@@ -1,6 +1,7 @@
 import { getIndustryData } from "@/lib/data";
 import { SUPPLY_DATA } from "@/lib/data-supply";
 import { RISK_DATA, CHOKEPOINTS } from "@/lib/data-risk";
+import { getMarketIntelData, getAlertsData, SOURCES } from "@/lib/data-analytics";
 import type {
   Industry,
   Company,
@@ -26,6 +27,9 @@ import type {
   EsgProfile,
   GeoRisk,
   Chokepoint,
+  MarketIntel,
+  SourceInfo,
+  AlertItem,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -175,6 +179,17 @@ export function getChokepoints(): Chokepoint[] {
 }
 export function getCompareRadar(industry: Industry) {
   return RISK_DATA[industry].compareRadar;
+}
+
+// --- Data & Analytics + Monitoring ---
+export function getMarketIntel(industry: Industry): MarketIntel {
+  return getMarketIntelData(industry);
+}
+export function getDataSources(): SourceInfo[] {
+  return SOURCES;
+}
+export function getAlerts(industry: Industry): AlertItem[] {
+  return getAlertsData(industry);
 }
 
 export function getPatents(industry: Industry): PatentRow[] {

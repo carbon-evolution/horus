@@ -213,6 +213,29 @@ export interface GeoRisk {
   chokepoints: string[];
 }
 
+// --- Data & Analytics + Monitoring sections ---
+export interface MarketIntel {
+  inventoryRatio: { period: string; value: number }[]; // days of inventory
+  leadTimes: { component: string; weeks: number; delta: number }[]; // delta vs prior quarter
+  utilization: { segment: string; pct: number }[];
+}
+export interface SourceInfo {
+  name: string;
+  provides: string;
+  cadence: string;
+  lastSync: string;
+  status: "healthy" | "degraded" | "offline";
+  free: boolean;
+}
+export interface AlertItem {
+  id: string;
+  severity: RiskLevel;
+  title: string;
+  entity: string;
+  href: string; // deep-link to the affected page
+  ago: string;
+}
+
 export interface IndustryData {
   kpis: Kpi[];
   companies: Company[];

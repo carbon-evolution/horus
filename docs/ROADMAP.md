@@ -6,8 +6,10 @@
 - [x] **Companies** — Top 10 Overview, Company Explorer, Financials, News & Events, Deals & Partnerships, Research & Patents, `[id]` deep-dive — done, tsc clean, all routes 200.
 - [x] **Supply Chain** — Suppliers & Vendors, Raw Materials, Manufacturing Facilities, Trade & Shipments, and full 3D Supply Chain Map (react-force-graph-3d, lazy-loaded) — done, tsc clean, all routes 200, 3D renders.
 - [x] **Risk & Compliance** — Risk Radar compare (multi-entity toggle), Policies & Laws tracker, ESG Scope 1–3 heatmap, Geopolitical Risk (country exposure + chokepoints) — done, tsc clean, routes 200.
-- [ ] **Data & Analytics** (3) — next. [ ] **Monitoring** (2).
-- [ ] Cross-filter focus pass. [ ] Phase Z: real data.
+- [x] **Data & Analytics** — Market Intelligence (inventory/lead-times/utilization), Reports (section picker + print-to-PDF), Data Sources (feed registry) — done.
+- [x] **Monitoring** — Alerts (severity filter + deep links), Watchlist (star/pin, localStorage-persisted via zustand persist) — done.
+- **ALL 21 SUB-PAGES COMPLETE** — 22/22 routes 200, tsc clean.
+- [ ] Cross-filter focus pass (focusCompany wiring across pages). [ ] Phase Z: real data (ETL → DuckDB → Postgres/Redis → flip provider.ts).
 
 
 ## Context
