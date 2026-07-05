@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/lib/store";
-import { getCompany, getCompanies } from "@/lib/provider";
+import { getCompany, getCompanies } from "@/lib/fixtures";
 
 // Cross-panel focus helper. The store keeps the focused company *id*; most
 // fixtures reference companies by *name*, so matching here is name-based and

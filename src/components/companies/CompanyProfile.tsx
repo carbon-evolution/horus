@@ -9,7 +9,7 @@ import {
   getFacilities,
   getNews,
   getPatents,
-} from "@/lib/provider";
+} from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";

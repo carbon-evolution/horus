@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import ForceGraph3D from "react-force-graph-3d";
 import { useApp } from "@/lib/store";
-import { getSupplyGraph } from "@/lib/provider";
+import { getSupplyGraph } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type GraphNode } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";

@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/lib/store";
-import { getSankey, getShipments } from "@/lib/provider";
+import { getSankey, getShipments } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type ShipMode } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

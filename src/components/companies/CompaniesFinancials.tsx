@@ -1,7 +1,7 @@
 "use client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useApp } from "@/lib/store";
-import { getCompanies, getFinancialsTTM, getFinancialsSnapshot } from "@/lib/provider";
+import { getCompanies, getFinancialsTTM, getFinancialsSnapshot } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

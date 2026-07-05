@@ -8,8 +8,8 @@ import {
   getSupplierEdges, getMaterials, getShipments,
   getPolicies, getEsgProfiles, getGeoRisks, getCompareRadar,
   getMarketIntel, getAlerts, getPatents,
-  getDataSources, getChokepoints,
-} from "../src/lib/provider";
+  getDataSources, getChokepoints, getCompanyMetaMap,
+} from "../src/lib/fixtures";
 
 const OUT = join(process.cwd(), "etl", "seeds", "fixtures");
 mkdirSync(OUT, { recursive: true });
@@ -36,6 +36,7 @@ function perIndustry(industry: Industry) {
     marketIntel: getMarketIntel(industry),
     alerts: getAlerts(industry),
     patents: getPatents(industry),
+    companyMeta: getCompanyMetaMap(industry),
   };
 }
 

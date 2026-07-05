@@ -1,7 +1,7 @@
 "use client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useApp } from "@/lib/store";
-import { getMarketIntel } from "@/lib/provider";
+import { getMarketIntel } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

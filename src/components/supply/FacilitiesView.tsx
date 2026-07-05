@@ -1,7 +1,7 @@
 "use client";
 import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
-import { getFacilities, getCompanies } from "@/lib/provider";
+import { getFacilities, getCompanies } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type FacilityStatus } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";

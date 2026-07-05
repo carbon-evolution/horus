@@ -1,7 +1,7 @@
 "use client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useApp } from "@/lib/store";
-import { getPatents } from "@/lib/provider";
+import { getPatents } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

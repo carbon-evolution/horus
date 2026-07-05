@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
-import { getSupplierEdges } from "@/lib/provider";
+import { getSupplierEdges } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";

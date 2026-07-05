@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Star, Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
-import { getCompanies, getCompanyMeta } from "@/lib/provider";
+import { getCompanies, getCompanyMeta } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";

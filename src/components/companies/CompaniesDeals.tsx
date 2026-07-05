@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/lib/store";
-import { getDeals } from "@/lib/provider";
+import { getDeals } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

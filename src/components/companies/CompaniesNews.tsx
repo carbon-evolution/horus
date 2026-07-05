@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/lib/store";
-import { getNews } from "@/lib/provider";
+import { getNews } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type NewsItem } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

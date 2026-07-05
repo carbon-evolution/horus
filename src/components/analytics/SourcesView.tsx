@@ -1,5 +1,5 @@
 "use client";
-import { getDataSources } from "@/lib/provider";
+import { getDataSources } from "@/lib/fixtures";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 

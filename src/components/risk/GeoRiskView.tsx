@@ -1,6 +1,6 @@
 "use client";
 import { useApp } from "@/lib/store";
-import { getGeoRisks, getChokepoints } from "@/lib/provider";
+import { getGeoRisks, getChokepoints } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";

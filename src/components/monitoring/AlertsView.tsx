@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useApp } from "@/lib/store";
-import { getAlerts } from "@/lib/provider";
+import { getAlerts } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type RiskLevel } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";

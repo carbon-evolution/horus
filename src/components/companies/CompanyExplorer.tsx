@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { useFocus } from "@/lib/focus";
-import { getCompanies, getCompanyMeta } from "@/lib/provider";
+import { getCompanies, getCompanyMeta } from "@/lib/fixtures";
 import { INDUSTRY_LABEL, type Company } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";

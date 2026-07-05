@@ -104,6 +104,12 @@ export function getCompanyMeta(industry: Industry, id: string): CompanyMeta {
   };
 }
 
+// Raw explicit companyMeta map (may be undefined) — used only by the ETL dump so
+// the async provider can serve explicit overrides and derive the rest.
+export function getCompanyMetaMap(industry: Industry): Record<string, CompanyMeta> {
+  return getIndustryData(industry).companyMeta ?? {};
+}
+
 // TTM series derived deterministically from the single snapshot value so the
 // Financials page has a trend to plot. 6 periods ending at the latest snapshot.
 const PERIODS = ["Q3'23", "Q4'23", "Q1'24", "Q2'24", "Q3'24", "Q4'24"];

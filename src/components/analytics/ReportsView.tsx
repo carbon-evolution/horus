@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useApp } from "@/lib/store";
-import { getCompanies, getAlerts, getMaterials, getPolicies } from "@/lib/provider";
+import { getCompanies, getAlerts, getMaterials, getPolicies } from "@/lib/fixtures";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
