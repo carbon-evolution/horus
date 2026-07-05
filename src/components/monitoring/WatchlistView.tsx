@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { getCompanies, getCompanyMeta } from "@/lib/provider";
 import { INDUSTRY_LABEL } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -12,6 +13,7 @@ export function WatchlistView() {
   const industry = useApp((s) => s.industry);
   const watchlist = useApp((s) => s.watchlist);
   const toggleWatch = useApp((s) => s.toggleWatch);
+  const { focusId, active, toggleFocus } = useFocus();
   const companies = getCompanies(industry);
   const watched = companies.filter((c) => watchlist.includes(c.id));
   const rest = companies.filter((c) => !watchlist.includes(c.id));
@@ -20,8 +22,9 @@ export function WatchlistView() {
     const c = companies.find((x) => x.id === id)!;
     const m = getCompanyMeta(industry, c.id);
     const on = watchlist.includes(c.id);
+    const focused = c.id === focusId;
     return (
-      <li className="flex items-center justify-between gap-3 py-2.5">
+      <li className={`flex items-center justify-between gap-3 py-2.5 transition-opacity ${focusDim(active, focused)}`}>
         <div className="flex min-w-0 items-center gap-3">
           <button
             onClick={() => toggleWatch(c.id)}
@@ -29,6 +32,13 @@ export function WatchlistView() {
             className={on ? "text-[var(--risk-med)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
           >
             <Star size={16} fill={on ? "currentColor" : "none"} />
+          </button>
+          <button
+            onClick={() => toggleFocus(c.id)}
+            title={focused ? "Clear focus" : "Focus across all pages"}
+            className={focused ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
+          >
+            <Crosshair size={14} />
           </button>
           <div className="min-w-0">
             <Link href={`/companies/${c.id}`} className="text-sm font-medium text-[var(--accent)] hover:underline">{c.name}</Link>

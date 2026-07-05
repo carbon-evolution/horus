@@ -1,4 +1,6 @@
+"use client";
 import type { Company } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 
 function pct(n: number) {
   if (n === 0) return <span className="text-[var(--text-faint)]">—</span>;
@@ -7,6 +9,7 @@ function pct(n: number) {
 }
 
 export function MarketSnapshot({ companies }: { companies: Company[] }) {
+  const { focusId, active, toggleFocus } = useFocus();
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -20,18 +23,28 @@ export function MarketSnapshot({ companies }: { companies: Company[] }) {
           </tr>
         </thead>
         <tbody>
-          {companies.map((c) => (
-            <tr key={c.id} className="border-t border-[var(--panel-border)]">
-              <td className="py-1.5">
-                <div className="font-medium">{c.name}</div>
-                <div className="text-[10px] text-[var(--text-faint)]">{c.ticker}</div>
-              </td>
-              <td className="py-1.5 text-right tabular-nums">{c.marketCap}</td>
-              <td className="py-1.5 text-right tabular-nums text-[var(--text-dim)]">{c.price}</td>
-              <td className="py-1.5 text-right tabular-nums">{pct(c.change24h)}</td>
-              <td className="py-1.5 text-right tabular-nums">{pct(c.changeYtd)}</td>
-            </tr>
-          ))}
+          {companies.map((c) => {
+            const focused = c.id === focusId;
+            return (
+              <tr
+                key={c.id}
+                onClick={() => toggleFocus(c.id)}
+                title={focused ? "Clear focus" : "Focus this company across all widgets"}
+                className={`cursor-pointer border-t border-[var(--panel-border)] transition-opacity hover:bg-white/5 ${
+                  focused ? "bg-[var(--accent)]/10" : focusDim(active, focused)
+                }`}
+              >
+                <td className="py-1.5">
+                  <div className={`font-medium ${focused ? "text-[var(--accent)]" : ""}`}>{c.name}</div>
+                  <div className="text-[10px] text-[var(--text-faint)]">{c.ticker}</div>
+                </td>
+                <td className="py-1.5 text-right tabular-nums">{c.marketCap}</td>
+                <td className="py-1.5 text-right tabular-nums text-[var(--text-dim)]">{c.price}</td>
+                <td className="py-1.5 text-right tabular-nums">{pct(c.change24h)}</td>
+                <td className="py-1.5 text-right tabular-nums">{pct(c.changeYtd)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -1,6 +1,9 @@
+"use client";
 import type { Deal } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 
 export function DealsTable({ deals }: { deals: Deal[] }) {
+  const { active, matchesText } = useFocus();
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -15,7 +18,7 @@ export function DealsTable({ deals }: { deals: Deal[] }) {
         </thead>
         <tbody>
           {deals.map((d, i) => (
-            <tr key={i} className="border-t border-[var(--panel-border)]">
+            <tr key={i} className={`border-t border-[var(--panel-border)] transition-opacity ${focusDim(active, matchesText(d.parties))}`}>
               <td className="py-2 whitespace-nowrap text-[var(--text-dim)]">{d.date}</td>
               <td className="py-2 whitespace-nowrap font-medium text-[var(--accent)]">{d.parties}</td>
               <td className="py-2 whitespace-nowrap text-[var(--text-dim)]">{d.type}</td>

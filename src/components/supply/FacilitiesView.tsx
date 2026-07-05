@@ -1,7 +1,9 @@
 "use client";
+import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { getFacilities, getCompanies } from "@/lib/provider";
 import { INDUSTRY_LABEL, type FacilityStatus } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
@@ -22,6 +24,7 @@ const STATUS_COLOR: Record<FacilityStatus, string> = {
 
 export function FacilitiesView() {
   const industry = useApp((s) => s.industry);
+  const { focusId, active, toggleFocus } = useFocus();
   const facilities = getFacilities(industry);
   const companyName = new Map(getCompanies(industry).map((c) => [c.id, c.name]));
   const count = (s: FacilityStatus) => facilities.filter((f) => f.status === s).length;
@@ -53,10 +56,23 @@ export function FacilitiesView() {
             </tr>
           </thead>
           <tbody>
-            {facilities.map((f) => (
-              <tr key={f.id} className="border-t border-[var(--panel-border)]">
+            {facilities.map((f) => {
+              const focused = f.companyId === focusId;
+              return (
+              <tr key={f.id} className={`border-t border-[var(--panel-border)] transition-opacity ${focusDim(active, focused)}`}>
                 <td className="py-2 font-medium">{f.name}</td>
-                <td className="py-2 text-[var(--text-dim)]">{companyName.get(f.companyId) ?? f.companyId}</td>
+                <td className="py-2 text-[var(--text-dim)]">
+                  <span className="inline-flex items-center gap-2">
+                    <button
+                      onClick={() => toggleFocus(f.companyId)}
+                      title={focused ? "Clear focus" : "Focus this company across all pages"}
+                      className={focused ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
+                    >
+                      <Crosshair size={13} />
+                    </button>
+                    {companyName.get(f.companyId) ?? f.companyId}
+                  </span>
+                </td>
                 <td className="py-2 capitalize text-[var(--text-dim)]">{f.type}</td>
                 <td className="py-2 tabular-nums text-[var(--text-faint)]">{f.lat.toFixed(2)}, {f.lng.toFixed(2)}</td>
                 <td className="py-2 text-right">
@@ -65,7 +81,8 @@ export function FacilitiesView() {
                   </span>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </Panel>

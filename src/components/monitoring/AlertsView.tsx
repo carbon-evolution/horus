@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useApp } from "@/lib/store";
 import { getAlerts } from "@/lib/provider";
 import { INDUSTRY_LABEL, type RiskLevel } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -12,6 +13,7 @@ const ORDER: RiskLevel[] = ["high", "medium", "low"];
 
 export function AlertsView() {
   const industry = useApp((s) => s.industry);
+  const { active, matchesText } = useFocus();
   const [filter, setFilter] = useState<RiskLevel | "all">("all");
   const alerts = getAlerts(industry)
     .filter((a) => filter === "all" || a.severity === filter)
@@ -41,7 +43,7 @@ export function AlertsView() {
       <Panel title={`Active Alerts (${alerts.length})`}>
         <ul className="divide-y divide-[var(--panel-border)]">
           {alerts.map((a) => (
-            <li key={a.id} className="flex items-center justify-between gap-3 py-2.5">
+            <li key={a.id} className={`flex items-center justify-between gap-3 py-2.5 transition-opacity ${focusDim(active, matchesText(a.entity) || matchesText(a.title))}`}>
               <div className="flex min-w-0 items-center gap-3">
                 <RiskBadge level={a.severity} />
                 <div className="min-w-0">

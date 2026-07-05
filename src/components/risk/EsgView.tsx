@@ -1,7 +1,9 @@
 "use client";
+import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { getEsgProfiles } from "@/lib/provider";
 import { INDUSTRY_LABEL } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -19,6 +21,7 @@ function heat(value: number, max: number) {
 
 export function EsgView() {
   const industry = useApp((s) => s.industry);
+  const { active, matchesText, toggleFocus, nameToId } = useFocus();
   const esg = getEsgProfiles(industry);
   const max = {
     s1: Math.max(...esg.map((e) => e.scope1), 0.1),
@@ -43,9 +46,25 @@ export function EsgView() {
             </tr>
           </thead>
           <tbody>
-            {esg.map((e) => (
-              <tr key={e.company} className="border-t border-[var(--panel-border)]">
-                <td className="py-2 font-medium">{e.company}</td>
+            {esg.map((e) => {
+              const matched = matchesText(e.company);
+              const id = nameToId(e.company);
+              return (
+              <tr key={e.company} className={`border-t border-[var(--panel-border)] transition-opacity ${focusDim(active, matched)}`}>
+                <td className="py-2 font-medium">
+                  <span className="inline-flex items-center gap-2">
+                    {id && (
+                      <button
+                        onClick={() => toggleFocus(id)}
+                        title={matched ? "Clear focus" : "Focus across all pages"}
+                        className={matched ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
+                      >
+                        <Crosshair size={13} />
+                      </button>
+                    )}
+                    {e.company}
+                  </span>
+                </td>
                 <td className="py-1.5">{heat(e.scope1, max.s1)}</td>
                 <td className="py-1.5">{heat(e.scope2, max.s2)}</td>
                 <td className="py-1.5">{heat(e.scope3, max.s3)}</td>
@@ -53,7 +72,8 @@ export function EsgView() {
                 <td className="py-2 text-right"><RiskBadge level={e.ethicalSourcing} /></td>
                 <td className="py-2 text-right tabular-nums text-[var(--text-dim)]">{e.netZeroTarget}</td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
         <p className="mt-3 text-[11px] text-[var(--text-faint)]">

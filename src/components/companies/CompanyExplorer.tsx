@@ -1,6 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
+import { useFocus } from "@/lib/focus";
 import { getCompanies, getCompanyMeta } from "@/lib/provider";
 import { INDUSTRY_LABEL, type Company } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -16,6 +18,7 @@ function capNum(s: string): number {
 export function CompanyExplorer() {
   const industry = useApp((s) => s.industry);
   const router = useRouter();
+  const { focusId, toggleFocus } = useFocus();
   const companies = getCompanies(industry);
 
   const columns: Column<Company>[] = [
@@ -46,6 +49,23 @@ export function CompanyExplorer() {
     },
     { key: "health", header: "Health", align: "right", sortValue: (r) => getCompanyMeta(industry, r.id).healthScore, render: (r) => `${getCompanyMeta(industry, r.id).healthScore}/100` },
     { key: "exposure", header: "Exposure", align: "right", sortValue: (r) => getCompanyMeta(industry, r.id).exposure, render: (r) => <RiskBadge level={getCompanyMeta(industry, r.id).exposure} /> },
+    {
+      key: "focus",
+      header: "",
+      align: "right",
+      render: (r) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFocus(r.id);
+          }}
+          title={r.id === focusId ? "Clear focus" : "Focus across all pages"}
+          className={r.id === focusId ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
+        >
+          <Crosshair size={14} />
+        </button>
+      ),
+    },
   ];
 
   return (

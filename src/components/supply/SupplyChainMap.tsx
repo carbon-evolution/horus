@@ -5,6 +5,7 @@ import ForceGraph3D from "react-force-graph-3d";
 import { useApp } from "@/lib/store";
 import { getSupplyGraph } from "@/lib/provider";
 import { INDUSTRY_LABEL, type GraphNode } from "@/lib/types";
+import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 const GROUP_COLOR: Record<GraphNode["group"], string> = {
@@ -15,6 +16,7 @@ const GROUP_COLOR: Record<GraphNode["group"], string> = {
 
 export default function SupplyChainMap() {
   const industry = useApp((s) => s.industry);
+  const { active, matchesText, toggleFocus, nameToId } = useFocus();
   const graph = useMemo(() => {
     const g = getSupplyGraph(industry);
     // Fresh copies — the force engine mutates node/link objects with coordinates.
@@ -40,6 +42,11 @@ export default function SupplyChainMap() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleClick(node: any) {
     setSelected(node);
+    // Company nodes drive the cross-page focus; suppliers/materials just zoom.
+    if (node?.group === "company") {
+      const id = nameToId(node.name);
+      if (id) toggleFocus(id);
+    }
     const fg = fgRef.current;
     if (fg?.cameraPosition && Number.isFinite(node.x)) {
       const dist = 120;
@@ -71,9 +78,13 @@ export default function SupplyChainMap() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           nodeLabel={(n: any) => `${n.name} (${n.group})`}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          nodeColor={(n: any) => GROUP_COLOR[n.group as GraphNode["group"]] ?? "#64748b"}
+          nodeColor={(n: any) => {
+            const base = GROUP_COLOR[n.group as GraphNode["group"]] ?? "#64748b";
+            if (!active) return base;
+            return matchesText(n.name) ? "#fbbf24" : "#2a3448";
+          }}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          nodeVal={(n: any) => Math.max(2, Math.sqrt(n.val || 1))}
+          nodeVal={(n: any) => Math.max(2, Math.sqrt(n.val || 1)) * (active && matchesText(n.name) ? 2.5 : 1)}
           nodeOpacity={0.95}
           linkColor={() => "#33507a"}
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

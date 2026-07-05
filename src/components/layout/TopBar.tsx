@@ -1,7 +1,9 @@
 "use client";
-import { Search, Star, Bell, Download, Settings, User } from "lucide-react";
+import { Search, Star, Bell, Download, Settings, User, Crosshair, X } from "lucide-react";
+import { useFocus } from "@/lib/focus";
 
 export function TopBar() {
+  const { focusName, clearFocus } = useFocus();
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-[var(--panel-border)] bg-[var(--bg-elevated)] px-5">
       {/* Global search */}
@@ -13,6 +15,16 @@ export function TopBar() {
           className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)] py-2 pr-3 pl-9 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--accent)] focus:outline-none"
         />
       </div>
+
+      {focusName && (
+        <button
+          onClick={clearFocus}
+          title="Clear cross-filter focus"
+          className="flex shrink-0 items-center gap-1.5 rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/15 px-3 py-1.5 text-xs font-medium text-[var(--accent)] hover:bg-[var(--accent)]/25"
+        >
+          <Crosshair size={13} /> Focus: {focusName} <X size={12} />
+        </button>
+      )}
 
       <div className="ml-auto flex items-center gap-1">
         <button className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-[var(--text-dim)] hover:bg-white/5 hover:text-[var(--text)]">

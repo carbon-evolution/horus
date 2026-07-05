@@ -9,13 +9,14 @@
 - [x] **Data & Analytics** — Market Intelligence (inventory/lead-times/utilization), Reports (section picker + print-to-PDF), Data Sources (feed registry) — done.
 - [x] **Monitoring** — Alerts (severity filter + deep links), Watchlist (star/pin, localStorage-persisted via zustand persist) — done.
 - **ALL 21 SUB-PAGES COMPLETE** — 22/22 routes 200, tsc clean.
-- [ ] Cross-filter focus pass (focusCompany wiring across pages). [ ] Phase Z: real data (ETL → DuckDB → Postgres/Redis → flip provider.ts).
+- [x] **Cross-filter focus pass** — `src/lib/focus.ts` (`useFocus()` + `focusDim()`); TopBar focus chip; set-points on Market Snapshot, Top-10 cards, Company Explorer, Companies Overview, Watchlist, Suppliers (buyer crosshair), Facilities register, ESG table, Supply Chain Map (company node click); consume-points dim/highlight in NewsFeed, DealsTable, FinancialPerformance, ManufacturingFootprint, Alerts, Watchlist, Facilities, ESG, Suppliers (auto-selects focused buyer), Supply Chain Map. tsc clean, all routes 200.
+- [ ] Phase Z: real data (ETL → DuckDB → Postgres/Redis → flip provider.ts).
 
 
 ## Context
 
 We rebuilt the platform from scratch this session. The **app shell + Dashboard** are done and live
-(`~/Downloads/Opencode/scr-radar`, Next.js 16 + Tailwind v4 + Recharts + Zustand, http://localhost:3000).
+(`~/Downloads/Opencode/scr-radar`, Next.js 16 + Tailwind v4 + Recharts + Zustand, http://localhost:4444).
 Only `/` (Dashboard) exists; every sidebar sub-page currently 404s.
 
 This plan covers **all 21 sub-pages**. Approach: **build every page with mock data first** (shaped exactly

@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
+import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
+import { useFocus, focusDim } from "@/lib/focus";
 import { getCompanies, getCompanyMeta } from "@/lib/provider";
 import { INDUSTRY_LABEL } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -12,6 +14,7 @@ function healthColor(n: number) {
 
 export function CompaniesOverview() {
   const industry = useApp((s) => s.industry);
+  const { focusId, active, toggleFocus } = useFocus();
   const companies = getCompanies(industry).slice(0, 10);
 
   return (
@@ -21,18 +24,33 @@ export function CompaniesOverview() {
         {companies.map((c) => {
           const m = getCompanyMeta(industry, c.id);
           const up = c.changeYtd >= 0;
+          const focused = c.id === focusId;
           return (
             <Link
               key={c.id}
               href={`/companies/${c.id}`}
-              className="flex flex-col rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 transition-colors hover:border-[var(--accent)]/50"
+              className={`flex flex-col rounded-xl border bg-[var(--panel)] p-4 transition-colors hover:border-[var(--accent)]/50 ${
+                focused ? "border-[var(--accent)]" : "border-[var(--panel-border)]"
+              } ${focusDim(active, focused)}`}
             >
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-semibold">{c.name}</div>
                   <div className="text-[10px] text-[var(--text-faint)]">{c.ticker} · {m.hq}</div>
                 </div>
-                <RiskBadge level={m.exposure} label={`${m.exposure[0].toUpperCase()}${m.exposure.slice(1)} exp.`} />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleFocus(c.id);
+                    }}
+                    title={focused ? "Clear focus" : "Focus across all pages"}
+                    className={focused ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}
+                  >
+                    <Crosshair size={14} />
+                  </button>
+                  <RiskBadge level={m.exposure} label={`${m.exposure[0].toUpperCase()}${m.exposure.slice(1)} exp.`} />
+                </div>
               </div>
 
               <div className="mt-3 flex items-end justify-between">

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip } from "recharts";
 import type { FinancialSeriesPoint } from "@/lib/types";
+import { useFocus } from "@/lib/focus";
 
 const TABS = [
   { key: "revenue", label: "Revenue" },
@@ -13,6 +14,7 @@ type TabKey = (typeof TABS)[number]["key"];
 
 export function FinancialPerformance({ data }: { data: FinancialSeriesPoint[] }) {
   const [tab, setTab] = useState<TabKey>("revenue");
+  const { active, matchesText } = useFocus();
   const rows = data.map((d) => ({ company: d.company, value: d[tab] }));
   return (
     <div>
@@ -40,7 +42,11 @@ export function FinancialPerformance({ data }: { data: FinancialSeriesPoint[] })
           />
           <Bar dataKey="value" radius={[3, 3, 0, 0]}>
             {rows.map((r, i) => (
-              <Cell key={i} fill={r.value < 0 ? "#ef4444" : "#3b82f6"} />
+              <Cell
+                key={i}
+                fill={r.value < 0 ? "#ef4444" : "#3b82f6"}
+                fillOpacity={active && !matchesText(r.company) ? 0.25 : 1}
+              />
             ))}
           </Bar>
         </BarChart>

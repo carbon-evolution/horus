@@ -18,7 +18,8 @@ export const useApp = create<AppState>()(
   persist(
     (set) => ({
       industry: "semiconductor",
-      setIndustry: (industry) => set({ industry }),
+      // Focus ids are industry-scoped, so switching industries clears it.
+      setIndustry: (industry) => set({ industry, focusCompany: null }),
       focusCompany: null,
       setFocusCompany: (focusCompany) => set({ focusCompany }),
       watchlist: [],

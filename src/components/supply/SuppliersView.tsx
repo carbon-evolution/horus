@@ -1,17 +1,24 @@
 "use client";
 import { useMemo, useState } from "react";
+import { Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { getSupplierEdges } from "@/lib/provider";
 import { INDUSTRY_LABEL } from "@/lib/types";
+import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
 export function SuppliersView() {
   const industry = useApp((s) => s.industry);
+  const { active, matchesText, toggleFocus, nameToId } = useFocus();
   const edges = getSupplierEdges(industry);
   const buyers = useMemo(() => [...new Set(edges.map((e) => e.buyer))], [edges]);
-  const [buyer, setBuyer] = useState<string>(buyers[0] ?? "");
+  const [picked, setPicked] = useState<string>(buyers[0] ?? "");
+  // A focused company auto-selects its buyer row; manual clicks apply otherwise.
+  const focusedBuyer = active ? buyers.find((b) => matchesText(b)) : undefined;
+  const buyer = focusedBuyer ?? picked;
+  const setBuyer = setPicked;
   const rows = edges.filter((e) => e.buyer === buyer);
 
   return (
@@ -21,11 +28,13 @@ export function SuppliersView() {
         {/* buyer list */}
         <Panel title="Buyers" className="xl:col-span-1" bodyClassName="p-2">
           <ul className="space-y-0.5">
-            {buyers.map((b) => (
-              <li key={b}>
+            {buyers.map((b) => {
+              const id = nameToId(b);
+              return (
+              <li key={b} className="flex items-center gap-1">
                 <button
                   onClick={() => setBuyer(b)}
-                  className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                  className={`flex-1 rounded-md px-3 py-2 text-left text-sm transition-colors ${
                     buyer === b ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "text-[var(--text-dim)] hover:bg-white/5"
                   }`}
                 >
@@ -34,8 +43,18 @@ export function SuppliersView() {
                     {edges.filter((e) => e.buyer === b).length} suppliers
                   </span>
                 </button>
+                {id && (
+                  <button
+                    onClick={() => toggleFocus(id)}
+                    title={matchesText(b) ? "Clear focus" : "Focus across all pages"}
+                    className={`shrink-0 px-1.5 ${matchesText(b) ? "text-[var(--accent)]" : "text-[var(--text-faint)] hover:text-[var(--text-dim)]"}`}
+                  >
+                    <Crosshair size={13} />
+                  </button>
+                )}
               </li>
-            ))}
+              );
+            })}
           </ul>
         </Panel>
 

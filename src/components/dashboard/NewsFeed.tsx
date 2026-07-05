@@ -1,4 +1,6 @@
+"use client";
 import type { NewsItem, RiskLevel } from "@/lib/types";
+import { useFocus, focusDim } from "@/lib/focus";
 
 const IMPACT_BG: Record<RiskLevel, string> = {
   high: "var(--risk-high)",
@@ -7,10 +9,11 @@ const IMPACT_BG: Record<RiskLevel, string> = {
 };
 
 export function NewsFeed({ news }: { news: NewsItem[] }) {
+  const { active, matchesText } = useFocus();
   return (
     <div className="space-y-3">
       {news.map((n) => (
-        <div key={n.id} className="flex gap-3">
+        <div key={n.id} className={`flex gap-3 transition-opacity ${focusDim(active, matchesText(n.company) || matchesText(n.headline))}`}>
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-[var(--panel-2)] text-[10px] font-semibold text-[var(--text-dim)]">
             {n.company.slice(0, 3).toUpperCase()}
           </div>

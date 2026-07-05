@@ -1,4 +1,6 @@
+"use client";
 import type { Facility, FacilityStatus } from "@/lib/types";
+import { useFocus } from "@/lib/focus";
 
 const STATUS_COLOR: Record<FacilityStatus, string> = {
   operating: "#34d399",
@@ -31,6 +33,7 @@ const LANDMASSES: { cx: number; cy: number; rx: number; ry: number }[] = [
 ];
 
 export function ManufacturingFootprint({ facilities }: { facilities: Facility[] }) {
+  const { focusId, active } = useFocus();
   return (
     <div>
       <div className="relative overflow-hidden rounded-lg bg-[var(--panel-2)]">
@@ -58,9 +61,14 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
           {/* facility nodes */}
           {facilities.map((f) => {
             const color = STATUS_COLOR[f.status];
+            const matched = f.companyId === focusId;
+            const dim = active && !matched;
             return (
-              <g key={f.id}>
+              <g key={f.id} opacity={dim ? 0.25 : 1}>
                 <circle cx={px(f.lng)} cy={py(f.lat)} r={7} fill={color} fillOpacity={0.18} />
+                {matched && (
+                  <circle cx={px(f.lng)} cy={py(f.lat)} r={9} fill="none" stroke={color} strokeOpacity={0.8} strokeWidth={1.5} />
+                )}
                 <circle cx={px(f.lng)} cy={py(f.lat)} r={3} fill={color}>
                   <title>{`${f.name} — ${STATUS_LABEL[f.status]}`}</title>
                 </circle>
