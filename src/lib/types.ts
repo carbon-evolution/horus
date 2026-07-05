@@ -179,6 +179,40 @@ export interface GraphData {
   links: GraphLink[];
 }
 
+// --- Risk & Compliance section ---
+export interface Policy {
+  id: string;
+  title: string;
+  authority: string;
+  region: string;
+  date: string;
+  severity: RiskLevel;
+  targets: string[];
+  summary: string;
+}
+export interface EsgProfile {
+  company: string;
+  scope1: number; // MtCO2e
+  scope2: number;
+  scope3: number;
+  waterRisk: RiskLevel; // scarcity exposure at production sites
+  netZeroTarget: string;
+  ethicalSourcing: RiskLevel; // supply-loop compliance risk
+}
+export interface Chokepoint {
+  name: string;
+  share: string; // e.g. "~40% of global chip trade"
+  risk: RiskLevel;
+}
+export interface GeoRisk {
+  country: string;
+  flag: string;
+  tension: number; // 0-100
+  role: string;
+  localization: number; // % domestic supplier localization
+  chokepoints: string[];
+}
+
 export interface IndustryData {
   kpis: Kpi[];
   companies: Company[];

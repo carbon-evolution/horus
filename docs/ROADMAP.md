@@ -5,7 +5,8 @@
 - [x] **Phase A** — shared UI (`PageHeader`, `DataTable`, `StatTile`, `RiskBadge`), `provider.ts` seam, type/fixture extensions — done.
 - [x] **Companies** — Top 10 Overview, Company Explorer, Financials, News & Events, Deals & Partnerships, Research & Patents, `[id]` deep-dive — done, tsc clean, all routes 200.
 - [x] **Supply Chain** — Suppliers & Vendors, Raw Materials, Manufacturing Facilities, Trade & Shipments, and full 3D Supply Chain Map (react-force-graph-3d, lazy-loaded) — done, tsc clean, all routes 200, 3D renders.
-- [ ] **Risk & Compliance** (4) — next. [ ] **Data & Analytics** (3). [ ] **Monitoring** (2).
+- [x] **Risk & Compliance** — Risk Radar compare (multi-entity toggle), Policies & Laws tracker, ESG Scope 1–3 heatmap, Geopolitical Risk (country exposure + chokepoints) — done, tsc clean, routes 200.
+- [ ] **Data & Analytics** (3) — next. [ ] **Monitoring** (2).
 - [ ] Cross-filter focus pass. [ ] Phase Z: real data.
 
 

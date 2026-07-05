@@ -1,5 +1,6 @@
 import { getIndustryData } from "@/lib/data";
 import { SUPPLY_DATA } from "@/lib/data-supply";
+import { RISK_DATA, CHOKEPOINTS } from "@/lib/data-risk";
 import type {
   Industry,
   Company,
@@ -21,6 +22,10 @@ import type {
   GraphData,
   GraphNode,
   GraphLink,
+  Policy,
+  EsgProfile,
+  GeoRisk,
+  Chokepoint,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -153,6 +158,23 @@ export function getSupplyGraph(industry: Industry): GraphData {
     return { source: e.supplier, target: e.buyer, value: v }; // vendor → client
   });
   return { nodes: [...nodeMap.values()], links };
+}
+
+// --- Risk & Compliance ---
+export function getPolicies(industry: Industry): Policy[] {
+  return RISK_DATA[industry].policies;
+}
+export function getEsgProfiles(industry: Industry): EsgProfile[] {
+  return RISK_DATA[industry].esg;
+}
+export function getGeoRisks(industry: Industry): GeoRisk[] {
+  return RISK_DATA[industry].geo;
+}
+export function getChokepoints(): Chokepoint[] {
+  return CHOKEPOINTS;
+}
+export function getCompareRadar(industry: Industry) {
+  return RISK_DATA[industry].compareRadar;
 }
 
 export function getPatents(industry: Industry): PatentRow[] {
