@@ -399,7 +399,10 @@ After this task the whole app lives under `/semiconductor` (default). Un-migrate
 - Move: every folder/file under `src/app/` except `layout.tsx`, `globals.css`, `favicon.*` → `src/app/[industry]/`
 - Create: `src/app/page.tsx` (redirect)
 - Create: `src/app/[industry]/layout.tsx`
+- Modify: `src/app/layout.tsx` (remove `AppShell` — it moves into the `[industry]` layout)
 - Modify: `src/components/layout/Sidebar.tsx`
+
+**Why AppShell moves:** `AppShell` renders the Sidebar + TopBar, which call `useIndustry()` / `useFocus()`→`useCompanies()`. Those hooks require `IndustryProvider` as an ancestor. So the shell must live INSIDE the provider, i.e. in `[industry]/layout.tsx`, not the root layout. The root layout keeps only `<html>/<body>`.
 
 - [ ] **Step 1: Create the `[industry]` segment and move routes**
 
@@ -421,6 +424,18 @@ export default function Home() {
 }
 ```
 
+- [ ] **Step 2b: Strip `AppShell` out of the root `src/app/layout.tsx`**
+
+The root layout must NOT render `AppShell` anymore (the shell moves into the `[industry]` layout so it sits inside `IndustryProvider`). Remove the `AppShell` import and wrapper; the body renders `{children}` directly:
+
+```typescript
+      <body className="min-h-full">
+        {children}
+      </body>
+```
+
+(Keep everything else in root `layout.tsx` — fonts, metadata, `<html>`.)
+
 - [ ] **Step 3: Write `src/app/[industry]/layout.tsx`**
 
 ```typescript
@@ -428,6 +443,7 @@ import { notFound } from "next/navigation";
 import { INDUSTRIES, type Industry } from "@/lib/types";
 import { getCompanies } from "@/lib/provider";
 import { IndustryProvider } from "@/lib/industry-context";
+import { AppShell } from "@/components/layout/AppShell";
 
 // No generateStaticParams: these routes read the live DB, so they render
 // dynamically on demand. notFound() below rejects unknown industries.
@@ -443,7 +459,7 @@ export default async function IndustryLayout({
   const companies = await getCompanies(industry as Industry);
   return (
     <IndustryProvider industry={industry as Industry} companies={companies}>
-      {children}
+      <AppShell>{children}</AppShell>
     </IndustryProvider>
   );
 }
