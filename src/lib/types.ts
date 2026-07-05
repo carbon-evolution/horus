@@ -129,6 +129,56 @@ export interface PatentRow {
   categories: PatentCategory[];
 }
 
+// --- Supply Chain section ---
+export interface SupplierEdge {
+  buyer: string;
+  supplier: string;
+  tier: 1 | 2 | 3;
+  material: string;
+  spend: string;
+  risk: RiskLevel;
+}
+export interface ProducerShare {
+  country: string;
+  share: number; // % of global output
+}
+export interface RawMaterial {
+  id: string;
+  name: string;
+  category: string;
+  price: string;
+  concentration: number; // top-3 sourcing concentration %
+  supplyRisk: RiskLevel;
+  topProducers: ProducerShare[];
+  usedIn: string;
+}
+export type ShipMode = "sea" | "air" | "rail";
+export interface TradeShipment {
+  lane: string;
+  origin: string;
+  destination: string;
+  mode: ShipMode;
+  commodity: string;
+  volume: string;
+  tariff: string;
+  risk: RiskLevel;
+}
+export interface GraphNode {
+  id: string;
+  name: string;
+  group: "company" | "supplier" | "material";
+  val: number;
+}
+export interface GraphLink {
+  source: string;
+  target: string;
+  value: number;
+}
+export interface GraphData {
+  nodes: GraphNode[];
+  links: GraphLink[];
+}
+
 export interface IndustryData {
   kpis: Kpi[];
   companies: Company[];
@@ -140,7 +190,10 @@ export interface IndustryData {
   deals: Deal[];
   suppliers: Supplier[];
   research: ResearchRow[];
-  // Optional richer fixtures (Companies section); provider fills defaults when absent.
+  // Optional richer fixtures; provider fills defaults when absent.
   companyMeta?: Record<string, CompanyMeta>;
   patents?: PatentRow[];
+  supplierEdges?: SupplierEdge[];
+  materials?: RawMaterial[];
+  shipments?: TradeShipment[];
 }

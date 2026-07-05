@@ -1,4 +1,5 @@
 import { getIndustryData } from "@/lib/data";
+import { SUPPLY_DATA } from "@/lib/data-supply";
 import type {
   Industry,
   Company,
@@ -14,6 +15,12 @@ import type {
   RadarAxis,
   SankeyData,
   Kpi,
+  SupplierEdge,
+  RawMaterial,
+  TradeShipment,
+  GraphData,
+  GraphNode,
+  GraphLink,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -104,6 +111,48 @@ export function getFinancialsTTM(industry: Industry, companyId: string): Financi
     rnd: +(snap.rnd * factor(i)).toFixed(2),
     capex: +(snap.capex * factor(i)).toFixed(1),
   }));
+}
+
+// --- Supply Chain ---
+export function getSupplierEdges(industry: Industry): SupplierEdge[] {
+  return getIndustryData(industry).supplierEdges ?? SUPPLY_DATA[industry].supplierEdges;
+}
+export function getMaterials(industry: Industry): RawMaterial[] {
+  return getIndustryData(industry).materials ?? SUPPLY_DATA[industry].materials;
+}
+export function getShipments(industry: Industry): TradeShipment[] {
+  return getIndustryData(industry).shipments ?? SUPPLY_DATA[industry].shipments;
+}
+
+function spendNum(s: string): number {
+  const n = parseFloat(s.replace(/[^0-9.]/g, ""));
+  return Number.isFinite(n) ? n : 1;
+}
+
+// Derive the force-graph from supplier edges: nodes are buyers/suppliers,
+// grouped "company" when the name matches a tracked company, else "supplier".
+export function getSupplyGraph(industry: Industry): GraphData {
+  const edges = getSupplierEdges(industry);
+  const companyNames = new Set(getCompanies(industry).map((c) => c.name.toLowerCase()));
+  const nodeMap = new Map<string, GraphNode>();
+  const ensure = (name: string) => {
+    if (!nodeMap.has(name)) {
+      nodeMap.set(name, {
+        id: name,
+        name,
+        group: companyNames.has(name.toLowerCase()) ? "company" : "supplier",
+        val: 1,
+      });
+    }
+    return nodeMap.get(name)!;
+  };
+  const links: GraphLink[] = edges.map((e) => {
+    const v = spendNum(e.spend);
+    ensure(e.buyer).val += v;
+    ensure(e.supplier).val += v;
+    return { source: e.supplier, target: e.buyer, value: v }; // vendor → client
+  });
+  return { nodes: [...nodeMap.values()], links };
 }
 
 export function getPatents(industry: Industry): PatentRow[] {
