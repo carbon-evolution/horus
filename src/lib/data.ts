@@ -111,6 +111,18 @@ const semiconductor: IndustryData = {
     { company: "Intel", rndExpense: "$16.0B", rndPctRevenue: "32.1%", patents: "4,193" },
     { company: "Qualcomm", rndExpense: "$6.42B", rndPctRevenue: "24.3%", patents: "2,341" },
   ],
+  companyMeta: {
+    nvidia: { ceo: "Jensen Huang", hq: "Santa Clara, USA", employees: "29,600", founded: "1993", description: "Designs GPUs and accelerated-computing platforms powering AI, gaming, and datacenters.", healthScore: 94, exposure: "medium", segments: [{ name: "Data Center", share: 78 }, { name: "Gaming", share: 17 }, { name: "Pro Viz / Auto", share: 5 }] },
+    tsmc: { ceo: "C.C. Wei", hq: "Hsinchu, Taiwan", employees: "73,000", founded: "1987", description: "World's largest dedicated semiconductor foundry, producing advanced logic for fabless designers.", healthScore: 88, exposure: "high", segments: [{ name: "HPC", share: 46 }, { name: "Smartphone", share: 33 }, { name: "IoT / Auto", share: 21 }] },
+    samsung: { ceo: "Jong-Hee Han", hq: "Suwon, South Korea", employees: "267,000", founded: "1969", description: "Integrated memory + logic maker and the second-largest foundry.", healthScore: 79, exposure: "high", segments: [{ name: "Memory", share: 55 }, { name: "Foundry / LSI", share: 30 }, { name: "Other", share: 15 }] },
+    asml: { ceo: "Christophe Fouquet", hq: "Veldhoven, Netherlands", employees: "42,000", founded: "1984", description: "Sole supplier of EUV lithography systems — a critical chokepoint in leading-edge chipmaking.", healthScore: 90, exposure: "medium", segments: [{ name: "EUV Systems", share: 48 }, { name: "DUV Systems", share: 34 }, { name: "Service", share: 18 }] },
+    intel: { ceo: "Lip-Bu Tan", hq: "Santa Clara, USA", employees: "108,900", founded: "1968", description: "Integrated device manufacturer investing heavily in a foundry turnaround.", healthScore: 58, exposure: "high", segments: [{ name: "Client", share: 51 }, { name: "Data Center", share: 30 }, { name: "Foundry / Other", share: 19 }] },
+    skhynix: { ceo: "Kwak Noh-Jung", hq: "Icheon, South Korea", employees: "31,000", founded: "1983", description: "Memory maker and leading supplier of HBM for AI accelerators.", healthScore: 82, exposure: "high", segments: [{ name: "DRAM / HBM", share: 71 }, { name: "NAND", share: 29 }] },
+    qualcomm: { ceo: "Cristiano Amon", hq: "San Diego, USA", employees: "50,000", founded: "1985", description: "Fabless leader in mobile SoCs and wireless connectivity IP.", healthScore: 76, exposure: "medium", segments: [{ name: "Handsets", share: 64 }, { name: "IoT", share: 22 }, { name: "Automotive", share: 14 }] },
+    micron: { ceo: "Sanjay Mehrotra", hq: "Boise, USA", employees: "48,000", founded: "1978", description: "US-based DRAM and NAND memory manufacturer.", healthScore: 74, exposure: "high", segments: [{ name: "DRAM", share: 73 }, { name: "NAND", share: 27 }] },
+    ti: { ceo: "Haviv Ilan", hq: "Dallas, USA", employees: "34,000", founded: "1930", description: "Broad-line analog and embedded-processing supplier with in-house fabs.", healthScore: 80, exposure: "low", segments: [{ name: "Analog", share: 74 }, { name: "Embedded", share: 18 }, { name: "Other", share: 8 }] },
+    infineon: { ceo: "Jochen Hanebeck", hq: "Neubiberg, Germany", employees: "58,000", founded: "1999", description: "Power semiconductors and automotive/industrial microcontrollers.", healthScore: 77, exposure: "medium", segments: [{ name: "Automotive", share: 48 }, { name: "Power & Sensor", share: 30 }, { name: "Connected / Secure", share: 22 }] },
+  },
 };
 
 const ai: IndustryData = {

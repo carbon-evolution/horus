@@ -45,6 +45,7 @@ export interface NewsItem {
   impact: RiskLevel;
   impactLabel: string;
   ago: string;
+  sentiment?: "positive" | "neutral" | "negative";
 }
 
 export interface RadarAxis {
@@ -95,6 +96,39 @@ export interface ResearchRow {
   patents: string;
 }
 
+// --- Companies section ---
+export interface CompanySegment {
+  name: string;
+  share: number; // % of revenue
+}
+export interface CompanyMeta {
+  ceo: string;
+  hq: string;
+  employees: string;
+  founded: string;
+  description: string;
+  healthScore: number; // 0-100 operational health
+  exposure: RiskLevel; // supply-chain exposure
+  segments: CompanySegment[];
+}
+export interface FinancialTTMPoint {
+  period: string; // e.g. "Q1'24"
+  revenue: number;
+  profit: number;
+  rnd: number;
+  capex: number;
+}
+export interface PatentCategory {
+  name: string;
+  count: number;
+}
+export interface PatentRow {
+  company: string;
+  total: number;
+  pending: number;
+  categories: PatentCategory[];
+}
+
 export interface IndustryData {
   kpis: Kpi[];
   companies: Company[];
@@ -106,4 +140,7 @@ export interface IndustryData {
   deals: Deal[];
   suppliers: Supplier[];
   research: ResearchRow[];
+  // Optional richer fixtures (Companies section); provider fills defaults when absent.
+  companyMeta?: Record<string, CompanyMeta>;
+  patents?: PatentRow[];
 }

@@ -1,5 +1,14 @@
 # Supply Chain Risk Radar — Sub-Page Build Plan (Mock-First)
 
+## Progress log
+- [x] **Scaffold + Dashboard** (app shell, nav, industry selector, 11 dashboard widgets) — done.
+- [x] **Phase A** — shared UI (`PageHeader`, `DataTable`, `StatTile`, `RiskBadge`), `provider.ts` seam, type/fixture extensions — done.
+- [x] **Companies** — Top 10 Overview, Company Explorer, Financials, News & Events, Deals & Partnerships, Research & Patents, `[id]` deep-dive — done, tsc clean, all routes 200.
+- [ ] **Supply Chain** (5 pages; `/supply-chain/map` full 3D last) — next.
+- [ ] **Risk & Compliance** (4). [ ] **Data & Analytics** (3). [ ] **Monitoring** (2).
+- [ ] Cross-filter focus pass. [ ] Phase Z: real data.
+
+
 ## Context
 
 We rebuilt the platform from scratch this session. The **app shell + Dashboard** are done and live
