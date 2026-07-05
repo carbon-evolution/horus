@@ -1,15 +1,21 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { NAV, DATA_SOURCES } from "@/lib/nav";
 import { INDUSTRIES, INDUSTRY_LABEL } from "@/lib/types";
 import { Icon } from "@/components/Icon";
-import { useApp } from "@/lib/store";
+import { useIndustry } from "@/lib/industry-context";
 
 function IndustrySelector() {
-  const { industry, setIndustry } = useApp();
+  const industry = useIndustry();
+  const router = useRouter();
+  const pathname = usePathname();
+  const switchTo = (i: string) => {
+    const rest = pathname.replace(/^\/[^/]+/, ""); // strip current industry segment
+    router.push(`/${i}${rest}`);
+  };
   return (
     <div className="px-3">
       <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-faint)]">
@@ -19,7 +25,7 @@ function IndustrySelector() {
         {INDUSTRIES.map((i) => (
           <button
             key={i}
-            onClick={() => setIndustry(i)}
+            onClick={() => switchTo(i)}
             className={`rounded-md px-1 py-1.5 text-[11px] font-medium transition-colors ${
               industry === i
                 ? "bg-[var(--accent)] text-white"
@@ -57,14 +63,16 @@ function DataSourceHealth() {
 
 function NavGroupItem({ group }: { group: (typeof NAV)[number] }) {
   const pathname = usePathname();
-  const childActive = group.children?.some((c) => pathname === c.href);
+  const industry = useIndustry();
+  const prefixed = (h: string) => `/${industry}${h === "/" ? "" : h}`;
+  const childActive = group.children?.some((c) => pathname === prefixed(c.href));
   const [open, setOpen] = useState<boolean>(Boolean(childActive) || group.label === "Companies");
 
   if (!group.children) {
-    const active = pathname === group.href;
+    const active = pathname === prefixed(group.href ?? "/");
     return (
       <Link
-        href={group.href ?? "#"}
+        href={group.href ? prefixed(group.href) : "#"}
         className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
           active ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "text-[var(--text-dim)] hover:bg-white/5 hover:text-[var(--text)]"
         }`}
@@ -90,11 +98,11 @@ function NavGroupItem({ group }: { group: (typeof NAV)[number] }) {
       {open && (
         <div className="mt-0.5 mb-1 space-y-0.5 pl-9">
           {group.children.map((c) => {
-            const active = pathname === c.href;
+            const active = pathname === prefixed(c.href);
             return (
               <Link
                 key={c.href}
-                href={c.href}
+                href={prefixed(c.href)}
                 className={`block rounded-md px-2.5 py-1.5 text-[13px] transition-colors ${
                   active ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "text-[var(--text-faint)] hover:bg-white/5 hover:text-[var(--text-dim)]"
                 }`}
