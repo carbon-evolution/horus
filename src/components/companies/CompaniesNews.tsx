@@ -1,6 +1,5 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getNews } from "@/lib/fixtures";
+import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type NewsItem } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
@@ -16,9 +15,8 @@ function sentiment(n: NewsItem): "positive" | "neutral" | "negative" {
   return "neutral";
 }
 
-export function CompaniesNews() {
-  const industry = useApp((s) => s.industry);
-  const news = getNews(industry);
+export function CompaniesNews({ news }: { news: NewsItem[] }) {
+  const industry = useIndustry();
   const counts = { positive: 0, neutral: 0, negative: 0 };
   for (const n of news) counts[sentiment(n)]++;
 

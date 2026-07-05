@@ -1,14 +1,13 @@
 "use client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { useApp } from "@/lib/store";
-import { getPatents } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type PatentRow } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 
-export function CompaniesPatents() {
-  const industry = useApp((s) => s.industry);
-  const patents = [...getPatents(industry)].sort((a, b) => b.total - a.total);
+export function CompaniesPatents({ patents: allPatents }: { patents: PatentRow[] }) {
+  const industry = useIndustry();
+  const patents = [...allPatents].sort((a, b) => b.total - a.total);
   const chart = patents.map((p) => ({ company: p.company, total: p.total }));
 
   return (

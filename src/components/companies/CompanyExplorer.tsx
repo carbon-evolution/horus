@@ -1,10 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { Crosshair } from "lucide-react";
-import { useApp } from "@/lib/store";
 import { useFocus } from "@/lib/focus";
-import { getCompanies, getCompanyMeta } from "@/lib/fixtures";
-import { INDUSTRY_LABEL, type Company } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Company, type CompanyMeta } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { DataTable, type Column } from "@/components/ui/DataTable";
@@ -15,11 +14,10 @@ function capNum(s: string): number {
   return /T/i.test(s) ? n * 1000 : n;
 }
 
-export function CompanyExplorer() {
-  const industry = useApp((s) => s.industry);
+export function CompanyExplorer({ companies, metas }: { companies: Company[]; metas: Record<string, CompanyMeta> }) {
+  const industry = useIndustry();
   const router = useRouter();
   const { focusId, toggleFocus } = useFocus();
-  const companies = getCompanies(industry);
 
   const columns: Column<Company>[] = [
     {
@@ -33,7 +31,7 @@ export function CompanyExplorer() {
         </div>
       ),
     },
-    { key: "hq", header: "HQ", render: (r) => getCompanyMeta(industry, r.id).hq, sortValue: (r) => getCompanyMeta(industry, r.id).hq },
+    { key: "hq", header: "HQ", render: (r) => metas[r.id].hq, sortValue: (r) => metas[r.id].hq },
     { key: "marketCap", header: "Market Cap", align: "right", sortValue: (r) => capNum(r.marketCap), render: (r) => r.marketCap },
     {
       key: "changeYtd",
@@ -47,8 +45,8 @@ export function CompanyExplorer() {
           <span style={{ color: r.changeYtd >= 0 ? "var(--pos)" : "var(--neg)" }}>{`${r.changeYtd >= 0 ? "+" : ""}${r.changeYtd.toFixed(1)}%`}</span>
         ),
     },
-    { key: "health", header: "Health", align: "right", sortValue: (r) => getCompanyMeta(industry, r.id).healthScore, render: (r) => `${getCompanyMeta(industry, r.id).healthScore}/100` },
-    { key: "exposure", header: "Exposure", align: "right", sortValue: (r) => getCompanyMeta(industry, r.id).exposure, render: (r) => <RiskBadge level={getCompanyMeta(industry, r.id).exposure} /> },
+    { key: "health", header: "Health", align: "right", sortValue: (r) => metas[r.id].healthScore, render: (r) => `${metas[r.id].healthScore}/100` },
+    { key: "exposure", header: "Exposure", align: "right", sortValue: (r) => metas[r.id].exposure, render: (r) => <RiskBadge level={metas[r.id].exposure} /> },
     {
       key: "focus",
       header: "",
@@ -76,7 +74,7 @@ export function CompanyExplorer() {
           rows={companies}
           columns={columns}
           rowKey={(r) => r.id}
-          searchable={(r) => `${r.name} ${r.ticker} ${getCompanyMeta(industry, r.id).hq}`}
+          searchable={(r) => `${r.name} ${r.ticker} ${metas[r.id].hq}`}
           searchPlaceholder="Search companies…"
           initialSort={{ key: "marketCap", dir: "desc" }}
           onRowClick={(r) => router.push(`/companies/${r.id}`)}

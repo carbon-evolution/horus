@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
 import { Crosshair } from "lucide-react";
-import { useApp } from "@/lib/store";
 import { useFocus, focusDim } from "@/lib/focus";
-import { getCompanies, getCompanyMeta } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Company, type CompanyMeta } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
@@ -12,17 +11,17 @@ function healthColor(n: number) {
   return n >= 80 ? "var(--risk-low)" : n >= 60 ? "var(--risk-med)" : "var(--risk-high)";
 }
 
-export function CompaniesOverview() {
-  const industry = useApp((s) => s.industry);
+export function CompaniesOverview({ companies: allCompanies, metas }: { companies: Company[]; metas: Record<string, CompanyMeta> }) {
+  const industry = useIndustry();
   const { focusId, active, toggleFocus } = useFocus();
-  const companies = getCompanies(industry).slice(0, 10);
+  const companies = allCompanies.slice(0, 10);
 
   return (
     <div>
       <PageHeader title="Top 10 Overview" subtitle={`${INDUSTRY_LABEL[industry]} · leading companies at a glance`} />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {companies.map((c) => {
-          const m = getCompanyMeta(industry, c.id);
+          const m = metas[c.id];
           const up = c.changeYtd >= 0;
           const focused = c.id === focusId;
           return (

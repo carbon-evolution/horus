@@ -1,14 +1,12 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getDeals } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Deal } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { DealsTable } from "@/components/dashboard/DealsTable";
 
-export function CompaniesDeals() {
-  const industry = useApp((s) => s.industry);
-  const deals = getDeals(industry);
+export function CompaniesDeals({ deals }: { deals: Deal[] }) {
+  const industry = useIndustry();
   const total = deals.reduce((s, d) => s + (parseFloat(d.value.replace(/[^0-9.]/g, "")) || 0), 0);
 
   return (

@@ -1,25 +1,31 @@
 "use client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { useApp } from "@/lib/store";
-import { getCompanies, getFinancialsTTM, getFinancialsSnapshot } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Company, type FinancialSeriesPoint, type FinancialTTMPoint } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { FinancialPerformance } from "@/components/dashboard/FinancialPerformance";
 
 const LINE_COLORS = ["#3b82f6", "#a78bfa", "#34d399", "#f59e0b", "#f87171"];
 
-export function CompaniesFinancials() {
-  const industry = useApp((s) => s.industry);
-  const snapshot = getFinancialsSnapshot(industry);
-  const top = getCompanies(industry).slice(0, 5);
+export function CompaniesFinancials({
+  companies,
+  financials: snapshot,
+  ttm,
+}: {
+  companies: Company[];
+  financials: FinancialSeriesPoint[];
+  ttm: Record<string, FinancialTTMPoint[]>;
+}) {
+  const industry = useIndustry();
+  const top = companies.slice(0, 5);
 
   // Merge each top company's TTM revenue into one series keyed by period.
-  const periods = getFinancialsTTM(industry, top[0]?.id ?? "").map((p) => p.period);
+  const periods = (ttm[top[0]?.id ?? ""] ?? []).map((p) => p.period);
   const revenueTrend = periods.map((period, i) => {
     const row: Record<string, number | string> = { period };
     for (const c of top) {
-      const s = getFinancialsTTM(industry, c.id)[i];
+      const s = ttm[c.id]?.[i];
       if (s) row[c.name] = s.revenue;
     }
     return row;

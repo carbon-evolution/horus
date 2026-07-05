@@ -1,24 +1,39 @@
 "use client";
 import Link from "next/link";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { useApp } from "@/lib/store";
+import { useIndustry } from "@/lib/industry-context";
 import {
-  getCompany,
-  getCompanyMeta,
-  getFinancialsTTM,
-  getFacilities,
-  getNews,
-  getPatents,
-} from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+  INDUSTRY_LABEL,
+  type Company,
+  type CompanyMeta,
+  type Facility,
+  type FinancialTTMPoint,
+  type NewsItem,
+  type PatentRow,
+} from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { NewsFeed } from "@/components/dashboard/NewsFeed";
 
-export function CompanyProfile({ id }: { id: string }) {
-  const industry = useApp((s) => s.industry);
-  const company = getCompany(industry, id);
+export function CompanyProfile({
+  id,
+  company,
+  meta: m,
+  ttm,
+  facilities: allFacilities,
+  news: allNews,
+  patents: allPatents,
+}: {
+  id: string;
+  company: Company;
+  meta: CompanyMeta;
+  ttm: FinancialTTMPoint[];
+  facilities: Facility[];
+  news: NewsItem[];
+  patents: PatentRow[];
+}) {
+  const industry = useIndustry();
 
   if (!company) {
     return (
@@ -31,11 +46,9 @@ export function CompanyProfile({ id }: { id: string }) {
     );
   }
 
-  const m = getCompanyMeta(industry, id);
-  const ttm = getFinancialsTTM(industry, id);
-  const facilities = getFacilities(industry).filter((f) => f.companyId === id);
-  const news = getNews(industry).filter((n) => n.company.toLowerCase() === company.name.toLowerCase()).slice(0, 4);
-  const patent = getPatents(industry).find((p) => p.company.toLowerCase() === company.name.toLowerCase());
+  const facilities = allFacilities.filter((f) => f.companyId === id);
+  const news = allNews.filter((n) => n.company.toLowerCase() === company.name.toLowerCase()).slice(0, 4);
+  const patent = allPatents.find((p) => p.company.toLowerCase() === company.name.toLowerCase());
 
   return (
     <div className="space-y-3">
