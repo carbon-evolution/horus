@@ -10,7 +10,7 @@
 - [x] **Monitoring** — Alerts (severity filter + deep links), Watchlist (star/pin, localStorage-persisted via zustand persist) — done.
 - **ALL 21 SUB-PAGES COMPLETE** — 22/22 routes 200, tsc clean.
 - [x] **Cross-filter focus pass** — `src/lib/focus.ts` (`useFocus()` + `focusDim()`); TopBar focus chip; set-points on Market Snapshot, Top-10 cards, Company Explorer, Companies Overview, Watchlist, Suppliers (buyer crosshair), Facilities register, ESG table, Supply Chain Map (company node click); consume-points dim/highlight in NewsFeed, DealsTable, FinancialPerformance, ManufacturingFootprint, Alerts, Watchlist, Facilities, ESG, Suppliers (auto-selects focused buyer), Supply Chain Map. tsc clean, all routes 200.
-- [ ] Phase Z: real data (ETL → DuckDB → Postgres/Redis → flip provider.ts).
+- [ ] **Phase Z: real data** — Plan 1 (data foundation: compose postgres+redis, Prefect ingest, fixtures→DB) DONE; Plan 2 (server-render off Postgres) next; Plan 3 (real fetchers); Plan 4 (scheduling). Specs/plans in `docs/superpowers/`.
 
 
 ## Context
