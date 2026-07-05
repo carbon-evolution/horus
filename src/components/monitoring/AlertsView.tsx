@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useApp } from "@/lib/store";
-import { getAlerts } from "@/lib/fixtures";
-import { INDUSTRY_LABEL, type RiskLevel } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type AlertItem, type RiskLevel } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
@@ -11,11 +10,11 @@ import { RiskBadge } from "@/components/ui/RiskBadge";
 
 const ORDER: RiskLevel[] = ["high", "medium", "low"];
 
-export function AlertsView() {
-  const industry = useApp((s) => s.industry);
+export function AlertsView({ alerts: allAlerts }: { alerts: AlertItem[] }) {
+  const industry = useIndustry();
   const { active, matchesText } = useFocus();
   const [filter, setFilter] = useState<RiskLevel | "all">("all");
-  const alerts = getAlerts(industry)
+  const alerts = allAlerts
     .filter((a) => filter === "all" || a.severity === filter)
     .sort((a, b) => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity));
 

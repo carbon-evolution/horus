@@ -2,25 +2,24 @@
 import Link from "next/link";
 import { Star, Crosshair } from "lucide-react";
 import { useApp } from "@/lib/store";
-import { getCompanies, getCompanyMeta } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Company, type CompanyMeta } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
-export function WatchlistView() {
-  const industry = useApp((s) => s.industry);
+export function WatchlistView({ companies, metas }: { companies: Company[]; metas: Record<string, CompanyMeta> }) {
+  const industry = useIndustry();
   const watchlist = useApp((s) => s.watchlist);
   const toggleWatch = useApp((s) => s.toggleWatch);
   const { focusId, active, toggleFocus } = useFocus();
-  const companies = getCompanies(industry);
   const watched = companies.filter((c) => watchlist.includes(c.id));
   const rest = companies.filter((c) => !watchlist.includes(c.id));
 
   const Row = ({ id }: { id: string }) => {
     const c = companies.find((x) => x.id === id)!;
-    const m = getCompanyMeta(industry, c.id);
+    const m = metas[c.id];
     const on = watchlist.includes(c.id);
     const focused = c.id === focusId;
     return (
