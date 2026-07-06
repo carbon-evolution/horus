@@ -3,10 +3,10 @@ Usage: run_source.py <name> [industry]   (industry defaults to semiconductor).""
 import sys
 import real_loader
 import warm
-from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive
+from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, holdings, derive
 
 SOURCES = {m.__name__.rsplit(".", 1)[-1]: m
-           for m in (yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive)}
+           for m in (yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, holdings, derive)}
 
 
 def main() -> int:

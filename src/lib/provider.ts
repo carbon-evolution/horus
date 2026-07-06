@@ -5,7 +5,7 @@ import type {
   PatentRow, Facility, NewsItem, Deal, Supplier, ResearchRow, RadarAxis,
   SankeyData, Kpi, SupplierEdge, RawMaterial, TradeShipment, GraphData,
   GraphNode, GraphLink, Policy, EsgProfile, GeoRisk, Chokepoint, MarketIntel,
-  SourceInfo, AlertItem, IndustryData,
+  SourceInfo, AlertItem, IndustryData, Holdings, Filing,
 } from "@/lib/types";
 
 const ds = <T>(industry: string, name: string, fallback: T) => readDataset<T>(industry, name, fallback);
@@ -32,6 +32,16 @@ export const getMarketIntel = (i: Industry) =>
   ds<MarketIntel>(i, "marketIntel", { inventoryRatio: [], leadTimes: [], utilization: [] });
 export const getAlerts = (i: Industry) => ds<AlertItem[]>(i, "alerts", []);
 export const getPatents = (i: Industry) => ds<PatentRow[]>(i, "patents", []);
+
+// Per-company corporate structure + SEC filings (keyed by company id).
+export async function getHoldings(i: Industry, id: string): Promise<Holdings | null> {
+  const all = await ds<Record<string, Holdings>>(i, "holdings", {});
+  return all[id] ?? null;
+}
+export async function getFilings(i: Industry, id: string): Promise<Filing[]> {
+  const all = await ds<Record<string, Filing[]>>(i, "filings", {});
+  return all[id] ?? [];
+}
 
 // --- Global (industry-independent) ---
 export const getDataSources = () => ds<SourceInfo[]>("_global", "sources", []);

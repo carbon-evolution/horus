@@ -7,6 +7,8 @@ import {
   getFinancialsTTM,
   getNews,
   getPatents,
+  getHoldings,
+  getFilings,
 } from "@/lib/provider";
 import type { Industry } from "@/lib/types";
 
@@ -14,12 +16,14 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
   const { industry, id } = await params;
   const company = await getCompany(industry, id);
   if (!company) notFound();
-  const [meta, ttm, facilities, news, patents] = await Promise.all([
+  const [meta, ttm, facilities, news, patents, holdings, filings] = await Promise.all([
     getCompanyMeta(industry, id),
     getFinancialsTTM(industry, id),
     getFacilities(industry),
     getNews(industry),
     getPatents(industry),
+    getHoldings(industry, id),
+    getFilings(industry, id),
   ]);
   return (
     <CompanyProfile
@@ -30,6 +34,8 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
       facilities={facilities}
       news={news}
       patents={patents}
+      holdings={holdings}
+      filings={filings}
     />
   );
 }

@@ -10,11 +10,14 @@ import {
   type FinancialTTMPoint,
   type NewsItem,
   type PatentRow,
+  type Holdings,
+  type Filing,
 } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { NewsFeed } from "@/components/dashboard/NewsFeed";
+import { CompanyLink } from "@/components/ui/CompanyLink";
 
 export function CompanyProfile({
   id,
@@ -24,6 +27,8 @@ export function CompanyProfile({
   facilities: allFacilities,
   news: allNews,
   patents: allPatents,
+  holdings,
+  filings,
 }: {
   id: string;
   company: Company;
@@ -32,6 +37,8 @@ export function CompanyProfile({
   facilities: Facility[];
   news: NewsItem[];
   patents: PatentRow[];
+  holdings: Holdings | null;
+  filings: Filing[];
 }) {
   const industry = useIndustry();
 
@@ -163,6 +170,66 @@ export function CompanyProfile({
         {/* news */}
         <Panel title="Recent News">
           {news.length ? <NewsFeed news={news} /> : <p className="text-sm text-[var(--text-faint)]">No recent company-specific news.</p>}
+        </Panel>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+        {/* corporate structure & investments (Wikidata) */}
+        <Panel title="Corporate Structure & Investments">
+          {holdings && (holdings.parent || holdings.subsidiaries.length || holdings.investments.length) ? (
+            <div className="space-y-3 text-sm">
+              {holdings.parent && (
+                <div>
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-[var(--text-faint)]">Parent</div>
+                  <CompanyLink name={holdings.parent} />
+                </div>
+              )}
+              {holdings.subsidiaries.length > 0 && (
+                <div>
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-[var(--text-faint)]">Subsidiaries ({holdings.subsidiaries.length})</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {holdings.subsidiaries.map((s) => (
+                      <span key={s} className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-2)] px-2 py-0.5 text-[12px]"><CompanyLink name={s} /></span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {holdings.investments.length > 0 && (
+                <div>
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-[var(--text-faint)]">Holdings & Investments ({holdings.investments.length})</div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {holdings.investments.map((s) => (
+                      <span key={s} className="rounded-md border border-[var(--panel-border)] bg-[var(--panel-2)] px-2 py-0.5 text-[12px]"><CompanyLink name={s} /></span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <p className="pt-1 text-[10px] text-[var(--text-faint)]">Ownership links via Wikidata (parent, subsidiaries, owned entities).</p>
+            </div>
+          ) : (
+            <p className="text-sm text-[var(--text-faint)]">No public ownership links recorded.</p>
+          )}
+        </Panel>
+
+        {/* recent SEC filings incl. M&A (SEC EDGAR 8-K item codes) */}
+        <Panel title="Recent SEC Filings & M&A">
+          {filings.length ? (
+            <ul className="divide-y divide-[var(--panel-border)] text-sm">
+              {filings.map((f, i) => (
+                <li key={i} className="flex items-center justify-between gap-3 py-2">
+                  <div className="min-w-0">
+                    <div className="truncate">{f.label}</div>
+                    <div className="text-[11px] text-[var(--text-faint)]">{f.form} · {f.date}</div>
+                  </div>
+                  {f.href && (
+                    <Link href={f.href} target="_blank" className="shrink-0 text-xs text-[var(--accent)] hover:underline">EDGAR →</Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-[var(--text-faint)]">No SEC filings (non-US filer or private).</p>
+          )}
         </Panel>
       </div>
     </div>

@@ -118,6 +118,19 @@ export interface FinancialTTMPoint {
   rnd: number;
   capex: number;
 }
+// Cross-company corporate structure (Wikidata: parent P127, subsidiary P355, owner-of P1830).
+export interface Holdings {
+  parent: string | null;
+  subsidiaries: string[];
+  investments: string[];
+}
+// A recent SEC EDGAR filing (incl. M&A 8-K items), linked to the source document.
+export interface Filing {
+  form: string;
+  date: string;
+  label: string;
+  href: string;
+}
 export interface PatentCategory {
   name: string;
   count: number;

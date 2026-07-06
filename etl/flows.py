@@ -13,7 +13,7 @@ import seed_loader
 import warm
 import entities
 import real_loader
-from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive
+from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, holdings, derive
 
 ROOT = Path(__file__).resolve().parent.parent
 INDUSTRIES = ["semiconductor", "ai", "battery"]
@@ -25,8 +25,8 @@ INDUSTRIES = ["semiconductor", "ai", "battery"]
 # (semi-specific HS codes / key-gated / would overwrite curated private meta).
 def sources_for(industry: str):
     if industry == "semiconductor":
-        return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, nvd, fedreg, derive]
-    return [yahoo, gdelt, sec, fedreg, derive]
+        return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, nvd, fedreg, holdings, derive]
+    return [yahoo, gdelt, sec, fedreg, holdings, derive]
 
 
 @task(retries=1, retry_delay_seconds=2)

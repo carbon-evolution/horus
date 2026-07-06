@@ -18,6 +18,30 @@ FORM_LABEL = {
 HIGH_ITEMS = {"1.03", "2.04", "2.06", "3.01", "4.01", "4.02"}
 MED_ITEMS = {"1.01", "2.01", "2.05", "5.02"}  # material agreements, deals, exec change
 
+# Human labels for the 8-K items most relevant to M&A / corporate actions.
+ITEM_LABEL = {
+    "1.01": "Material agreement", "1.02": "Agreement terminated",
+    "2.01": "Acquisition / disposition completed", "2.03": "New financial obligation",
+    "2.05": "Restructuring / exit costs", "3.02": "Unregistered equity sale",
+    "5.02": "Leadership change", "7.01": "Regulation FD disclosure",
+    "8.01": "Other material event", "1.03": "Bankruptcy", "2.02": "Results of operations",
+}
+
+
+def _sec_doc_url(cik: str, accession: str, doc: str) -> str:
+    """Build the public EDGAR document URL from submission metadata."""
+    acc = accession.replace("-", "")
+    return f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{acc}/{doc}"
+
+
+def _filing_label(form: str, items: str) -> str:
+    codes = [c.strip() for c in (items or "").split(",") if c.strip()]
+    labelled = [ITEM_LABEL[c] for c in codes if c in ITEM_LABEL]
+    if labelled:
+        return "; ".join(dict.fromkeys(labelled))  # dedupe, keep order
+    key = _form_key(form)
+    return FORM_LABEL.get(key, form) if key else form
+
 
 def _epoch(iso: str) -> float:
     """'2026-07-02T18:05:12.000Z' or '2026-07-02' -> epoch seconds (UTC)."""
@@ -64,19 +88,38 @@ def normalize_filing(company: dict, industry: str, form: str, items: str,
 def run(industry: str = "semiconductor") -> dict:
     ents = [e for e in entities.load(industry) if e.get("cik")]
     alerts: list[tuple[float, dict]] = []
+    filings: dict[str, list[dict]] = {}  # per-company recent notable filings (incl. M&A)
     idx = 1
     for e in ents:
         cik = str(e["cik"]).zfill(10)
         data = get_json(SUB.format(cik=cik), f"sec_{cik}", throttle_s=0.2)
         rec = data.get("filings", {}).get("recent", {})
         forms = rec.get("form", [])
-        for i in range(min(len(forms), 40)):  # newest first; only scan the recent window
-            accepted = rec.get("acceptanceDateTime", rec.get("filingDate", []))[i]
-            a = normalize_filing(e, industry, forms[i], rec.get("items", [""] * len(forms))[i],
-                                 accepted, idx)
-            if a:
-                alerts.append((_epoch(accepted), a))
-                idx += 1
-                break  # one most-recent notable filing per company keeps the feed diverse
+        items = rec.get("items", [""] * len(forms))
+        dates = rec.get("filingDate", [])
+        accepted_all = rec.get("acceptanceDateTime", dates)
+        accessions = rec.get("accessionNumber", [])
+        docs = rec.get("primaryDocument", [])
+        picked_alert = False
+        per_company: list[dict] = []
+        for i in range(min(len(forms), 60)):
+            if not _form_key(forms[i]):
+                continue
+            accepted = accepted_all[i]
+            if not picked_alert:  # one most-recent notable filing per company for the alert feed
+                a = normalize_filing(e, industry, forms[i], items[i], accepted, idx)
+                if a:
+                    alerts.append((_epoch(accepted), a))
+                    idx += 1
+                    picked_alert = True
+            if len(per_company) < 6:
+                per_company.append({
+                    "form": forms[i],
+                    "date": dates[i] if i < len(dates) else accepted[:10],
+                    "label": _filing_label(forms[i], items[i]),
+                    "href": _sec_doc_url(cik, accessions[i], docs[i]) if i < len(accessions) and i < len(docs) else "",
+                })
+        if per_company:
+            filings[e["id"]] = per_company
     alerts.sort(key=lambda t: -t[0])
-    return {"alerts": [a for _, a in alerts[:14]]}
+    return {"alerts": [a for _, a in alerts[:14]], "filings": filings}
