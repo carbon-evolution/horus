@@ -4,10 +4,12 @@ import entities
 from real_loader import read_dataset
 from sources.base import fmt_cap
 
-CUR_SYMBOL = {"USD": "$", "KRW": "₩", "EUR": "€", "TWD": "NT$", "JPY": "¥", "HKD": "HK$"}
+CUR_SYMBOL = {"USD": "$", "KRW": "₩", "EUR": "€", "TWD": "NT$", "JPY": "¥",
+              "HKD": "HK$", "CNY": "CN¥", "INR": "₹", "GBP": "£", "SGD": "S$"}
 # Coarse FX to USD so $B/$T magnitudes are comparable across listings.
 FX_TO_USD = {"USD": 1.0, "KRW": 1 / 1400.0, "EUR": 1.08, "TWD": 1 / 32.5,
-             "JPY": 1 / 150.0, "HKD": 1 / 7.8}
+             "JPY": 1 / 150.0, "HKD": 1 / 7.8, "CNY": 1 / 7.1, "INR": 1 / 83.0,
+             "GBP": 1.27, "SGD": 1 / 1.35}
 
 
 def normalize_company(raw: dict) -> dict:
@@ -76,12 +78,51 @@ def _fetch_one(ent: dict) -> tuple[dict, dict]:
     return company_raw, fin_raw
 
 
+def _cap_to_num(s: str) -> float:
+    """'$1.20T' -> 1.2e12, '$300B' -> 3e11 — for sorting mixed real/curated caps."""
+    try:
+        s = s.strip().lstrip("$")
+        mult = 1e12 if s.endswith("T") else 1e9 if s.endswith("B") else 1e6 if s.endswith("M") else 1.0
+        return float(s.rstrip("TBMK")) * mult
+    except Exception:
+        return 0.0
+
+
 def run(industry: str = "semiconductor") -> dict:
-    raws = [_fetch_one(ent) for ent in entities.load(industry)]
-    # Market Snapshot shows the first 10 — order by market cap, not entity-map order.
-    raws.sort(key=lambda pair: -pair[0]["market_cap"])
-    companies = [normalize_company(c) for c, _ in raws]
-    financials = [normalize_financial(f) for _, f in raws]
+    """Overlay live data onto the curated base: public tickers are fetched and
+    replace their curated entries; private/unlisted companies (no ticker) and any
+    that fail to fetch keep their curated fixture data. Every tracked company is
+    preserved. For an all-public universe (semiconductor) this is all-real."""
+    ents = entities.load(industry)
+    base_c = {c["id"]: c for c in (read_dataset(industry, "companies") or [])}
+    base_f = {f["company"]: f for f in (read_dataset(industry, "financials") or [])}
+
+    real_c: dict[str, dict] = {}
+    real_f: dict[str, dict] = {}
+    for ent in ents:
+        if not ent.get("ticker"):
+            continue  # private / unlisted — keep curated
+        try:
+            c_raw, f_raw = _fetch_one(ent)
+        except Exception:
+            continue  # transient / delisted — keep curated
+        real_c[ent["id"]] = normalize_company(c_raw)
+        real_f[ent["name"]] = normalize_financial(f_raw)
+
+    # Market Snapshot shows the first 10 — order by market cap, not entity order.
+    companies = [real_c.get(e["id"]) or base_c.get(e["id"]) for e in ents]
+    companies = [c for c in companies if c]
+    companies.sort(key=lambda c: -_cap_to_num(c.get("marketCap", "0")))
+
+    # Prefer live financials only when they actually carry revenue — yfinance
+    # omits the income statement for some foreign tickers, and an empty $0 row
+    # should not clobber the curated figure.
+    financials = []
+    for e in ents:
+        rf, bf = real_f.get(e["name"]), base_f.get(e["name"])
+        financials.append(rf if (rf and rf.get("revenue")) else bf)
+    financials = [f for f in financials if f]
+
     # research: R&D spend + % of revenue from the same numbers; patents count
     # comes from the patents dataset if already loaded (else em-dash).
     patents = {p["company"]: p["total"] for p in (read_dataset(industry, "patents") or [])}

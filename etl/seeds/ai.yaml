@@ -1,0 +1,25 @@
+# Entity map — AI industry. The big platforms are US SEC filers (CIK set);
+# most frontier-model labs are private (no ticker) and keep their curated
+# fixture data — fetchers overlay real data only onto companies that resolve.
+industry: ai
+companies:
+  - { id: microsoft,   name: Microsoft,    ticker: MSFT,  cik: "0000789019", qid: Q2283 }
+  - { id: alphabet,    name: Alphabet,     ticker: GOOGL, cik: "0001652044", qid: Q20800404 }
+  - { id: amazon,      name: Amazon,       ticker: AMZN,  cik: "0001018724", qid: Q3884 }
+  - { id: meta,        name: Meta,         ticker: META,  cik: "0001326801", qid: Q380 }
+  - { id: openai,      name: OpenAI,       ticker: null,  cik: null,         qid: Q21708200 }
+  - { id: alibaba,     name: Alibaba,      ticker: BABA,  cik: "0001577552", qid: Q1359568 }
+  - { id: palantir,    name: Palantir,     ticker: PLTR,  cik: "0001321655", qid: Q2047336 }
+  - { id: anthropic,   name: Anthropic,    ticker: null,  cik: null,         qid: Q116758847 }
+  - { id: databricks,  name: Databricks,   ticker: null,  cik: null,         qid: Q18350420 }
+  - { id: xai,         name: xAI,          ticker: null,  cik: null,         qid: Q40890078 }
+  - { id: perplexity,  name: Perplexity,   ticker: null,  cik: null,         qid: Q124333951 }
+  - { id: scaleai,     name: Scale AI,     ticker: null,  cik: null,         qid: Q112629176 }
+  - { id: midjourney,  name: Midjourney,   ticker: null,  cik: null,         qid: Q113070628 }
+  - { id: cerebras,    name: Cerebras,     ticker: null,  cik: null,         qid: Q66604886 }
+  - { id: mistral,     name: Mistral AI,   ticker: null,  cik: null,         qid: Q119718658 }
+  - { id: cohere,      name: Cohere,       ticker: null,  cik: null,         qid: Q110363143 }
+  - { id: abridge,     name: Abridge,      ticker: null,  cik: null,         qid: null }
+  - { id: huggingface, name: Hugging Face, ticker: null,  cik: null,         qid: Q108943604 }
+  - { id: runway,      name: Runway,       ticker: null,  cik: null,         qid: null }
+  - { id: deepseek,    name: DeepSeek,     ticker: null,  cik: null,         qid: Q131577453 }

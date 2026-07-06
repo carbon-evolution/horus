@@ -1,0 +1,26 @@
+# Entity map — battery industry. CIKs are US SEC filers (ADRs/US-listed); most
+# battery makers list in Asia/EU so cik is null there. qid = Wikidata id.
+# Private companies (no ticker) keep their curated fixture data; the fetchers
+# only overlay real data onto companies that resolve.
+industry: battery
+companies:
+  - { id: catl,         name: CATL,              ticker: 300750.SZ,   cik: null,         qid: Q18653563 }
+  - { id: byd,          name: BYD,               ticker: 1211.HK,     cik: null,         qid: Q2608329 }
+  - { id: tesla,        name: Tesla,             ticker: TSLA,        cik: "0001318605", qid: Q478214 }
+  - { id: lges,         name: LG Energy,         ticker: 373220.KS,   cik: null,         qid: Q109464416 }
+  - { id: panasonic,    name: Panasonic,         ticker: 6752.T,      cik: null,         qid: Q53247 }
+  - { id: samsungsdi,   name: Samsung SDI,       ticker: 006400.KS,   cik: null,         qid: Q21120876 }
+  - { id: skon,         name: SK On,             ticker: null,        cik: null,         qid: Q131187782 }
+  - { id: calb,         name: CALB,              ticker: 3931.HK,     cik: null,         qid: null }
+  - { id: eve,          name: EVE Energy,        ticker: 300014.SZ,   cik: null,         qid: Q105966435 }
+  - { id: gotion,       name: Gotion,            ticker: 002074.SZ,   cik: null,         qid: Q67932360 }
+  - { id: toshiba,      name: Toshiba,           ticker: 6502.T,      cik: null,         qid: Q49125 }
+  - { id: clarios,      name: Clarios,           ticker: null,        cik: null,         qid: Q80948913 }
+  - { id: svolt,        name: SVOLT,             ticker: null,        cik: null,         qid: Q121298604 }
+  - { id: aesc,         name: AESC,              ticker: null,        cik: null,         qid: null }
+  - { id: sunwoda,      name: Sunwoda,           ticker: 300207.SZ,   cik: null,         qid: Q112943834 }
+  - { id: lishen,       name: Tianjin Lishen,    ticker: null,        cik: null,         qid: Q137546781 }
+  - { id: northvolt,    name: Northvolt,         ticker: null,        cik: null,         qid: Q28913869 }
+  - { id: exide,        name: Exide Industries,  ticker: EXIDEIND.NS, cik: null,         qid: Q5420252 }
+  - { id: quantumscape, name: QuantumScape,      ticker: QS,          cik: "0001811414", qid: Q99036143 }
+  - { id: gsyuasa,      name: GS Yuasa,          ticker: 6674.T,      cik: null,         qid: Q931156 }

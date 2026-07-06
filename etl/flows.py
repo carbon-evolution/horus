@@ -16,9 +16,17 @@ import real_loader
 from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive
 
 ROOT = Path(__file__).resolve().parent.parent
+INDUSTRIES = ["semiconductor", "ai", "battery"]
 # Order matters: wikidata/derive read companies (yahoo), yahoo reads patents,
 # nvd appends CVE alerts onto the `alerts` stream that sec.py writes first.
-SOURCES = [patentsview, yahoo, wikidata, comtrade, gdelt, sec, nvd, fedreg, derive]
+# Semiconductor is the fully-instrumented universe; ai/battery run the subset
+# that generalises cleanly (yahoo merges real onto curated, sec/fedreg are
+# US-gov, gdelt is name-based). comtrade/patentsview/wikidata stay semi-only
+# (semi-specific HS codes / key-gated / would overwrite curated private meta).
+def sources_for(industry: str):
+    if industry == "semiconductor":
+        return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, nvd, fedreg, derive]
+    return [yahoo, gdelt, sec, fedreg, derive]
 
 
 @task(retries=1, retry_delay_seconds=2)
@@ -42,19 +50,22 @@ def sync_entities():
 
 
 @task
-def fetch_all(industry: str = "semiconductor") -> dict:
-    """Run every source; a failure only skips that source's datasets."""
+def fetch_all() -> dict:
+    """Run each industry's applicable sources; a failure only skips that
+    source's datasets (per-source isolation)."""
     log = get_run_logger()
-    status = {}
-    for mod in SOURCES:
-        name = mod.__name__.rsplit(".", 1)[-1]
-        try:
-            loaded = real_loader.upsert_datasets(industry, mod.run(industry))
-            status[name] = loaded
-            log.info("source %s -> %s", name, loaded)
-        except Exception as exc:  # noqa: BLE001 — isolation is the point
-            status[name] = f"SKIPPED: {exc}"
-            log.warning("source %s skipped: %s", name, exc)
+    status: dict = {}
+    for industry in INDUSTRIES:
+        entities.sync_company_table(industry)
+        for mod in sources_for(industry):
+            name = mod.__name__.rsplit(".", 1)[-1]
+            key = f"{industry}.{name}"
+            try:
+                status[key] = real_loader.upsert_datasets(industry, mod.run(industry))
+                log.info("source %s -> %s", key, status[key])
+            except Exception as exc:  # noqa: BLE001 — isolation is the point
+                status[key] = f"SKIPPED: {exc}"
+                log.warning("source %s skipped: %s", key, exc)
     return status
 
 
