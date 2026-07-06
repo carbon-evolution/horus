@@ -26,9 +26,9 @@ const py = (lat: number) => ((90 - lat) / 180) * H;
 export function ManufacturingFootprint({ facilities }: { facilities: Facility[] }) {
   const { focusId, active } = useFocus();
   return (
-    <div>
-      <div className="relative overflow-hidden rounded-lg bg-[var(--panel-2)]">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+    <div className="flex h-full flex-col">
+      <div className="relative min-h-[200px] flex-1 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
+        <svg viewBox={`0 18 ${W} ${H - 36}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
           {/* graticule */}
           {Array.from({ length: 13 }).map((_, i) => (
             <line key={`v${i}`} x1={(i * W) / 12} y1={0} x2={(i * W) / 12} y2={H} stroke="#ffffff" strokeOpacity={0.03} />
@@ -67,7 +67,7 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
         </svg>
       </div>
       {/* legend */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[var(--text-dim)]">
+      <div className="mt-3 flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[var(--text-dim)]">
         {(Object.keys(STATUS_COLOR) as FacilityStatus[]).map((s) => (
           <span key={s} className="inline-flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full" style={{ background: STATUS_COLOR[s] }} />

@@ -13,17 +13,14 @@ interface RiskBlock {
 const AXES = ["Geopolitical", "Supplier Conc.", "Financial", "Operational", "Regulatory", "ESG", "Raw Material", "Logistics"];
 const mk = (vals: number[]): RadarAxis[] => AXES.map((axis, i) => ({ axis, value: vals[i] }));
 
-// Build the entity series plus a "Sector Avg" that is the TRUE mean of those
-// entities, so the composite line is always consistent with them — and with the
-// dashboard radar, which is derived from this same Sector Avg (see fixtures.ts).
+// Build the entity series plus a curated sector-wide composite reference line
+// (NOT an average of the few listed leaders — a whole-sector risk assessment).
+// The dashboard radar derives from this same composite (see fixtures.ts), so the
+// two radars always agree.
 type Entity = { entity: string; color: string; vals: number[] };
-function withAvg(entities: Entity[]): { entity: string; color: string; axes: RadarAxis[] }[] {
+function withComposite(entities: Entity[], composite: number[]): { entity: string; color: string; axes: RadarAxis[] }[] {
   const series = entities.map((e) => ({ entity: e.entity, color: e.color, axes: mk(e.vals) }));
-  const avg = AXES.map((axis, i) => ({
-    axis,
-    value: Math.round(series.reduce((s, e) => s + e.axes[i].value, 0) / series.length),
-  }));
-  return [...series, { entity: "Sector Avg", color: "#f59e0b", axes: avg }];
+  return [...series, { entity: "Sector Composite", color: "#f59e0b", axes: mk(composite) }];
 }
 
 export const CHOKEPOINTS: Chokepoint[] = [
@@ -62,11 +59,11 @@ const semiconductor: RiskBlock = {
     { country: "Netherlands", flag: "🇳🇱", tension: 30, role: "EUV lithography monopoly (ASML)", localization: 55, chokepoints: [] },
     { country: "Ukraine", flag: "🇺🇦", tension: 90, role: "Neon gas (~50% semiconductor-grade)", localization: 20, chokepoints: [] },
   ],
-  compareRadar: withAvg([
+  compareRadar: withComposite([
     { entity: "TSMC", color: "#38bdf8", vals: [85, 60, 25, 55, 60, 45, 65, 60] },
     { entity: "Intel", color: "#a78bfa", vals: [40, 55, 70, 65, 45, 40, 55, 45] },
     { entity: "Samsung", color: "#34d399", vals: [60, 55, 40, 55, 50, 50, 60, 55] },
-  ]),
+  ], [82, 74, 35, 58, 66, 49, 71, 55]),
 };
 
 const ai: RiskBlock = {
@@ -90,11 +87,11 @@ const ai: RiskBlock = {
     { country: "China", flag: "🇨🇳", tension: 78, role: "Restricted-market models + domestic accelerators", localization: 60, chokepoints: ["South China Sea"] },
     { country: "Middle East", flag: "🇦🇪", tension: 52, role: "Sovereign AI datacenter buildouts", localization: 25, chokepoints: ["Strait of Hormuz"] },
   ],
-  compareRadar: withAvg([
+  compareRadar: withComposite([
     { entity: "NVIDIA", color: "#38bdf8", vals: [70, 88, 20, 55, 75, 40, 60, 45] },
     { entity: "Microsoft", color: "#a78bfa", vals: [45, 80, 15, 50, 60, 55, 40, 35] },
     { entity: "CoreWeave", color: "#34d399", vals: [50, 90, 65, 60, 55, 45, 55, 40] },
-  ]),
+  ], [70, 88, 30, 62, 74, 68, 55, 48]),
 };
 
 const battery: RiskBlock = {
@@ -120,11 +117,11 @@ const battery: RiskBlock = {
     { country: "Chile", flag: "🇨🇱", tension: 35, role: "Lithium brine (~24%), nationalization drift", localization: 40, chokepoints: ["Panama Canal"] },
     { country: "USA", flag: "🇺🇸", tension: 45, role: "Gigafactory buildout, IRA onshoring", localization: 35, chokepoints: [] },
   ],
-  compareRadar: withAvg([
+  compareRadar: withComposite([
     { entity: "CATL", color: "#38bdf8", vals: [75, 70, 35, 55, 70, 80, 85, 60] },
     { entity: "Tesla", color: "#a78bfa", vals: [55, 75, 30, 50, 55, 65, 80, 55] },
     { entity: "LG Energy", color: "#34d399", vals: [50, 60, 45, 55, 50, 55, 75, 50] },
-  ]),
+  ], [78, 84, 45, 60, 62, 80, 86, 58]),
 };
 
 export const RISK_DATA: Record<Industry, RiskBlock> = { semiconductor, ai, battery };

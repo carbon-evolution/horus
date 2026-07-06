@@ -71,9 +71,9 @@ const DASHBOARD_RADAR_LABELS = [
 ];
 export function getRadar(industry: Industry): RadarAxis[] {
   // Single source of truth: the dashboard composite IS the Risk page's "Sector
-  // Avg", just relabeled — so the two radars can never disagree.
-  const sectorAvg = getCompareRadar(industry).find((s) => s.entity === "Sector Avg");
-  const axes = sectorAvg?.axes ?? [];
+  // Composite" line, just relabeled — so the two radars can never disagree.
+  const composite = getCompareRadar(industry).find((s) => s.entity === "Sector Composite");
+  const axes = composite?.axes ?? [];
   return DASHBOARD_RADAR_LABELS.map((axis, i) => ({ axis, value: axes[i]?.value ?? 0 }));
 }
 export function getSankey(industry: Industry): SankeyData {

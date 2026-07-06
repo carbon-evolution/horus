@@ -66,8 +66,8 @@ export function RawMaterialsSankey({ data }: { data: SankeyData }) {
       <g>
         <defs>
           <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={color} stopOpacity={0.1} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.32} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.22} />
+            <stop offset="100%" stopColor={color} stopOpacity={0.5} />
           </linearGradient>
         </defs>
         <path
@@ -82,6 +82,11 @@ export function RawMaterialsSankey({ data }: { data: SankeyData }) {
 
   return (
     <div>
+      <div className="mb-1 flex items-center justify-between text-[10px] font-medium uppercase tracking-wide text-[var(--text-faint)]">
+        <span>Origin country</span>
+        <span>Raw material</span>
+        <span>Destination</span>
+      </div>
       <ResponsiveContainer width="100%" height={280}>
         <Sankey
           data={data}
