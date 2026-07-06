@@ -46,6 +46,12 @@ export interface NewsItem {
   impactLabel: string;
   ago: string;
   sentiment?: "positive" | "neutral" | "negative";
+  // Enrichment (sources/news_enrich.py) — optional so un-enriched items still type.
+  category?: string;
+  impactScore?: number;
+  confidence?: number;
+  geo?: string;
+  relatedCompanies?: string[];
 }
 
 export interface RadarAxis {
@@ -144,6 +150,31 @@ export interface FinancialHistory {
   revenue?: FinancialHistoryPoint[];
   netIncome?: FinancialHistoryPoint[];
   source?: string; // provenance: SEC EDGAR XBRL (US filers) or Yahoo (foreign filers)
+}
+// Composite per-company risk scores (0-100, higher = more risk); sources/scores.py.
+export interface ScoreTrendPoint { period: string; value: number; }
+export interface Scores {
+  supplierDependency: number; customerDependency: number; esg: number;
+  cyber: number; financial: number; geopolitical: number;
+  overall: number; band: string;
+  trend: ScoreTrendPoint[];
+  factors: Record<string, Record<string, number | boolean | string>>;
+}
+// Derived risk register item; sources/risks.py. probability/confidence are 0..1.
+export interface Risk {
+  id: string; category: string; title: string;
+  severity: number; probability: number;
+  financialImpactUsd: number; timeToRecoveryDays: number;
+  impactedSuppliers: string[]; impactedFacilities: string[];
+  recommendedActions: string[]; confidence: number; source: string;
+}
+// Per-company cyber exposure; sources/cyber.py (derived, not a commercial rating).
+export interface CyberCve { id: string; cvss: number; vendor: string; }
+export interface CyberKev { id: string; name: string; }
+export interface CyberBreach { title: string; date: string; }
+export interface Cyber {
+  score: number; band: string;
+  recentCves: CyberCve[]; kevHits: CyberKev[]; breaches: CyberBreach[];
 }
 export interface PatentCategory {
   name: string;

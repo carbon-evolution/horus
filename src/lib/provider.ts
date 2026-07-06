@@ -7,6 +7,7 @@ import type {
   SankeyData, Kpi, SupplierEdge, RawMaterial, TradeShipment, GraphData,
   GraphNode, GraphLink, Policy, EsgProfile, GeoRisk, Chokepoint, MarketIntel,
   SourceInfo, AlertItem, IndustryData, Holdings, Filing, FinancialHistory,
+  Scores, Risk, Cyber,
 } from "@/lib/types";
 
 const ds = <T>(industry: string, name: string, fallback: T) => readDataset<T>(industry, name, fallback);
@@ -46,6 +47,26 @@ export async function getFilings(i: Industry, id: string): Promise<Filing[]> {
 // Multi-year financial history parsed from SEC XBRL company facts (keyed by company id).
 export async function getFinancialHistory(i: Industry, id: string): Promise<FinancialHistory | null> {
   const all = await ds<Record<string, FinancialHistory>>(i, "financialHistory", {});
+  return all[id] ?? null;
+}
+// Company intelligence: composite scores, risk register, cyber exposure, AI summary.
+export async function getScores(i: Industry, id: string): Promise<Scores | null> {
+  const all = await ds<Record<string, Scores>>(i, "scores", {});
+  return all[id] ?? null;
+}
+export async function getRisks(i: Industry, id: string): Promise<Risk[]> {
+  const all = await ds<Record<string, Risk[]>>(i, "risks", {});
+  return all[id] ?? [];
+}
+export async function getAllRisks(i: Industry): Promise<Record<string, Risk[]>> {
+  return ds<Record<string, Risk[]>>(i, "risks", {});
+}
+export async function getCyber(i: Industry, id: string): Promise<Cyber | null> {
+  const all = await ds<Record<string, Cyber>>(i, "cyber", {});
+  return all[id] ?? null;
+}
+export async function getCompanySummary(i: Industry, id: string): Promise<string | null> {
+  const all = await ds<Record<string, string>>(i, "companySummary", {});
   return all[id] ?? null;
 }
 
