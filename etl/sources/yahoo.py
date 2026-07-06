@@ -50,8 +50,17 @@ def _fetch_one(ent: dict) -> tuple[dict, dict]:
     change_ytd = (price / float(hist["Close"].iloc[0]) - 1) * 100 if len(hist) else 0.0
     inc = t.quarterly_income_stmt
     cf = t.quarterly_cashflow
-    cur = str(info.get("currency") or "USD")
+    cur = str(info.get("currency") or "USD")  # price / market-cap currency
+    # Income statement / cash flow can be reported in a DIFFERENT currency than
+    # the quote — foreign ADRs (TSM priced in USD but reporting TWD; ASML USD/EUR)
+    # would otherwise be left unconverted. Use the statement's own currency for
+    # the financial figures, falling back to the price currency.
+    try:
+        fin_cur = str(t.info.get("financialCurrency") or cur)
+    except Exception:
+        fin_cur = cur
     fx = FX_TO_USD.get(cur, 1.0)
+    fx_fin = FX_TO_USD.get(fin_cur, 1.0)
     company_raw = {
         "id": ent["id"], "name": ent["name"], "ticker": ent["ticker"], "currency": cur,
         "price": price, "market_cap": float(info["marketCap"]) * fx,
@@ -59,10 +68,10 @@ def _fetch_one(ent: dict) -> tuple[dict, dict]:
     }
     fin_raw = {
         "name": ent["name"],
-        "revenue": _ttm(inc, "Total Revenue") * fx,
-        "profit": _ttm(inc, "Net Income") * fx,
-        "rnd": _ttm(inc, "Research And Development") * fx,
-        "capex": _ttm(cf, "Capital Expenditure") * fx,
+        "revenue": _ttm(inc, "Total Revenue") * fx_fin,
+        "profit": _ttm(inc, "Net Income") * fx_fin,
+        "rnd": _ttm(inc, "Research And Development") * fx_fin,
+        "capex": _ttm(cf, "Capital Expenditure") * fx_fin,
     }
     return company_raw, fin_raw
 
