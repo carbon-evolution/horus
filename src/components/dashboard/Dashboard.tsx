@@ -1,7 +1,6 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getIndustryData } from "@/lib/data";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type IndustryData } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { KpiRow } from "@/components/dashboard/KpiRow";
 import { ManufacturingFootprint } from "@/components/dashboard/ManufacturingFootprint";
@@ -15,9 +14,11 @@ import { TopSuppliers } from "@/components/dashboard/TopSuppliers";
 import { ResearchInnovation } from "@/components/dashboard/ResearchInnovation";
 import { DataSourcesFooter } from "@/components/dashboard/DataSourcesFooter";
 
-export function Dashboard() {
-  const industry = useApp((s) => s.industry);
-  const d = getIndustryData(industry);
+type DashboardData = Pick<IndustryData,
+  "kpis" | "companies" | "facilities" | "news" | "radar" | "sankey" | "financials" | "deals" | "suppliers" | "research">;
+
+export function Dashboard({ data }: { data: DashboardData }) {
+  const industry = useIndustry();
 
   return (
     <div className="space-y-3">
@@ -28,44 +29,44 @@ export function Dashboard() {
         </p>
       </div>
 
-      <KpiRow kpis={d.kpis} />
+      <KpiRow kpis={data.kpis} />
 
       {/* Row: map / market / news */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
         <Panel title="Global Manufacturing Footprint" action="All Facilities" className="xl:col-span-5">
-          <ManufacturingFootprint facilities={d.facilities} />
+          <ManufacturingFootprint facilities={data.facilities} />
         </Panel>
         <Panel title="Market Snapshot (Top 10)" className="xl:col-span-4">
-          <MarketSnapshot companies={d.companies} />
+          <MarketSnapshot companies={data.companies} />
         </Panel>
         <Panel title="Latest News & Market Impact" action="View All" className="xl:col-span-3">
-          <NewsFeed news={d.news} />
+          <NewsFeed news={data.news} />
         </Panel>
       </div>
 
       {/* Row: sankey / radar / financials */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
         <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments">
-          <RawMaterialsSankey data={d.sankey} />
+          <RawMaterialsSankey data={data.sankey} />
         </Panel>
         <Panel title="Supply Chain Risk Radar" action="View All Risks">
-          <RiskRadar data={d.radar} />
+          <RiskRadar data={data.radar} />
         </Panel>
         <Panel title="Financial Performance (TTM)" action="View Financial Details">
-          <FinancialPerformance data={d.financials} />
+          <FinancialPerformance data={data.financials} />
         </Panel>
       </div>
 
       {/* Row: deals / suppliers / research */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
         <Panel title="Recent Deals & Partnerships" action="View All" className="xl:col-span-5" bodyClassName="overflow-x-auto">
-          <DealsTable deals={d.deals} />
+          <DealsTable deals={data.deals} />
         </Panel>
         <Panel title="Top Suppliers by Spend" action="View All" className="xl:col-span-4">
-          <TopSuppliers suppliers={d.suppliers} />
+          <TopSuppliers suppliers={data.suppliers} />
         </Panel>
         <Panel title="Research & Innovation (TTM)" action="View All" className="xl:col-span-3">
-          <ResearchInnovation rows={d.research} />
+          <ResearchInnovation rows={data.research} />
         </Panel>
       </div>
 
