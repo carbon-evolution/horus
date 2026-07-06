@@ -77,7 +77,7 @@ export function CompanyExplorer({ companies, metas }: { companies: Company[]; me
           searchable={(r) => `${r.name} ${r.ticker} ${metas[r.id].hq}`}
           searchPlaceholder="Search companies…"
           initialSort={{ key: "marketCap", dir: "desc" }}
-          onRowClick={(r) => router.push(`/companies/${r.id}`)}
+          onRowClick={(r) => router.push(`/${industry}/companies/${r.id}`)}
         />
       </section>
     </div>

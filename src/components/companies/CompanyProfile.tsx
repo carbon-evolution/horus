@@ -40,7 +40,7 @@ export function CompanyProfile({
       <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-6">
         <p className="text-sm text-[var(--text-dim)]">
           <span className="font-medium text-[var(--text)]">{id}</span> is not tracked in {INDUSTRY_LABEL[industry]}. Switch
-          the Industry Focus in the sidebar, or <Link href="/companies" className="text-[var(--accent)] hover:underline">browse companies</Link>.
+          the Industry Focus in the sidebar, or <Link href={`/${industry}/companies`} className="text-[var(--accent)] hover:underline">browse companies</Link>.
         </p>
       </div>
     );
@@ -56,7 +56,7 @@ export function CompanyProfile({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <Link href="/companies" className="text-xs text-[var(--accent)] hover:underline">← Companies</Link>
+            <Link href={`/${industry}/companies`} className="text-xs text-[var(--accent)] hover:underline">← Companies</Link>
           </div>
           <h1 className="mt-1 text-xl font-bold">{company.name}</h1>
           <p className="max-w-2xl text-xs text-[var(--text-dim)]">{m.description}</p>
