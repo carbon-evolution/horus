@@ -4,6 +4,7 @@ financial weakness) so `source` always traces to data. Recovery time + actions
 are per-category heuristics; 'projection' items are flagged in `source`."""
 import entities
 from real_loader import read_dataset
+from sources.geoutil import country_tension
 
 # category -> (recommended actions, typical recovery days)
 PLAYBOOK = {
@@ -35,17 +36,18 @@ def build_risks(ctx: dict) -> list[dict]:
                            cyber["score"], min(0.9, 0.3 + 0.15 * kev), 5e7 + kev * 2e7,
                            [], [], 0.6 + 0.1 * bool(kev), "NVD + CISA KEV"))
     for p in ctx.get("policies") or []:
-        if name in (p.get("targets") or []) or any(name in t for t in (p.get("targets") or [])):
+        targets = p.get("targets") or []
+        text = f"{p.get('title', '')} {p.get('summary', '')}"
+        if any(name == t or name in t for t in targets) or name.lower() in text.lower():
             sev = {"high": 78, "medium": 55, "low": 35}.get(p.get("severity"), 50)
             risks.append(_risk(cid, "regulatory", f"Policy exposure: {p['title']}", sev, 0.7,
                                8e7, [], [], 0.7, "Federal Register / policy tracker"))
             break
-    hq = ctx.get("hqCountry")
-    geo = next((g for g in (ctx.get("geo") or []) if g.get("country") == hq), None)
-    if geo and geo.get("tension", 0) >= 55:
-        risks.append(_risk(cid, "geopolitical", f"Geopolitical tension in {hq} ({geo['tension']})",
-                           geo["tension"], geo["tension"] / 120, 1.2e8, [], [], 0.65,
-                           f"Geo risk index ({hq})"))
+    country, tension = ctx.get("geoCountry", ""), ctx.get("geoTension", 0)
+    if country and tension >= 55:
+        risks.append(_risk(cid, "geopolitical", f"Geopolitical tension in {country} ({tension})",
+                           tension, tension / 120, 1.2e8, [], [], 0.65,
+                           f"Geo risk index ({country})"))
     sole = [e for e in (ctx.get("supplierEdges") or []) if e.get("buyer") == name and e.get("risk") == "high"]
     if sole:
         mats = ", ".join(sorted({e["material"] for e in sole})[:3])
@@ -59,11 +61,6 @@ def build_risks(ctx: dict) -> list[dict]:
     return risks
 
 
-def _country(hq: str) -> str:
-    """Last comma-token of an HQ string ('Hsinchu, Taiwan' -> 'Taiwan')."""
-    return hq.split(",")[-1].strip() if hq else ""
-
-
 def run(industry: str = "semiconductor") -> dict:
     meta = read_dataset(industry, "companyMeta") or {}
     cyber = read_dataset(industry, "cyber") or {}
@@ -73,8 +70,9 @@ def run(industry: str = "semiconductor") -> dict:
     out = {}
     for e in entities.load(industry):
         m = meta.get(e["id"], {})
+        country, tension = country_tension(e["id"], geo)
         ctx = {"id": e["id"], "name": e["name"], "cyber": cyber.get(e["id"]),
-               "policies": policies, "geo": geo, "hqCountry": _country(m.get("hq", "")),
+               "policies": policies, "geoCountry": country, "geoTension": tension,
                "supplierEdges": edges, "healthScore": m.get("healthScore")}
         out[e["id"]] = build_risks(ctx)
     return {"risks": out}

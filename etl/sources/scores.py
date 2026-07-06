@@ -6,6 +6,7 @@ import hashlib
 from datetime import date
 import entities
 from real_loader import read_dataset
+from sources.geoutil import country_tension
 
 SCORE_WEIGHTS = {  # must sum to 1.0
     "geopolitical": 0.22, "supplierDependency": 0.20, "cyber": 0.18,
@@ -89,8 +90,7 @@ def run(industry: str = "semiconductor") -> dict:
     out = {}
     for e in entities.load(industry):
         m = meta.get(e["id"], {})
-        hq_country = (m.get("hq", "").split(",")[-1].strip()) if m.get("hq") else ""
-        gt = next((g["tension"] for g in geo if g.get("country") == hq_country), None)
+        _country, gt = country_tension(e["id"], geo)
         ctx = {"id": e["id"], "name": e["name"], "healthScore": m.get("healthScore"),
                "exposure": m.get("exposure"), "esg": esg_by.get(e["name"]),
                "cyber": cyber.get(e["id"]), "edges": edges, "geoTension": gt,

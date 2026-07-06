@@ -221,8 +221,7 @@ def test_build_risks_derives_from_signals():
         "id": "tsmc", "name": "TSMC",
         "cyber": {"score": 80, "kevHits": [{"id": "CVE-1", "name": "tsmc"}]},
         "policies": [{"title": "DUV export curbs", "targets": ["TSMC"], "severity": "high"}],
-        "geo": [{"country": "Taiwan", "tension": 82}],
-        "hqCountry": "Taiwan",
+        "geoCountry": "Taiwan", "geoTension": 82,
         "supplierEdges": [{"buyer": "TSMC", "supplier": "Sole Co", "risk": "high", "material": "neon"}],
         "healthScore": 40,
     }
