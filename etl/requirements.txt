@@ -8,3 +8,4 @@ python-dotenv==1.0.1
 pytest==8.3.4
 requests==2.32.3
 yfinance==0.2.61
+importlib_metadata  # prefect server start needs the backport on Python 3.14

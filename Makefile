@@ -1,4 +1,4 @@
-.PHONY: up down psql redis-cli ingest serve
+.PHONY: up down psql redis-cli ingest serve prefect-server
 
 up:
 	docker compose up -d
@@ -22,5 +22,12 @@ ingest:
 ingest.%:
 	cd etl && ./.venv/bin/python run_source.py $*
 
+# Daily schedule needs BOTH: `make prefect-server` (terminal 1, runs the scheduler)
+# and `make serve` (terminal 2, polls for the scheduled runs). Prefect's ephemeral
+# server cannot schedule. Zero-daemon alternative — plain cron:
+#   0 7 * * * cd <repo> && make ingest
+prefect-server:
+	cd etl && ./.venv/bin/prefect server start
+
 serve:
-	cd etl && ./.venv/bin/python flows.py serve
+	cd etl && PREFECT_API_URL=$${PREFECT_API_URL:-http://127.0.0.1:4200/api} ./.venv/bin/python flows.py serve

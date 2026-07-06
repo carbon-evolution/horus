@@ -73,4 +73,9 @@ def ingest():
 
 
 if __name__ == "__main__":
-    ingest()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "serve":
+        # Long-running scheduler: daily ingest at 07:00 local. Ctrl-C to stop.
+        ingest.serve(name="scr-ingest-daily", cron="0 7 * * *")
+    else:
+        ingest()
