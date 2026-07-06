@@ -2,10 +2,10 @@
 import sys
 import real_loader
 import warm
-from sources import yahoo, wikidata, patentsview, comtrade, gdelt, derive
+from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive
 
 SOURCES = {m.__name__.rsplit(".", 1)[-1]: m
-           for m in (yahoo, wikidata, patentsview, comtrade, gdelt, derive)}
+           for m in (yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive)}
 
 
 def main() -> int:

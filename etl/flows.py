@@ -13,11 +13,12 @@ import seed_loader
 import warm
 import entities
 import real_loader
-from sources import yahoo, wikidata, patentsview, comtrade, gdelt, derive
+from sources import yahoo, wikidata, patentsview, comtrade, gdelt, sec, nvd, fedreg, derive
 
 ROOT = Path(__file__).resolve().parent.parent
-# Order matters: wikidata/derive read companies (yahoo), yahoo reads patents.
-SOURCES = [patentsview, yahoo, wikidata, comtrade, gdelt, derive]
+# Order matters: wikidata/derive read companies (yahoo), yahoo reads patents,
+# nvd appends CVE alerts onto the `alerts` stream that sec.py writes first.
+SOURCES = [patentsview, yahoo, wikidata, comtrade, gdelt, sec, nvd, fedreg, derive]
 
 
 @task(retries=1, retry_delay_seconds=2)
