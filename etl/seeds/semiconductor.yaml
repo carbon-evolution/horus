@@ -1,0 +1,14 @@
+# Entity map — source of truth linking internal ids to external identifiers.
+# CIKs are zero-padded SEC ids (US filers + foreign private issuers with ADRs).
+industry: semiconductor
+companies:
+  - { id: nvidia,   name: NVIDIA,            ticker: NVDA,      cik: "0001045810", qid: Q182477 }
+  - { id: tsmc,     name: TSMC,              ticker: TSM,       cik: "0001046179", qid: Q713418 }
+  - { id: samsung,  name: Samsung,           ticker: 005930.KS, cik: null,         qid: Q20718 }
+  - { id: asml,     name: ASML,              ticker: ASML,      cik: "0000937966", qid: Q807880 }
+  - { id: intel,    name: Intel,             ticker: INTC,      cik: "0000050863", qid: Q248 }
+  - { id: skhynix,  name: SK hynix,          ticker: 000660.KS, cik: null,         qid: Q622316 }
+  - { id: qualcomm, name: Qualcomm,          ticker: QCOM,      cik: "0000804328", qid: Q544847 }
+  - { id: micron,   name: Micron,            ticker: MU,        cik: "0000723125", qid: Q673992 }
+  - { id: ti,       name: Texas Instruments, ticker: TXN,       cik: "0000097476", qid: Q595718 }
+  - { id: infineon, name: Infineon,          ticker: IFX.DE,    cik: null,         qid: Q663650 }

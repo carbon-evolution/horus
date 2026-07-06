@@ -46,3 +46,4 @@ etl/.venv/
 etl/seeds/fixtures/
 __pycache__/
 .pytest_cache/
+etl/cache/
