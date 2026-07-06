@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type NewsItem } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -17,8 +18,12 @@ function sentiment(n: NewsItem): "positive" | "neutral" | "negative" {
 
 export function CompaniesNews({ news }: { news: NewsItem[] }) {
   const industry = useIndustry();
+  const [cat, setCat] = useState("all");
   const counts = { positive: 0, neutral: 0, negative: 0 };
   for (const n of news) counts[sentiment(n)]++;
+
+  const categories = ["all", ...Array.from(new Set(news.map((n) => n.category ?? "general"))).sort()];
+  const shown = cat === "all" ? news : news.filter((n) => (n.category ?? "general") === cat);
 
   return (
     <div className="space-y-3">
@@ -38,7 +43,22 @@ export function CompaniesNews({ news }: { news: NewsItem[] }) {
         </div>
       </div>
       <Panel title="Event Feed">
-        <NewsFeed news={news} />
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                cat === c
+                  ? "border-transparent bg-[var(--accent)] text-white"
+                  : "border-[var(--panel-border)] text-[var(--text-dim)] hover:text-[var(--text)]"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+        {shown.length ? <NewsFeed news={shown} /> : <p className="text-sm text-[var(--text-faint)]">No events in this category.</p>}
       </Panel>
     </div>
   );
