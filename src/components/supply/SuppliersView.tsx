@@ -2,13 +2,14 @@
 import { useMemo, useState } from "react";
 import { Crosshair } from "lucide-react";
 import { useIndustry } from "@/lib/industry-context";
-import { INDUSTRY_LABEL, type SupplierEdge } from "@/lib/types";
+import { INDUSTRY_LABEL, type SupplierEdge, type SupplierProfile } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { SupplierIntel } from "@/components/supply/SupplierIntel";
 
-export function SuppliersView({ edges }: { edges: SupplierEdge[] }) {
+export function SuppliersView({ edges, profiles }: { edges: SupplierEdge[]; profiles: SupplierProfile[] }) {
   const industry = useIndustry();
   const { active, matchesText, toggleFocus, nameToId } = useFocus();
   const buyers = useMemo(() => [...new Set(edges.map((e) => e.buyer))], [edges]);
@@ -21,7 +22,11 @@ export function SuppliersView({ edges }: { edges: SupplierEdge[] }) {
 
   return (
     <div className="space-y-3">
-      <PageHeader title="Suppliers & Vendors" subtitle={`${INDUSTRY_LABEL[industry]} · buyer → multi-tier supplier dependencies`} />
+      <PageHeader title="Suppliers & Vendors" subtitle={`${INDUSTRY_LABEL[industry]} · supplier intelligence + multi-tier dependencies`} />
+
+      {/* Supplier Intelligence — per-supplier risk/dependency/performance profiles */}
+      <SupplierIntel profiles={profiles} />
+
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-4">
         {/* buyer list */}
         <Panel title="Buyers" className="xl:col-span-1" bodyClassName="p-2">

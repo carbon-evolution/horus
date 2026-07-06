@@ -172,6 +172,28 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.supplier_intel import build_profiles
+
+
+def test_supplier_profiles_sole_source_and_tracked_scores():
+    edges = [
+        {"buyer": "TSMC", "supplier": "ASML", "tier": 1, "material": "EUV", "spend": "$12B", "risk": "medium"},
+        {"buyer": "TSMC", "supplier": "AMAT", "tier": 1, "material": "Etch", "spend": "$9B", "risk": "low"},
+        {"buyer": "Intel", "supplier": "AMAT", "tier": 1, "material": "Etch", "spend": "$4B", "risk": "low"},
+    ]
+    scores = {"asml": {"financial": 20, "cyber": 30, "esg": 40}}
+    profiles = build_profiles(edges, scores, {"asml": "asml"})
+    by = {p["name"]: p for p in profiles}
+    # ASML is the sole supplier of EUV -> sole-source; inherits its tracked scores
+    assert by["ASML"]["dependency"]["soleSource"] is True
+    assert by["ASML"]["risk"]["financial"] == 20 and by["ASML"]["companyId"] == "asml"
+    # ASML EUV has no alternates; AMAT Etch serves 2 buyers but is still the only Etch supplier
+    assert by["ASML"]["country"] == "Netherlands"
+    assert by["ASML"]["totalSpend"] == 12.0
+    for p in profiles:
+        assert 0 <= p["overallRisk"] <= 100 and p["overallBand"] in ("low", "medium", "high")
+
+
 from ai.summary import generate as gen_summary
 
 

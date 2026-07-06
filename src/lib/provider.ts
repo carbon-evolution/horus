@@ -4,7 +4,7 @@ import { INDUSTRIES } from "@/lib/types";
 import type {
   Industry, Company, CompanyMeta, FinancialTTMPoint, FinancialSeriesPoint,
   PatentRow, Facility, NewsItem, Deal, Supplier, ResearchRow, RadarAxis,
-  SankeyData, Kpi, SupplierEdge, RawMaterial, TradeShipment, GraphData,
+  SankeyData, Kpi, SupplierEdge, SupplierProfile, RawMaterial, TradeShipment, GraphData,
   GraphNode, GraphLink, Policy, EsgProfile, GeoRisk, Chokepoint, MarketIntel,
   SourceInfo, AlertItem, IndustryData, Holdings, Filing, FinancialHistory,
   Scores, Risk, Cyber,
@@ -24,6 +24,7 @@ export const getRadar = (i: Industry) => ds<RadarAxis[]>(i, "radar", []);
 export const getSankey = (i: Industry) => ds<SankeyData>(i, "sankey", { nodes: [], links: [] });
 export const getFinancialsSnapshot = (i: Industry) => ds<FinancialSeriesPoint[]>(i, "financials", []);
 export const getSupplierEdges = (i: Industry) => ds<SupplierEdge[]>(i, "supplierEdges", []);
+export const getSupplierProfiles = (i: Industry) => ds<SupplierProfile[]>(i, "supplierProfiles", []);
 export const getMaterials = (i: Industry) => ds<RawMaterial[]>(i, "materials", []);
 export const getShipments = (i: Industry) => ds<TradeShipment[]>(i, "shipments", []);
 export const getPolicies = (i: Industry) => ds<Policy[]>(i, "policies", []);

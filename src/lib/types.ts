@@ -188,6 +188,21 @@ export interface PatentRow {
 }
 
 // --- Supply Chain section ---
+// Supplier Intelligence profile (sources/supplier_intel.py).
+export interface SupplierProfile {
+  name: string;
+  country: string;
+  companyId: string | null;   // set when the supplier is a tracked company
+  tier: number;
+  products: string[];
+  buyers: string[];
+  totalSpend: number;         // USD billions
+  overallRisk: number;
+  overallBand: RiskLevel;
+  risk: { financial: number; cyber: number; esg: number; political: number; disaster: number };
+  dependency: { soleSource: boolean; singleRegion: boolean; alternates: number };
+  performance: { delivery: number; quality: number; leadTimeDays: number; capacityUtil: number };
+}
 export interface SupplierEdge {
   buyer: string;
   supplier: string;
