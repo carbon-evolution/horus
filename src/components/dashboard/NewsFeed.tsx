@@ -19,13 +19,21 @@ export function NewsFeed({ news }: { news: NewsItem[] }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[13px] leading-snug">{n.headline}</p>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex flex-wrap items-center gap-2">
               <span
                 className="rounded px-1.5 py-0.5 text-[10px] font-medium text-white"
                 style={{ background: IMPACT_BG[n.impact] }}
               >
                 {n.impactLabel}
               </span>
+              {n.category && (
+                <span className="rounded border border-[var(--panel-border)] px-1.5 py-0.5 text-[10px] text-[var(--text-dim)]">
+                  {n.category}{typeof n.impactScore === "number" ? ` · ${n.impactScore}` : ""}
+                </span>
+              )}
+              {n.geo && n.geo !== "Global" && (
+                <span className="text-[10px] text-[var(--text-faint)]">{n.geo}</span>
+              )}
               <span className="text-[10px] text-[var(--text-faint)]">{n.ago}</span>
             </div>
           </div>

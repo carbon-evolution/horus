@@ -13,12 +13,14 @@ import {
   type Holdings,
   type Filing,
   type FinancialHistory,
+  type Scores,
 } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { NewsFeed } from "@/components/dashboard/NewsFeed";
 import { CompanyLink } from "@/components/ui/CompanyLink";
+import { CompanyScorecard } from "./CompanyScorecard";
 
 export function CompanyProfile({
   id,
@@ -31,6 +33,8 @@ export function CompanyProfile({
   holdings,
   filings,
   history,
+  scores,
+  summary,
 }: {
   id: string;
   company: Company;
@@ -42,6 +46,8 @@ export function CompanyProfile({
   holdings: Holdings | null;
   filings: Filing[];
   history: FinancialHistory | null;
+  scores: Scores | null;
+  summary: string | null;
 }) {
   const industry = useIndustry();
 
@@ -86,6 +92,17 @@ export function CompanyProfile({
         </div>
         <RiskBadge level={m.exposure} label={`Supply Exposure: ${m.exposure}`} />
       </div>
+
+      {/* AI executive summary */}
+      {summary && (
+        <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel-2)] p-4">
+          <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-faint)]">Executive Summary · AI-assisted</div>
+          <p className="text-sm text-[var(--text-dim)]">{summary}</p>
+        </div>
+      )}
+
+      {/* composite risk scorecard */}
+      {scores && <CompanyScorecard scores={scores} />}
 
       {/* stat tiles */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
