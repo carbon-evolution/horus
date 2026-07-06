@@ -52,6 +52,104 @@ def test_build_meta_handles_missing_facts():
     assert m["ceo"] == "—" and m["hq"] == "—"
 
 
+from sources.sec_facts import build_history, _series
+
+
+def _pt(start, end, val, form="10-K", fp="FY", fy=None):
+    return {"start": start, "end": end, "val": val, "form": form, "fp": fp,
+            "fy": fy if fy is not None else int(end[:4])}
+
+
+def test_sec_facts_annual_series_and_fallback():
+    g = {
+        # primary R&D tag: two full years
+        "ResearchAndDevelopmentExpense": {"units": {"USD": [
+            _pt("2023-01-01", "2023-12-31", 5_000_000_000),
+            _pt("2024-01-01", "2024-12-31", 7_000_000_000),
+            _pt("2024-07-01", "2024-09-30", 1_800_000_000, fp="Q3"),  # quarter — ignored
+        ]}},
+        # capex: primary tag empty for recent year, fallback carries it
+        "PaymentsToAcquirePropertyPlantAndEquipment": {"units": {"USD": [
+            _pt("2023-01-01", "2023-12-31", 1_000_000_000),
+        ]}},
+        "PaymentsToAcquireProductiveAssets": {"units": {"USD": [
+            _pt("2024-01-01", "2024-12-31", 3_240_000_000),
+        ]}},
+    }
+    hist = build_history({"facts": {"us-gaap": g}})
+    assert hist["rnd"] == [{"year": 2023, "val": 5.0}, {"year": 2024, "val": 7.0}]
+    # fallback backfills 2024, primary keeps 2023
+    assert {r["year"]: r["val"] for r in hist["capex"]} == {2023: 1.0, 2024: 3.24}
+    assert "acquisitions" not in hist  # no data -> metric dropped
+
+
+def test_sec_facts_currency_conversion():
+    g = {"Revenues": {"units": {"EUR": [
+        _pt("2024-01-01", "2024-12-31", 10_000_000_000),  # 10B EUR -> ~10.8B USD
+    ]}}}
+    rev = _series(g, ["Revenues"], 6)
+    assert rev == [{"year": 2024, "val": 10.8}]
+
+
+from sources.yahoo_facts import _to_series, build_history as yf_build_history
+
+
+class _FakeDF:
+    """Minimal stand-in for a yfinance statement DataFrame (index + .loc rows)."""
+    def __init__(self, rows):
+        import datetime
+        self.index = list(rows)
+        self._rows = {k: {datetime.datetime(y, 12, 31): v for y, v in pairs}
+                      for k, pairs in rows.items()}
+        self.empty = not rows
+
+    class _Loc:
+        def __init__(self, outer):
+            self.outer = outer
+
+        def __getitem__(self, key):
+            import pandas as pd
+            return pd.Series(self.outer._rows[key])
+
+    @property
+    def loc(self):
+        return _FakeDF._Loc(self)
+
+
+def test_yahoo_facts_to_series_fx_and_abs():
+    # KRW values -> USD billions; capex is a negative cash outflow -> abs.
+    pairs = [(2024, 53_741_600_000_000), (2025, 52_153_100_000_000)]
+    out = _to_series([(y, -v) for y, v in pairs], fx=1 / 1400.0)
+    assert out == [{"year": 2024, "val": 38.39}, {"year": 2025, "val": 37.25}]
+
+
+def test_yahoo_facts_build_history_picks_rows_and_skips_missing():
+    inc = _FakeDF({"Total Revenue": [(2024, 300_000_000_000_000)],
+                   "Net Income": [(2024, 33_000_000_000_000)]})  # no R&D row
+    cf = _FakeDF({"Capital Expenditure": [(2024, -53_000_000_000_000)]})
+    hist = yf_build_history(inc, cf, fx=1 / 1400.0)
+    assert hist["revenue"] == [{"year": 2024, "val": 214.29}]
+    assert hist["capex"] == [{"year": 2024, "val": 37.86}]
+    assert "rnd" not in hist and "acquisitions" not in hist
+
+
+from sources.opendart import classify
+
+
+def test_opendart_classify_material_and_noise():
+    # material M&A / corporate actions -> (label, severity)
+    assert classify("주요사항보고서(회사합병결정)") == ("Merger", "high")
+    assert classify("타법인주식및출자증권취득결정") == ("Acquisition of equity stake", "high")
+    assert classify("주요사항보고서(자기주식취득결정)") == ("Share buyback", "medium")
+    assert classify("단일판매ㆍ공급계약체결") == ("Major supply contract", "medium")
+    # generic major-event report still surfaces
+    assert classify("주요사항보고서(유상증자결정)") == ("Rights offering (capital raise)", "medium")
+    # insider-ownership / holding noise -> dropped
+    assert classify("임원ㆍ주요주주특정증권등소유상황보고서") is None
+    assert classify("주식등의대량보유상황보고서") is None
+    assert classify("분기보고서") is None
+
+
 from sources.patentsview import normalize_patents
 
 

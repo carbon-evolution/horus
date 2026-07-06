@@ -16,6 +16,7 @@ MIGRATIONS_DIR = ROOT / "etl" / "migrations"
 CACHE_DIR = ROOT / "etl" / "cache"
 SEEDS_DIR = ROOT / "etl" / "seeds"
 PATENTSVIEW_API_KEY = os.environ.get("PATENTSVIEW_API_KEY")  # optional
+DART_API_KEY = os.environ.get("DART_API_KEY")  # optional — OpenDART (Korea FSS)
 
 
 def pg():

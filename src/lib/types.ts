@@ -131,6 +131,20 @@ export interface Filing {
   label: string;
   href: string;
 }
+// Multi-year annual series parsed from SEC XBRL company-facts (10-K / 20-F).
+// Each value is in USD billions. Metrics absent from a filer's facts are omitted.
+export interface FinancialHistoryPoint {
+  year: number;
+  val: number;
+}
+export interface FinancialHistory {
+  rnd?: FinancialHistoryPoint[];
+  capex?: FinancialHistoryPoint[];
+  acquisitions?: FinancialHistoryPoint[];
+  revenue?: FinancialHistoryPoint[];
+  netIncome?: FinancialHistoryPoint[];
+  source?: string; // provenance: SEC EDGAR XBRL (US filers) or Yahoo (foreign filers)
+}
 export interface PatentCategory {
   name: string;
   count: number;

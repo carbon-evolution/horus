@@ -1,11 +1,12 @@
 import "server-only";
 import { readDataset } from "@/lib/db";
+import { INDUSTRIES } from "@/lib/types";
 import type {
   Industry, Company, CompanyMeta, FinancialTTMPoint, FinancialSeriesPoint,
   PatentRow, Facility, NewsItem, Deal, Supplier, ResearchRow, RadarAxis,
   SankeyData, Kpi, SupplierEdge, RawMaterial, TradeShipment, GraphData,
   GraphNode, GraphLink, Policy, EsgProfile, GeoRisk, Chokepoint, MarketIntel,
-  SourceInfo, AlertItem, IndustryData, Holdings, Filing,
+  SourceInfo, AlertItem, IndustryData, Holdings, Filing, FinancialHistory,
 } from "@/lib/types";
 
 const ds = <T>(industry: string, name: string, fallback: T) => readDataset<T>(industry, name, fallback);
@@ -42,6 +43,11 @@ export async function getFilings(i: Industry, id: string): Promise<Filing[]> {
   const all = await ds<Record<string, Filing[]>>(i, "filings", {});
   return all[id] ?? [];
 }
+// Multi-year financial history parsed from SEC XBRL company facts (keyed by company id).
+export async function getFinancialHistory(i: Industry, id: string): Promise<FinancialHistory | null> {
+  const all = await ds<Record<string, FinancialHistory>>(i, "financialHistory", {});
+  return all[id] ?? null;
+}
 
 // --- Global (industry-independent) ---
 export const getDataSources = () => ds<SourceInfo[]>("_global", "sources", []);
@@ -49,6 +55,17 @@ export const getChokepoints = () => ds<Chokepoint[]>("_global", "chokepoints", [
 
 export async function getCompany(i: Industry, id: string): Promise<Company | undefined> {
   return (await getCompanies(i)).find((c) => c.id === id);
+}
+
+// Locate the industry a company id actually belongs to (companies live in one
+// industry). Lets the company page distinguish "tracked, but in another focus"
+// (switching industry on a deep link) from a genuinely unknown id (real 404).
+export async function findCompanyHome(id: string): Promise<{ industry: Industry; company: Company } | null> {
+  for (const i of INDUSTRIES) {
+    const company = await getCompany(i, id);
+    if (company) return { industry: i, company };
+  }
+  return null;
 }
 
 // --- Dashboard bundle (Dashboard reads the whole IndustryData shape) ---

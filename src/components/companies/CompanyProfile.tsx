@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { useIndustry } from "@/lib/industry-context";
 import {
   INDUSTRY_LABEL,
@@ -12,6 +12,7 @@ import {
   type PatentRow,
   type Holdings,
   type Filing,
+  type FinancialHistory,
 } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
@@ -29,6 +30,7 @@ export function CompanyProfile({
   patents: allPatents,
   holdings,
   filings,
+  history,
 }: {
   id: string;
   company: Company;
@@ -39,6 +41,7 @@ export function CompanyProfile({
   patents: PatentRow[];
   holdings: Holdings | null;
   filings: Filing[];
+  history: FinancialHistory | null;
 }) {
   const industry = useIndustry();
 
@@ -56,6 +59,19 @@ export function CompanyProfile({
   const facilities = allFacilities.filter((f) => f.companyId === id);
   const news = allNews.filter((n) => n.company.toLowerCase() === company.name.toLowerCase()).slice(0, 4);
   const patent = allPatents.find((p) => p.company.toLowerCase() === company.name.toLowerCase());
+
+  // Merge the SEC-filing annual series (R&D / capex / acquisitions) into one
+  // year-indexed dataset for the grouped bar chart.
+  const spendByYear = new Map<number, { year: number; rnd?: number; capex?: number; acquisitions?: number }>();
+  for (const key of ["rnd", "capex", "acquisitions"] as const) {
+    for (const p of history?.[key] ?? []) {
+      const row = spendByYear.get(p.year) ?? { year: p.year };
+      row[key] = p.val;
+      spendByYear.set(p.year, row);
+    }
+  }
+  const spendSeries = [...spendByYear.values()].sort((a, b) => a.year - b.year);
+  const latestAcq = history?.acquisitions?.at(-1);
 
   return (
     <div className="space-y-3">
@@ -124,6 +140,46 @@ export function CompanyProfile({
           </div>
         </Panel>
       </div>
+
+      {/* historical spending, R&D & acquisitions — parsed from SEC XBRL filings */}
+      {spendSeries.length > 0 && (
+        <Panel title="Historical Spending, R&D & Acquisitions ($B)">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-[2fr_1fr]">
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={spendSeries} margin={{ top: 6, right: 12, bottom: 0, left: -14 }}>
+                <XAxis dataKey="year" tick={{ fill: "#8695ab", fontSize: 10 }} />
+                <YAxis tick={{ fill: "#5b6a80", fontSize: 10 }} />
+                <Tooltip contentStyle={{ background: "#0d1420", border: "1px solid #1e2a3d", borderRadius: 8, fontSize: 12 }} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <Bar dataKey="rnd" name="R&D" fill="#f59e0b" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="capex" name="Capex" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="acquisitions" name="Acquisitions" fill="#a78bfa" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col justify-center gap-3 text-sm">
+              {history?.rnd?.at(-1) && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest R&D ({history.rnd.at(-1)!.year})</div>
+                  <div className="text-lg font-bold text-[#f59e0b]">${history.rnd.at(-1)!.val.toFixed(1)}B</div>
+                </div>
+              )}
+              {history?.capex?.at(-1) && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest Capex ({history.capex.at(-1)!.year})</div>
+                  <div className="text-lg font-bold text-[#3b82f6]">${history.capex.at(-1)!.val.toFixed(1)}B</div>
+                </div>
+              )}
+              {latestAcq && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest Acquisitions ({latestAcq.year})</div>
+                  <div className="text-lg font-bold text-[#a78bfa]">${latestAcq.val.toFixed(1)}B</div>
+                </div>
+              )}
+              <p className="pt-1 text-[10px] text-[var(--text-faint)]">Annual figures from {history?.source ?? "company filings"}.</p>
+            </div>
+          </div>
+        </Panel>
+      )}
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
         {/* facilities */}
@@ -211,8 +267,8 @@ export function CompanyProfile({
           )}
         </Panel>
 
-        {/* recent SEC filings incl. M&A (SEC EDGAR 8-K item codes) */}
-        <Panel title="Recent SEC Filings & M&A">
+        {/* recent regulatory filings incl. M&A (SEC EDGAR 8-K items / Korea DART) */}
+        <Panel title="Recent Filings & M&A">
           {filings.length ? (
             <ul className="divide-y divide-[var(--panel-border)] text-sm">
               {filings.map((f, i) => (
@@ -222,13 +278,13 @@ export function CompanyProfile({
                     <div className="text-[11px] text-[var(--text-faint)]">{f.form} · {f.date}</div>
                   </div>
                   {f.href && (
-                    <Link href={f.href} target="_blank" className="shrink-0 text-xs text-[var(--accent)] hover:underline">EDGAR →</Link>
+                    <Link href={f.href} target="_blank" className="shrink-0 text-xs text-[var(--accent)] hover:underline">{f.form === "DART" ? "DART" : "EDGAR"} →</Link>
                   )}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-[var(--text-faint)]">No SEC filings (non-US filer or private).</p>
+            <p className="text-sm text-[var(--text-faint)]">No regulatory filings on record (private, or a jurisdiction not yet wired).</p>
           )}
         </Panel>
       </div>
