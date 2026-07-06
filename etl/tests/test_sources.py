@@ -172,6 +172,15 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.cyber import score_from_counts, band_for
+
+
+def test_cyber_score_and_band():
+    assert score_from_counts(cve_count=0, kev_count=0, breach_count=0) < 20
+    assert score_from_counts(cve_count=25, kev_count=4, breach_count=2) > 70
+    assert band_for(85) == "F" and band_for(10) == "A"
+
+
 from sources.news_enrich import classify_news, enrich_item
 
 
