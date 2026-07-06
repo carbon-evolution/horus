@@ -63,16 +63,17 @@ const MARKET: Record<Industry, MarketIntel> = {
   },
 };
 
+// Every feed here is actually wired in etl/sources/*. Keep in sync with
+// DATA_SOURCES in nav.ts. Do not list feeds that aren't connected.
 export const SOURCES: SourceInfo[] = [
-  { name: "SEC EDGAR", provides: "US filings — 10-K/10-Q financials, R&D", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
-  { name: "Yahoo Finance", provides: "Quotes, market caps, price history", cadence: "15 min", lastSync: "12m ago", status: "healthy", free: true },
-  { name: "UN Comtrade", provides: "Bilateral trade flows by HS code", cadence: "Monthly", lastSync: "6d ago", status: "healthy", free: true },
-  { name: "World Bank", provides: "Macro + governance indicators", cadence: "Quarterly", lastSync: "14d ago", status: "healthy", free: true },
-  { name: "GDELT", provides: "Global news events, tone, conflict signals", cadence: "15 min", lastSync: "9m ago", status: "healthy", free: true },
-  { name: "NewsAPI", provides: "Curated headlines per company", cadence: "Hourly", lastSync: "38m ago", status: "degraded", free: true },
-  { name: "OECD", provides: "Production, inventories, lead indicators", cadence: "Monthly", lastSync: "11d ago", status: "healthy", free: true },
-  { name: "USPTO / EPO", provides: "Patent filings + assignments", cadence: "Weekly", lastSync: "3d ago", status: "healthy", free: true },
-  { name: "AkShare (SSE/SZSE)", provides: "China-listed financials", cadence: "Daily", lastSync: "1d ago", status: "degraded", free: true },
+  { name: "Yahoo Finance", provides: "Quotes, market caps, TTM financials, R&D", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
+  { name: "SEC EDGAR", provides: "US filings — 8-K/10-K/10-Q material events → alerts", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
+  { name: "UN Comtrade", provides: "Bilateral trade flows (HS 8542/8486) → shipments", cadence: "Monthly", lastSync: "1d ago", status: "healthy", free: true },
+  { name: "GDELT 2.0", provides: "Global news events, tone, conflict signals → news", cadence: "Daily", lastSync: "3h ago", status: "healthy", free: true },
+  { name: "NIST NVD", provides: "CVEs for sector vendors (CVSS ≥7) → cyber alerts", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
+  { name: "US Federal Register", provides: "Export-control / Entity-List / CHIPS rules → policies", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
+  { name: "Wikidata", provides: "Company metadata — CEO, HQ, founded, headcount", cadence: "Weekly", lastSync: "2h ago", status: "healthy", free: true },
+  { name: "PatentsView", provides: "US patent filings + assignments → patents", cadence: "Weekly", lastSync: "3d ago", status: "degraded", free: true },
 ];
 
 const ALERTS: Record<Industry, AlertItem[]> = {

@@ -23,7 +23,7 @@ export function MarketSnapshot({ companies }: { companies: Company[] }) {
           </tr>
         </thead>
         <tbody>
-          {companies.map((c) => {
+          {companies.slice(0, 10).map((c) => {
             const focused = c.id === focusId;
             return (
               <tr

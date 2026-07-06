@@ -1,6 +1,7 @@
 "use client";
 import type { Facility, FacilityStatus } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
+import { WORLD_LAND_PATH } from "@/lib/world-land-path";
 
 const STATUS_COLOR: Record<FacilityStatus, string> = {
   operating: "#34d399",
@@ -17,20 +18,10 @@ const STATUS_LABEL: Record<FacilityStatus, string> = {
 
 const W = 720;
 const H = 360;
-// Equirectangular projection.
+// Equirectangular projection — matches the WORLD_LAND_PATH viewBox exactly,
+// so facility nodes land on their real continents.
 const px = (lng: number) => ((lng + 180) / 360) * W;
 const py = (lat: number) => ((90 - lat) / 180) * H;
-
-// Rough continental land masses as soft blobs — enough to orient the nodes
-// without shipping a heavy GeoJSON. Coordinates are [lng, lat] centers + radii.
-const LANDMASSES: { cx: number; cy: number; rx: number; ry: number }[] = [
-  { cx: -100, cy: 45, rx: 34, ry: 22 }, // North America
-  { cx: -60, cy: -15, rx: 20, ry: 26 }, // South America
-  { cx: 18, cy: 50, rx: 20, ry: 16 }, // Europe
-  { cx: 22, cy: 5, rx: 26, ry: 30 }, // Africa
-  { cx: 90, cy: 45, rx: 52, ry: 26 }, // Asia
-  { cx: 134, cy: -25, rx: 18, ry: 12 }, // Australia
-];
 
 export function ManufacturingFootprint({ facilities }: { facilities: Facility[] }) {
   const { focusId, active } = useFocus();
@@ -45,10 +36,8 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
           {Array.from({ length: 7 }).map((_, i) => (
             <line key={`h${i}`} x1={0} y1={(i * H) / 6} x2={W} y2={(i * H) / 6} stroke="#ffffff" strokeOpacity={0.03} />
           ))}
-          {/* land */}
-          {LANDMASSES.map((l, i) => (
-            <ellipse key={i} cx={px(l.cx)} cy={py(l.cy)} rx={l.rx} ry={l.ry} fill="#1b2740" fillOpacity={0.6} />
-          ))}
+          {/* real world landmasses */}
+          <path d={WORLD_LAND_PATH} fill="#1b2740" fillOpacity={0.85} stroke="#2b3b5a" strokeWidth={0.4} />
           {/* faint connection arcs between the first facility and others (trade-route feel) */}
           {facilities.slice(1, 8).map((f, i) => {
             const a = facilities[0];

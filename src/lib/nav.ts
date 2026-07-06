@@ -64,13 +64,15 @@ export const NAV: NavGroup[] = [
   },
 ];
 
+// Only feeds actually wired into the ETL (etl/sources/*). Keep in sync with
+// SOURCES in data-analytics.ts — no aspirational/unconnected feeds here.
 export const DATA_SOURCES = [
-  "OECD",
-  "UN Comtrade",
-  "World Bank",
-  "SEC EDGAR",
-  "Company Filings",
-  "NewsAPI",
   "Yahoo Finance",
+  "SEC EDGAR",
+  "UN Comtrade",
   "GDELT",
+  "NIST NVD",
+  "Federal Register",
+  "Wikidata",
+  "PatentsView",
 ];
