@@ -12,3 +12,13 @@ companies:
   - { id: micron,   name: Micron,            ticker: MU,        cik: "0000723125", qid: Q673992 }
   - { id: ti,       name: Texas Instruments, ticker: TXN,       cik: "0000097476", qid: Q595718 }
   - { id: infineon, name: Infineon,          ticker: IFX.DE,    cik: null,         qid: Q663650 }
+  - { id: broadcom, name: Broadcom,          ticker: AVGO,      cik: "0001730168", qid: Q555925 }
+  - { id: amd,      name: AMD,               ticker: AMD,       cik: "0000002488", qid: Q128896 }
+  - { id: amat,     name: Applied Materials, ticker: AMAT,      cik: "0000006951", qid: Q621610 }
+  - { id: lam,      name: Lam Research,      ticker: LRCX,      cik: "0000707549", qid: Q1342041 }
+  - { id: tel,      name: Tokyo Electron,    ticker: 8035.T,    cik: null,         qid: Q1351484 }
+  - { id: arm,      name: Arm Holdings,      ticker: ARM,       cik: "0001973239", qid: Q296782 }
+  - { id: mediatek, name: MediaTek,          ticker: 2454.TW,   cik: null,         qid: Q699848 }
+  - { id: kla,      name: KLA,               ticker: KLAC,      cik: "0000319201", qid: Q624649 }
+  - { id: nxp,      name: NXP,               ticker: NXPI,      cik: "0001413447", qid: Q1155668 }
+  - { id: adi,      name: Analog Devices,    ticker: ADI,       cik: "0000006281", qid: Q484930 }

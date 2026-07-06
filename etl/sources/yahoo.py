@@ -4,7 +4,10 @@ import entities
 from real_loader import read_dataset
 from sources.base import fmt_cap
 
-CUR_SYMBOL = {"USD": "$", "KRW": "₩", "EUR": "€", "TWD": "NT$"}
+CUR_SYMBOL = {"USD": "$", "KRW": "₩", "EUR": "€", "TWD": "NT$", "JPY": "¥", "HKD": "HK$"}
+# Coarse FX to USD so $B/$T magnitudes are comparable across listings.
+FX_TO_USD = {"USD": 1.0, "KRW": 1 / 1400.0, "EUR": 1.08, "TWD": 1 / 32.5,
+             "JPY": 1 / 150.0, "HKD": 1 / 7.8}
 
 
 def normalize_company(raw: dict) -> dict:
@@ -47,12 +50,8 @@ def _fetch_one(ent: dict) -> tuple[dict, dict]:
     change_ytd = (price / float(hist["Close"].iloc[0]) - 1) * 100 if len(hist) else 0.0
     inc = t.quarterly_income_stmt
     cf = t.quarterly_cashflow
-    fx = 1.0
     cur = str(info.get("currency") or "USD")
-    if cur == "KRW":
-        fx = 1 / 1400.0   # coarse KRW->USD so $B magnitudes are comparable
-    elif cur == "EUR":
-        fx = 1.08
+    fx = FX_TO_USD.get(cur, 1.0)
     company_raw = {
         "id": ent["id"], "name": ent["name"], "ticker": ent["ticker"], "currency": cur,
         "price": price, "market_cap": float(info["marketCap"]) * fx,
@@ -69,11 +68,11 @@ def _fetch_one(ent: dict) -> tuple[dict, dict]:
 
 
 def run(industry: str = "semiconductor") -> dict:
-    companies, financials = [], []
-    for ent in entities.load(industry):
-        c_raw, f_raw = _fetch_one(ent)
-        companies.append(normalize_company(c_raw))
-        financials.append(normalize_financial(f_raw))
+    raws = [_fetch_one(ent) for ent in entities.load(industry)]
+    # Market Snapshot shows the first 10 — order by market cap, not entity-map order.
+    raws.sort(key=lambda pair: -pair[0]["market_cap"])
+    companies = [normalize_company(c) for c, _ in raws]
+    financials = [normalize_financial(f) for _, f in raws]
     # research: R&D spend + % of revenue from the same numbers; patents count
     # comes from the patents dataset if already loaded (else em-dash).
     patents = {p["company"]: p["total"] for p in (read_dataset(industry, "patents") or [])}
