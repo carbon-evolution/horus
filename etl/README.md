@@ -1,4 +1,4 @@
-# ETL — Data Pipeline (Phase Z, Plans 1 + 3)
+# ETL — Data Pipeline (Phase Z, Plans 1 + 3 + 4)
 
 Loads data into Postgres + Redis for the app to read (the app reads Postgres through
 the `server-only` provider + Redis read-through since Plan 2; `src/lib/fixtures.ts`
@@ -12,11 +12,20 @@ datasets are overwritten with real data from free public sources after seeding.
 
 ## Run
 ```bash
-make up        # start postgres + redis
-make ingest    # dump fixtures -> migrate -> seed -> entity sync -> real fetchers -> warm
-make psql      # inspect the database
-make down      # stop services
+make up             # start postgres + redis
+make ingest         # dump fixtures -> migrate -> seed -> entity sync -> real fetchers -> warm
+make ingest.yahoo   # refresh ONE source (+warm): .wikidata .patentsview .comtrade .gdelt .derive
+make psql           # inspect the database
+make down           # stop services
 ```
+
+## Scheduling (daily 07:00)
+Prefect's ephemeral server cannot schedule, so the cron deployment needs two processes:
+```bash
+make prefect-server   # terminal 1: dedicated server (scheduler + UI at :4200)
+make serve            # terminal 2: serves scr-ingest/scr-ingest-daily (cron 0 7 * * *)
+```
+Zero-daemon alternative — plain cron: `0 7 * * * cd <repo> && make ingest`.
 
 ## Ingest order (source isolation)
 Seeds load **first**, so every dataset always exists; each fetcher then overwrites
@@ -48,4 +57,7 @@ sankey, suppliers, alerts, compareRadar.
 - `flows.py` — Prefect flow tying it together
 - `tests/` — pytest (normalizers are pure; DB tests need `make up`)
 
-Scheduling (daily Prefect runs) arrives in Plan 4.
+- `run_source.py` — one-source CLI behind `make ingest.<source>`
+
+Phase Z complete: seeded foundation (Plan 1) → server-rendered reads (Plan 2) →
+real fetchers (Plan 3) → per-source ops + daily scheduling (Plan 4).
