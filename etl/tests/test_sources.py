@@ -172,6 +172,27 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.risks import build_risks, PLAYBOOK
+
+
+def test_build_risks_derives_from_signals():
+    ctx = {
+        "id": "tsmc", "name": "TSMC",
+        "cyber": {"score": 80, "kevHits": [{"id": "CVE-1", "name": "tsmc"}]},
+        "policies": [{"title": "DUV export curbs", "targets": ["TSMC"], "severity": "high"}],
+        "geo": [{"country": "Taiwan", "tension": 82}],
+        "hqCountry": "Taiwan",
+        "supplierEdges": [{"buyer": "TSMC", "supplier": "Sole Co", "risk": "high", "material": "neon"}],
+        "healthScore": 40,
+    }
+    risks = build_risks(ctx)
+    cats = {r["category"] for r in risks}
+    assert {"cyber", "regulatory", "geopolitical"} <= cats
+    for r in risks:
+        assert 0 <= r["severity"] <= 100 and 0.0 <= r["probability"] <= 1.0
+        assert r["recommendedActions"] and r["source"] and r["category"] in PLAYBOOK
+
+
 from sources.cyber import score_from_counts, band_for
 
 
