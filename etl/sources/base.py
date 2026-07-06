@@ -8,14 +8,19 @@ UA = {"User-Agent": "scr-radar-etl/1.0 (research dashboard; contact: local)"}
 
 
 def get_json(url: str, cache_key: str, params: dict | None = None,
-             headers: dict | None = None, max_age_h: float = 12.0):
+             headers: dict | None = None, max_age_h: float = 12.0,
+             throttle_s: float = 0.0):
     """GET JSON with an on-disk cache. On any fetch error, fall back to the
-    last cached copy regardless of age (source isolation: stale beats broken)."""
+    last cached copy regardless of age (source isolation: stale beats broken).
+    `throttle_s` sleeps before the network request only — cache hits are free —
+    for APIs that 429 on rapid consecutive calls (GDELT)."""
     CACHE_DIR.mkdir(exist_ok=True)
     path = CACHE_DIR / f"{cache_key}.json"
     if path.exists() and (time.time() - path.stat().st_mtime) < max_age_h * 3600:
         return json.loads(path.read_text())
     try:
+        if throttle_s:
+            time.sleep(throttle_s)
         resp = requests.get(url, params=params, headers={**UA, **(headers or {})}, timeout=30)
         resp.raise_for_status()
         data = resp.json()

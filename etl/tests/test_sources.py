@@ -76,3 +76,17 @@ def test_normalize_shipment():
     assert s["mode"] == "air" and s["commodity"] == "Semiconductor Machinery"
     assert s["volume"] == "$8.4B/yr"
     assert s["risk"] in ("low", "medium", "high")
+
+
+from sources.gdelt import normalize_article
+
+
+def test_normalize_article():
+    n = normalize_article(
+        {"title": "TSMC to expand Arizona fab amid export control tension",
+         "seendate": "20260706T010000Z"},
+        company="TSMC", idx=3, now_epoch=1_782_000_000)
+    assert n["id"] == "n3" and n["company"] == "TSMC"
+    assert n["impact"] == "high"          # matches 'export control' keyword
+    assert n["headline"].startswith("TSMC to expand")
+    assert n["ago"].endswith(" ago")

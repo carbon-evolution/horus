@@ -761,6 +761,13 @@ def run(industry: str = "semiconductor") -> dict:
 
 ## Task 7: World Bank → patch `geo` tension
 
+> **SUPERSEDED during execution (2026-07-06):** implemented and then removed. The live WGI
+> "Political Stability" scores (`GOV_WGI_PV.SC`, WGI database `source=3` — note the indicator
+> was renamed from `PV.PER.RNK`) measure *domestic* stability and produced misleading values
+> for this dashboard's geopolitical-tension semantic (Ukraine → 43 vs curated 90; China → 37
+> vs curated 78). `geo` therefore stays curated, alongside materials/marketIntel. The original
+> task is kept below for the record.
+
 **Files:**
 - Create: `etl/sources/worldbank.py`
 - Test: `etl/tests/test_sources.py` (append)
