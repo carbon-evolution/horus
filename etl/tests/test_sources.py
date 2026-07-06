@@ -133,6 +133,67 @@ def test_yahoo_facts_build_history_picks_rows_and_skips_missing():
     assert "rnd" not in hist and "acquisitions" not in hist
 
 
+from sources.derive import build_compare_radar, AXES
+
+
+def test_build_compare_radar_covers_all_companies_keeps_curated_and_composite():
+    companies = [{"id": "tsmc", "name": "TSMC"}, {"id": "nvidia", "name": "NVIDIA"},
+                 {"id": "micron", "name": "Micron"}]
+    curated = [
+        {"entity": "TSMC", "color": "#38bdf8",
+         "axes": [{"axis": a, "value": 50} for a in AXES]},
+        {"entity": "Sector Composite", "color": "#f59e0b",
+         "axes": [{"axis": a, "value": 60} for a in AXES]},
+    ]
+    meta = {"nvidia": {"healthScore": 90, "exposure": "low"}}
+    esg = [{"company": "Micron", "scope1": 1.6, "scope2": 4.4, "scope3": 7.2, "ethicalSourcing": "low"}]
+    out = build_compare_radar(companies, curated, meta, esg)
+
+    names = [s["entity"] for s in out]
+    assert names == ["TSMC", "NVIDIA", "Micron", "Sector Composite"]  # every company + composite
+    # curated entity passed through verbatim
+    assert out[0] is curated[0]
+    # NVIDIA: healthScore 90 -> Financial risk 10; exposure low -> Geopolitical ~35
+    nv = {a["axis"]: a["value"] for a in out[1]["axes"]}
+    assert nv["Financial"] == 10
+    assert 20 <= nv["Geopolitical"] <= 45
+    # every derived value stays in-range
+    for s in out:
+        for a in s["axes"]:
+            assert 0 <= a["value"] <= 100
+
+
+def test_build_compare_radar_is_deterministic():
+    companies = [{"id": "micron", "name": "Micron"}]
+    curated = [{"entity": "Sector Composite", "color": "#f59e0b",
+                "axes": [{"axis": a, "value": 55} for a in AXES]}]
+    a = build_compare_radar(companies, curated, {}, [])
+    b = build_compare_radar(companies, curated, {}, [])
+    assert a == b  # stable across calls (md5 seed, not salted hash())
+
+
+from sources.news_enrich import classify_news, enrich_item
+
+
+def test_classify_news_taxonomy():
+    assert classify_news("Ransomware attack cripples chipmaker network")[0] == "cyber-attack"
+    assert classify_news("Company X to acquire rival in $5B deal")[0] == "m&a"
+    assert classify_news("New fab expansion announced in Arizona")[0] == "factory-expansion"
+    assert classify_news("Earthquake disrupts production in Taiwan")[0] == "disaster"
+    assert classify_news("Workers strike over wages")[0] == "labor-strike"
+    assert classify_news("Quarterly earnings beat expectations")[0] == "financial"
+    assert classify_news("Some unremarkable headline")[0] == "general"
+
+
+def test_enrich_item_scores_and_related():
+    item = {"headline": "Ransomware attack hits NVIDIA suppliers in Taiwan", "company": "NVIDIA"}
+    out = enrich_item(item, ["NVIDIA", "TSMC"])
+    assert out["category"] == "cyber-attack"
+    assert 0 <= out["impactScore"] <= 100 and out["impact"] in ("low", "medium", "high")
+    assert 0.0 <= out["confidence"] <= 1.0
+    assert "NVIDIA" in out["relatedCompanies"] and out["geo"] == "Taiwan"
+
+
 from sources.opendart import classify
 
 
