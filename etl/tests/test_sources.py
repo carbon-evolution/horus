@@ -32,3 +32,21 @@ def test_normalize_financial():
     f = normalize_financial(raw)
     assert f == {"company": "NVIDIA", "revenue": 235.1, "profit": 120.4,
                  "rnd": 8.67, "capex": 3.2}
+
+
+from sources.wikidata import build_meta
+
+
+def test_build_meta_merges_facts_and_derived():
+    facts = {"ceo": "Jensen Huang", "hq": "Santa Clara", "founded": "1993", "employees": "29,600"}
+    company = {"id": "nvidia", "name": "NVIDIA", "changeYtd": 24.5}
+    m = build_meta(facts, company, "semiconductor")
+    assert m["ceo"] == "Jensen Huang" and m["founded"] == "1993"
+    assert 0 <= m["healthScore"] <= 100
+    assert m["exposure"] in ("low", "medium", "high")
+    assert sum(s["share"] for s in m["segments"]) == 100
+
+
+def test_build_meta_handles_missing_facts():
+    m = build_meta({}, {"id": "x", "name": "X", "changeYtd": -2}, "semiconductor")
+    assert m["ceo"] == "—" and m["hq"] == "—"
