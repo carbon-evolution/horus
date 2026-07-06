@@ -13,7 +13,9 @@ import seed_loader
 import warm
 import entities
 import real_loader
-from sources import yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec, sec_facts, opendart, nvd, fedreg, holdings, derive
+from sources import (yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec,
+                     sec_facts, opendart, nvd, fedreg, holdings, news_enrich, cyber,
+                     risks, scores, summary, derive)
 
 ROOT = Path(__file__).resolve().parent.parent
 INDUSTRIES = ["semiconductor", "ai", "battery"]
@@ -24,9 +26,14 @@ INDUSTRIES = ["semiconductor", "ai", "battery"]
 # US-gov, gdelt is name-based). comtrade/patentsview/wikidata stay semi-only
 # (semi-specific HS codes / key-gated / would overwrite curated private meta).
 def sources_for(industry: str):
+    # Intelligence stages run after their inputs and before derive: news_enrich
+    # (needs news) -> cyber (needs enriched news) -> risks (needs cyber/policies/
+    # geo/edges) -> scores (needs cyber/esg/geo/edges) -> summary (needs scores/risks).
+    common_tail = [news_enrich, cyber, risks, scores, summary]
     if industry == "semiconductor":
-        return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, sec_facts, yahoo_facts, opendart, nvd, fedreg, holdings, derive]
-    return [yahoo, gdelt, sec, sec_facts, yahoo_facts, opendart, fedreg, holdings, derive]
+        return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, sec_facts, yahoo_facts,
+                opendart, nvd, fedreg, holdings, *common_tail, derive]
+    return [yahoo, gdelt, sec, sec_facts, yahoo_facts, opendart, fedreg, holdings, *common_tail, derive]
 
 
 @task(retries=1, retry_delay_seconds=2)
