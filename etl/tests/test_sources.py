@@ -63,3 +63,16 @@ def test_normalize_patents():
     assert rows["pending"] > 0
     assert len(rows["categories"]) == 3
     assert rows["categories"][0]["count"] >= rows["categories"][1]["count"]
+
+
+from sources.comtrade import normalize_shipment
+
+
+def test_normalize_shipment():
+    s = normalize_shipment({"reporterDesc": "Netherlands", "partnerDesc": "Taiwan",
+                            "cmdCode": "8486", "primaryValue": 8.4e9})
+    assert s["lane"] == "Netherlands → Taiwan"
+    assert s["origin"] == "Netherlands" and s["destination"] == "Taiwan"
+    assert s["mode"] == "air" and s["commodity"] == "Semiconductor Machinery"
+    assert s["volume"] == "$8.4B/yr"
+    assert s["risk"] in ("low", "medium", "high")
