@@ -1,4 +1,5 @@
 import type { ResearchRow } from "@/lib/types";
+import { CompanyLink } from "@/components/ui/CompanyLink";
 
 export function ResearchInnovation({ rows }: { rows: ResearchRow[] }) {
   return (
@@ -14,7 +15,7 @@ export function ResearchInnovation({ rows }: { rows: ResearchRow[] }) {
       <tbody>
         {rows.map((r) => (
           <tr key={r.company} className="border-t border-[var(--panel-border)]">
-            <td className="py-2 font-medium">{r.company}</td>
+            <td className="py-2 font-medium"><CompanyLink name={r.company} /></td>
             <td className="py-2 text-right tabular-nums">{r.rndExpense}</td>
             <td className="py-2 text-right tabular-nums text-[var(--text-dim)]">{r.rndPctRevenue}</td>
             <td className="py-2 text-right tabular-nums">{r.patents}</td>

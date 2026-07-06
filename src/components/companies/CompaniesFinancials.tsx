@@ -5,6 +5,7 @@ import { INDUSTRY_LABEL, type Company, type FinancialSeriesPoint, type Financial
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { FinancialPerformance } from "@/components/dashboard/FinancialPerformance";
+import { CompanyLink } from "@/components/ui/CompanyLink";
 
 const LINE_COLORS = ["#3b82f6", "#a78bfa", "#34d399", "#f59e0b", "#f87171"];
 
@@ -79,7 +80,7 @@ export function CompaniesFinancials({
           <tbody>
             {ratios.map((r) => (
               <tr key={r.company} className="border-t border-[var(--panel-border)]">
-                <td className="py-2 font-medium">{r.company}</td>
+                <td className="py-2 font-medium"><CompanyLink name={r.company} /></td>
                 <td className="py-2 text-right tabular-nums">{r.revenue.toFixed(1)}</td>
                 <td className="py-2 text-right tabular-nums">{r.profit.toFixed(1)}</td>
                 <td className="py-2 text-right tabular-nums" style={{ color: r.margin >= 0 ? "var(--pos)" : "var(--neg)" }}>{r.margin.toFixed(1)}%</td>

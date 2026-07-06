@@ -27,7 +27,7 @@ export function CompaniesOverview({ companies: allCompanies, metas }: { companie
           return (
             <Link
               key={c.id}
-              href={`/companies/${c.id}`}
+              href={`/${industry}/companies/${c.id}`}
               className={`flex flex-col rounded-xl border bg-[var(--panel)] p-4 transition-colors hover:border-[var(--accent)]/50 ${
                 focused ? "border-[var(--accent)]" : "border-[var(--panel-border)]"
               } ${focusDim(active, focused)}`}

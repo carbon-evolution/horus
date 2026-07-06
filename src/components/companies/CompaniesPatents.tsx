@@ -4,6 +4,7 @@ import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type PatentRow } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
+import { CompanyLink } from "@/components/ui/CompanyLink";
 
 export function CompaniesPatents({ patents: allPatents }: { patents: PatentRow[] }) {
   const industry = useIndustry();
@@ -66,7 +67,7 @@ export function CompaniesPatents({ patents: allPatents }: { patents: PatentRow[]
           <tbody>
             {patents.map((p) => (
               <tr key={p.company} className="border-t border-[var(--panel-border)]">
-                <td className="py-2 font-medium">{p.company}</td>
+                <td className="py-2 font-medium"><CompanyLink name={p.company} /></td>
                 <td className="py-2 text-right tabular-nums">{p.total.toLocaleString()}</td>
                 <td className="py-2 text-right tabular-nums text-[var(--text-dim)]">{p.pending.toLocaleString()}</td>
                 <td className="py-2 text-[var(--text-dim)]">{p.categories.map((c) => c.name).join(", ")}</td>

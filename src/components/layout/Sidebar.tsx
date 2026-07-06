@@ -8,6 +8,12 @@ import { INDUSTRIES, INDUSTRY_LABEL } from "@/lib/types";
 import { Icon } from "@/components/Icon";
 import { useIndustry } from "@/lib/industry-context";
 
+const INDUSTRY_ICON: Record<string, string> = {
+  semiconductor: "Cpu",
+  ai: "BrainCircuit",
+  battery: "BatteryCharging",
+};
+
 function IndustrySelector() {
   const industry = useIndustry();
   const router = useRouter();
@@ -21,23 +27,22 @@ function IndustrySelector() {
       <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-faint)]">
         Industry Focus
       </div>
-      <div className="grid grid-cols-3 gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)] p-1">
+      <div className="flex flex-col gap-1 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)] p-1">
         {INDUSTRIES.map((i) => (
           <button
             key={i}
             onClick={() => switchTo(i)}
-            className={`rounded-md px-1 py-1.5 text-[11px] font-medium transition-colors ${
+            aria-pressed={industry === i}
+            className={`flex items-center gap-2 rounded-md px-2.5 py-2 text-left text-[12px] font-medium transition-colors ${
               industry === i
                 ? "bg-[var(--accent)] text-white"
-                : "text-[var(--text-dim)] hover:bg-white/5"
+                : "text-[var(--text-dim)] hover:bg-white/5 hover:text-[var(--text)]"
             }`}
           >
-            {i === "semiconductor" ? "Semi" : i === "ai" ? "AI" : "Battery"}
+            <Icon name={INDUSTRY_ICON[i]} size={15} className="shrink-0" />
+            {INDUSTRY_LABEL[i]}
           </button>
         ))}
-      </div>
-      <div className="mt-1 text-center text-[10px] text-[var(--text-faint)]">
-        {INDUSTRY_LABEL[industry]}
       </div>
     </div>
   );

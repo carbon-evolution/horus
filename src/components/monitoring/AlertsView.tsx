@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useIndustry } from "@/lib/industry-context";
-import { INDUSTRY_LABEL, type AlertItem, type RiskLevel } from "@/lib/types";
+import { INDUSTRY_LABEL, INDUSTRIES, type AlertItem, type RiskLevel } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
@@ -12,6 +12,13 @@ const ORDER: RiskLevel[] = ["high", "medium", "low"];
 
 export function AlertsView({ alerts: allAlerts }: { alerts: AlertItem[] }) {
   const industry = useIndustry();
+  // Alerts from the ETL are already industry-prefixed; seeded/fixture alerts use
+  // bare paths like "/risk/policies". Prefix only the bare ones so both resolve.
+  const linkFor = (href: string) => {
+    if (!href.startsWith("/")) return href;
+    const seg = href.split("/")[1];
+    return (INDUSTRIES as readonly string[]).includes(seg) ? href : `/${industry}${href}`;
+  };
   const { active, matchesText } = useFocus();
   const [filter, setFilter] = useState<RiskLevel | "all">("all");
   const alerts = allAlerts
@@ -50,7 +57,7 @@ export function AlertsView({ alerts: allAlerts }: { alerts: AlertItem[] }) {
                   <div className="text-[11px] text-[var(--text-faint)]">{a.entity} · {a.ago}</div>
                 </div>
               </div>
-              <Link href={a.href} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
+              <Link href={linkFor(a.href)} className="shrink-0 text-xs text-[var(--accent)] hover:underline">
                 View asset →
               </Link>
             </li>

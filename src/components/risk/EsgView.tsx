@@ -6,6 +6,7 @@ import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { CompanyLink } from "@/components/ui/CompanyLink";
 
 // Emissions cell shaded relative to the column max (simple heatmap).
 function heat(value: number, max: number) {
@@ -60,7 +61,7 @@ export function EsgView({ esg }: { esg: EsgProfile[] }) {
                         <Crosshair size={13} />
                       </button>
                     )}
-                    {e.company}
+                    <CompanyLink name={e.company} className="font-medium" />
                   </span>
                 </td>
                 <td className="py-1.5">{heat(e.scope1, max.s1)}</td>

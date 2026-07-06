@@ -40,7 +40,7 @@ export function WatchlistView({ companies, metas }: { companies: Company[]; meta
             <Crosshair size={14} />
           </button>
           <div className="min-w-0">
-            <Link href={`/companies/${c.id}`} className="text-sm font-medium text-[var(--accent)] hover:underline">{c.name}</Link>
+            <Link href={`/${industry}/companies/${c.id}`} className="text-sm font-medium text-[var(--accent)] hover:underline">{c.name}</Link>
             <div className="text-[11px] text-[var(--text-faint)]">{c.ticker} · {m.hq}</div>
           </div>
         </div>
