@@ -90,3 +90,18 @@ def test_normalize_article():
     assert n["impact"] == "high"          # matches 'export control' keyword
     assert n["headline"].startswith("TSMC to expand")
     assert n["ago"].endswith(" ago")
+
+
+from sources.derive import build_kpis
+
+
+def test_build_kpis_patches_values_keeps_style():
+    seeded = [{"label": "Companies Tracked", "value": "99", "icon": "Building2", "accent": "#3b82f6"},
+              {"label": "News Impacting Markets", "value": "152", "icon": "Newspaper", "accent": "#f59e0b"},
+              {"label": "Facilities Worldwide", "value": "1,246", "icon": "Factory", "accent": "#34d399"}]
+    kpis = build_kpis(seeded, companies_count=10, news_count=23)
+    by = {k["label"]: k for k in kpis}
+    assert by["Companies Tracked"]["value"] == "10"
+    assert by["News Impacting Markets"]["value"] == "23"
+    assert by["Facilities Worldwide"]["value"] == "1,246"   # curated label untouched
+    assert by["Companies Tracked"]["icon"] == "Building2"   # style preserved
