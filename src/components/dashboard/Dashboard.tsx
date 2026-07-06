@@ -32,29 +32,26 @@ export function Dashboard({ data }: { data: DashboardData }) {
 
       <KpiRow kpis={data.kpis} />
 
-      {/* Row: map / market / news */}
+      {/* Hero row: the two headline visuals, enlarged */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
-        <Panel title="Global Manufacturing Footprint" action="All Facilities" className="xl:col-span-5">
+        <Panel title="Global Manufacturing Footprint" action="All Facilities" className="min-h-[460px] xl:col-span-7">
           <ManufacturingFootprint facilities={data.facilities} />
         </Panel>
-        <Panel title="Market Snapshot (Top 10)" className="xl:col-span-4">
-          <MarketSnapshot companies={data.companies} />
-        </Panel>
-        <Panel title="Latest News & Market Impact" action="View All" className="xl:col-span-3">
-          <NewsFeed news={data.news} />
+        <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments" className="min-h-[460px] xl:col-span-5">
+          <RawMaterialsSankey data={data.sankey} />
         </Panel>
       </div>
 
-      {/* Row: sankey / radar / financials */}
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-        <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments">
-          <RawMaterialsSankey data={data.sankey} />
+      {/* Row: market / radar / news */}
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
+        <Panel title="Market Snapshot (Top 10)" className="xl:col-span-5">
+          <MarketSnapshot companies={data.companies} />
         </Panel>
-        <Panel title="Supply Chain Risk Radar" action="View All Risks">
+        <Panel title="Supply Chain Risk Radar" action="View All Risks" className="xl:col-span-4">
           <RiskRadar data={data.radar} />
         </Panel>
-        <Panel title="Financial Performance (TTM)" action="View Financial Details">
-          <FinancialPerformance data={data.financials} />
+        <Panel title="Latest News & Market Impact" action="View All" className="xl:col-span-3">
+          <NewsFeed news={data.news} />
         </Panel>
       </div>
 
@@ -70,6 +67,11 @@ export function Dashboard({ data }: { data: DashboardData }) {
           <ResearchInnovation rows={data.research} />
         </Panel>
       </div>
+
+      {/* Financial performance — full width */}
+      <Panel title="Financial Performance (TTM)" action="View Financial Details">
+        <FinancialPerformance data={data.financials} />
+      </Panel>
 
       <DataSourcesFooter />
     </div>
