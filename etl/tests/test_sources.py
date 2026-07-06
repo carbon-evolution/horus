@@ -172,6 +172,33 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.scores import build_scores, overall_and_band, SCORE_WEIGHTS
+
+
+def test_overall_and_band_weighted():
+    subs = {"supplierDependency": 80, "customerDependency": 50, "esg": 40,
+            "cyber": 70, "financial": 60, "geopolitical": 90}
+    overall, band = overall_and_band(subs)
+    assert 0 <= overall <= 100 and band in ("A", "B", "C", "D", "F")
+    assert abs(sum(SCORE_WEIGHTS.values()) - 1.0) < 1e-6
+
+
+def test_build_scores_flags_customer_estimated():
+    ctx = {"id": "tsmc", "name": "TSMC", "healthScore": 70, "exposure": "high",
+           "esg": {"scope1": 2.2, "scope2": 8.1, "scope3": 12.4, "ethicalSourcing": "low"},
+           "cyber": {"score": 65}, "edges": [], "geoTension": 82, "prevTrend": []}
+    s = build_scores(ctx)
+    assert s["factors"]["customerDependency"]["estimated"] is True
+    assert s["band"] == overall_and_band({k: s[k] for k in SCORE_WEIGHTS})[1]
+    assert s["trend"] and s["trend"][-1]["value"] == s["overall"]
+
+
+def test_build_scores_deterministic():
+    ctx = {"id": "x", "name": "X", "healthScore": 50, "exposure": "medium", "esg": {},
+           "cyber": {"score": 40}, "edges": [], "geoTension": None, "prevTrend": []}
+    assert build_scores(ctx) == build_scores(ctx)
+
+
 from sources.risks import build_risks, PLAYBOOK
 
 
