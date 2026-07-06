@@ -241,7 +241,6 @@ export interface IndustryData {
   companies: Company[];
   facilities: Facility[];
   news: NewsItem[];
-  radar: RadarAxis[];
   sankey: SankeyData;
   financials: FinancialSeriesPoint[];
   deals: Deal[];

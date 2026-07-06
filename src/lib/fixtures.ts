@@ -63,8 +63,18 @@ export function getSuppliers(industry: Industry): Supplier[] {
 export function getResearch(industry: Industry): ResearchRow[] {
   return getIndustryData(industry).research;
 }
+// Dashboard axis labels (fuller wording than the compact compare-chart labels),
+// same order/semantics as data-risk.ts AXES.
+const DASHBOARD_RADAR_LABELS = [
+  "Geopolitical Risk", "Supplier Concentration", "Financial Stability", "Operational Risk",
+  "Regulatory Risk", "ESG & Environmental Risk", "Raw Material Risk", "Logistics Risk",
+];
 export function getRadar(industry: Industry): RadarAxis[] {
-  return getIndustryData(industry).radar;
+  // Single source of truth: the dashboard composite IS the Risk page's "Sector
+  // Avg", just relabeled — so the two radars can never disagree.
+  const sectorAvg = getCompareRadar(industry).find((s) => s.entity === "Sector Avg");
+  const axes = sectorAvg?.axes ?? [];
+  return DASHBOARD_RADAR_LABELS.map((axis, i) => ({ axis, value: axes[i]?.value ?? 0 }));
 }
 export function getSankey(industry: Industry): SankeyData {
   return getIndustryData(industry).sankey;

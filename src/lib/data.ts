@@ -61,16 +61,6 @@ const semiconductor: IndustryData = {
     { id: "n4", company: "Lithium", headline: "Neon supply concerns resurface amid Eastern Europe tensions", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
     { id: "n5", company: "Samsung", headline: "Samsung signs $16.5B foundry supply deal", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
   ],
-  radar: [
-    { axis: "Geopolitical Risk", value: 82 },
-    { axis: "Supplier Concentration", value: 74 },
-    { axis: "Financial Stability", value: 35 },
-    { axis: "Operational Risk", value: 58 },
-    { axis: "Regulatory Risk", value: 66 },
-    { axis: "ESG & Environmental Risk", value: 49 },
-    { axis: "Raw Material Risk", value: 71 },
-    { axis: "Logistics Risk", value: 55 },
-  ],
   sankey: {
     nodes: [
       { name: "China" }, { name: "Japan" }, { name: "USA" }, { name: "Germany" }, { name: "Ukraine" },
@@ -186,16 +176,6 @@ const ai: IndustryData = {
     { id: "an4", company: "NVIDIA", headline: "HBM supply tightness expected through 2025", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
     { id: "an5", company: "CoreWeave", headline: "CoreWeave secures $7.5B debt for GPU expansion", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago" },
   ],
-  radar: [
-    { axis: "Geopolitical Risk", value: 70 },
-    { axis: "Supplier Concentration", value: 88 },
-    { axis: "Financial Stability", value: 30 },
-    { axis: "Operational Risk", value: 62 },
-    { axis: "Regulatory Risk", value: 74 },
-    { axis: "ESG & Environmental Risk", value: 68 },
-    { axis: "Raw Material Risk", value: 55 },
-    { axis: "Logistics Risk", value: 48 },
-  ],
   sankey: {
     nodes: [
       { name: "Taiwan" }, { name: "South Korea" }, { name: "USA" }, { name: "Japan" },
@@ -292,16 +272,6 @@ const battery: IndustryData = {
     { id: "bn3", company: "EU", headline: "EU Critical Raw Materials Act enters new phase", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago" },
     { id: "bn4", company: "DR Congo", headline: "Cobalt supply disruption risk rises in DRC", impact: "high", impactLabel: "Market Impact: High", ago: "1d ago" },
     { id: "bn5", company: "LG Energy", headline: "LG Energy ↔ GM expand Ultium JV capacity", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago" },
-  ],
-  radar: [
-    { axis: "Geopolitical Risk", value: 78 },
-    { axis: "Supplier Concentration", value: 84 },
-    { axis: "Financial Stability", value: 45 },
-    { axis: "Operational Risk", value: 60 },
-    { axis: "Regulatory Risk", value: 62 },
-    { axis: "ESG & Environmental Risk", value: 80 },
-    { axis: "Raw Material Risk", value: 86 },
-    { axis: "Logistics Risk", value: 58 },
   ],
   sankey: {
     nodes: [

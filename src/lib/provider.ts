@@ -43,7 +43,8 @@ export async function getCompany(i: Industry, id: string): Promise<Company | und
 
 // --- Dashboard bundle (Dashboard reads the whole IndustryData shape) ---
 export async function getIndustryBundle(i: Industry): Promise<Pick<IndustryData,
-  "kpis" | "companies" | "facilities" | "news" | "radar" | "sankey" | "financials" | "deals" | "suppliers" | "research">> {
+  "kpis" | "companies" | "facilities" | "news" | "sankey" | "financials" | "deals" | "suppliers" | "research">
+  & { radar: RadarAxis[] }> {
   const [kpis, companies, facilities, news, radar, sankey, financials, deals, suppliers, research] =
     await Promise.all([
       getKpis(i), getCompanies(i), getFacilities(i), getNews(i), getRadar(i),
@@ -79,6 +80,9 @@ export async function getCompanyMeta(i: Industry, id: string): Promise<CompanyMe
 
 const PERIODS = ["Q3'23", "Q4'23", "Q1'24", "Q2'24", "Q3'24", "Q4'24"];
 export async function getFinancialsTTM(i: Industry, companyId: string): Promise<FinancialTTMPoint[]> {
+  // Real quarterly series (ETL: yahoo fetcher) when available; synthetic fallback below.
+  const real = await ds<Record<string, FinancialTTMPoint[]>>(i, "financialsTTM", {});
+  if (real[companyId]?.length) return real[companyId];
   const [snapshots, company] = await Promise.all([getFinancialsSnapshot(i), getCompany(i, companyId)]);
   const snap = snapshots.find(
     (f) => f.company.toLowerCase() === (company?.name ?? companyId).toLowerCase(),

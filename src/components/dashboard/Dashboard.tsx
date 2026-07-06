@@ -1,6 +1,6 @@
 "use client";
 import { useIndustry } from "@/lib/industry-context";
-import { INDUSTRY_LABEL, type IndustryData } from "@/lib/types";
+import { INDUSTRY_LABEL, type IndustryData, type RadarAxis } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { KpiRow } from "@/components/dashboard/KpiRow";
 import { ManufacturingFootprint } from "@/components/dashboard/ManufacturingFootprint";
@@ -15,7 +15,8 @@ import { ResearchInnovation } from "@/components/dashboard/ResearchInnovation";
 import { DataSourcesFooter } from "@/components/dashboard/DataSourcesFooter";
 
 type DashboardData = Pick<IndustryData,
-  "kpis" | "companies" | "facilities" | "news" | "radar" | "sankey" | "financials" | "deals" | "suppliers" | "research">;
+  "kpis" | "companies" | "facilities" | "news" | "sankey" | "financials" | "deals" | "suppliers" | "research">
+  & { radar: RadarAxis[] };
 
 export function Dashboard({ data }: { data: DashboardData }) {
   const industry = useIndustry();
