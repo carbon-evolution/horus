@@ -1,8 +1,7 @@
 "use client";
 import { Crosshair } from "lucide-react";
-import { useApp } from "@/lib/store";
-import { getEsgProfiles } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type EsgProfile } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
@@ -19,10 +18,9 @@ function heat(value: number, max: number) {
   );
 }
 
-export function EsgView() {
-  const industry = useApp((s) => s.industry);
+export function EsgView({ esg }: { esg: EsgProfile[] }) {
+  const industry = useIndustry();
   const { active, matchesText, toggleFocus, nameToId } = useFocus();
-  const esg = getEsgProfiles(industry);
   const max = {
     s1: Math.max(...esg.map((e) => e.scope1), 0.1),
     s2: Math.max(...esg.map((e) => e.scope2), 0.1),

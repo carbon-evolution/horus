@@ -1,15 +1,19 @@
 "use client";
 import { useState } from "react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend } from "recharts";
-import { useApp } from "@/lib/store";
-import { getCompareRadar } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type RadarAxis } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 
-export function RiskRadarCompare() {
-  const industry = useApp((s) => s.industry);
-  const series = getCompareRadar(industry);
+export interface CompareRadarSeries {
+  entity: string;
+  color: string;
+  axes: RadarAxis[];
+}
+
+export function RiskRadarCompare({ compareRadar: series }: { compareRadar: CompareRadarSeries[] }) {
+  const industry = useIndustry();
   const [active, setActive] = useState<string[]>(series.map((s) => s.entity));
 
   // Merge per-entity axes into recharts rows: one row per axis, one key per entity.

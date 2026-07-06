@@ -1,7 +1,6 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getGeoRisks, getChokepoints } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type GeoRisk, type Chokepoint } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -10,10 +9,9 @@ function tensionColor(t: number) {
   return t >= 70 ? "var(--risk-high)" : t >= 45 ? "var(--risk-med)" : "var(--risk-low)";
 }
 
-export function GeoRiskView() {
-  const industry = useApp((s) => s.industry);
-  const geo = [...getGeoRisks(industry)].sort((a, b) => b.tension - a.tension);
-  const chokepoints = getChokepoints();
+export function GeoRiskView({ geo: allGeo, chokepoints }: { geo: GeoRisk[]; chokepoints: Chokepoint[] }) {
+  const industry = useIndustry();
+  const geo = [...allGeo].sort((a, b) => b.tension - a.tension);
 
   return (
     <div className="space-y-3">

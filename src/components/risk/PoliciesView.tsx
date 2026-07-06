@@ -1,14 +1,13 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getPolicies } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type Policy } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
-export function PoliciesView() {
-  const industry = useApp((s) => s.industry);
-  const policies = [...getPolicies(industry)].sort((a, b) => b.date.localeCompare(a.date));
+export function PoliciesView({ policies: allPolicies }: { policies: Policy[] }) {
+  const industry = useIndustry();
+  const policies = [...allPolicies].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className="space-y-3">
