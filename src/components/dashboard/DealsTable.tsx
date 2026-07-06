@@ -12,8 +12,8 @@ export function DealsTable({ deals }: { deals: Deal[] }) {
             <th className="pb-2 font-medium">Date</th>
             <th className="pb-2 font-medium">Companies</th>
             <th className="pb-2 font-medium">Deal Type</th>
-            <th className="pb-2 text-right font-medium">Value</th>
-            <th className="pb-2 font-medium">Description</th>
+            <th className="pb-2 pr-4 text-right font-medium">Value</th>
+            <th className="pb-2 pl-4 font-medium">Description</th>
           </tr>
         </thead>
         <tbody>
@@ -22,8 +22,8 @@ export function DealsTable({ deals }: { deals: Deal[] }) {
               <td className="py-2 whitespace-nowrap text-[var(--text-dim)]">{d.date}</td>
               <td className="py-2 whitespace-nowrap font-medium text-[var(--accent)]">{d.parties}</td>
               <td className="py-2 whitespace-nowrap text-[var(--text-dim)]">{d.type}</td>
-              <td className="py-2 text-right tabular-nums">{d.value}</td>
-              <td className="py-2 text-[var(--text-dim)]">{d.description}</td>
+              <td className="py-2 pr-4 whitespace-nowrap text-right tabular-nums">{d.value}</td>
+              <td className="py-2 pl-4 text-[var(--text-dim)]">{d.description}</td>
             </tr>
           ))}
         </tbody>
