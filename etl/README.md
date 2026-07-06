@@ -1,7 +1,8 @@
 # ETL — Data Foundation (Phase Z, Plan 1)
 
-Loads the app's fixtures into Postgres + Redis. The app does not read from this
-yet (that is Plan 2); this plan only builds and fills the backend.
+Loads the app's fixtures into Postgres + Redis. As of Plan 2 the app **reads from
+Postgres** (through the `server-only` provider + Redis read-through); `src/lib/fixtures.ts`
+is now the dump source only, feeding this ETL rather than the running app.
 
 ## Prereqs
 - Docker, Node, Python 3.14
