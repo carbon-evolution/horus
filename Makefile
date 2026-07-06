@@ -1,4 +1,4 @@
-.PHONY: up down psql redis-cli ingest
+.PHONY: up down psql redis-cli ingest serve
 
 up:
 	docker compose up -d
@@ -17,3 +17,10 @@ redis-cli:
 
 ingest:
 	cd etl && ./.venv/bin/python flows.py
+
+# Refresh a single source: make ingest.yahoo / .wikidata / .patentsview / .comtrade / .gdelt / .derive
+ingest.%:
+	cd etl && ./.venv/bin/python run_source.py $*
+
+serve:
+	cd etl && ./.venv/bin/python flows.py serve
