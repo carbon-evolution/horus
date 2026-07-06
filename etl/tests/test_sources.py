@@ -172,6 +172,20 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from ai.summary import generate as gen_summary
+
+
+def test_generate_exec_summary_is_factual():
+    ctx = {"name": "TSMC", "industry": "semiconductor",
+           "scores": {"overall": 71, "band": "D", "geopolitical": 90, "supplierDependency": 60,
+                      "cyber": 55, "financial": 30, "esg": 45, "customerDependency": 50},
+           "topRisk": {"title": "Geopolitical tension in Taiwan (82)"},
+           "hq": "Hsinchu, Taiwan"}
+    s = gen_summary(ctx)
+    assert "TSMC" in s and "band D" in s and "Taiwan" in s
+    assert 40 <= len(s.split()) <= 120
+
+
 from sources.scores import build_scores, overall_and_band, SCORE_WEIGHTS
 
 
