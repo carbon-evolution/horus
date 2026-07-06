@@ -28,7 +28,7 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
   return (
     <div className="flex h-full flex-col">
       <div className="relative min-h-[200px] flex-1 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
-        <svg viewBox={`0 18 ${W} ${H - 36}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
           {/* graticule */}
           {Array.from({ length: 13 }).map((_, i) => (
             <line key={`v${i}`} x1={(i * W) / 12} y1={0} x2={(i * W) / 12} y2={H} stroke="#ffffff" strokeOpacity={0.03} />
