@@ -1,12 +1,11 @@
 "use client";
-import { getDataSources } from "@/lib/fixtures";
+import type { SourceInfo } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 
 const STATUS_COLOR = { healthy: "var(--risk-low)", degraded: "var(--risk-med)", offline: "var(--risk-high)" } as const;
 
-export function SourcesView() {
-  const sources = getDataSources();
+export function SourcesView({ sources }: { sources: SourceInfo[] }) {
   return (
     <div className="space-y-3">
       <PageHeader title="Data Sources" subtitle="Lineage of every feed powering the platform — all free and open" />

@@ -1,8 +1,7 @@
 "use client";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { useApp } from "@/lib/store";
-import { getMarketIntel } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type MarketIntel } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 
@@ -10,9 +9,8 @@ function utilColor(pct: number) {
   return pct >= 95 ? "var(--risk-high)" : pct >= 80 ? "var(--risk-med)" : "var(--risk-low)";
 }
 
-export function MarketIntelView() {
-  const industry = useApp((s) => s.industry);
-  const m = getMarketIntel(industry);
+export function MarketIntelView({ marketIntel: m }: { marketIntel: MarketIntel }) {
+  const industry = useIndustry();
 
   return (
     <div className="space-y-3">

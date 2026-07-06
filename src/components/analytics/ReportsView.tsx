@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
-import { useApp } from "@/lib/store";
-import { getCompanies, getAlerts, getMaterials, getPolicies } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type AlertItem, type Company, type RawMaterial, type Policy } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -16,13 +15,14 @@ const SECTIONS = [
 ] as const;
 type SectionKey = (typeof SECTIONS)[number]["key"];
 
-export function ReportsView() {
-  const industry = useApp((s) => s.industry);
+export function ReportsView({
+  alerts, companies: allCompanies, materials: allMaterials, policies: allPolicies,
+}: { alerts: AlertItem[]; companies: Company[]; materials: RawMaterial[]; policies: Policy[] }) {
+  const industry = useIndustry();
   const [picked, setPicked] = useState<SectionKey[]>(["exec", "companies", "alerts"]);
-  const companies = getCompanies(industry).slice(0, 5);
-  const materials = getMaterials(industry).slice(0, 5);
-  const policies = getPolicies(industry).slice(0, 4);
-  const alerts = getAlerts(industry);
+  const companies = allCompanies.slice(0, 5);
+  const materials = allMaterials.slice(0, 5);
+  const policies = allPolicies.slice(0, 4);
   const has = (k: SectionKey) => picked.includes(k);
 
   return (
