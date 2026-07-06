@@ -172,6 +172,25 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.materials_intel import enrich_material
+
+
+def test_enrich_material_deep_fields_and_restrictions():
+    m = {"id": "gallium", "name": "Gallium", "price": "$340/kg", "category": "Metal",
+         "supplyRisk": "high", "concentration": 90,
+         "topProducers": [{"country": "China", "share": 90}, {"country": "Japan", "share": 5}]}
+    policies = [{"title": "China gallium/germanium export licensing", "authority": "MOFCOM",
+                 "summary": "Export permits required for gallium."}]
+    out = enrich_material(m, policies)
+    assert out["strategicLabel"] in ("critical", "high", "moderate")
+    assert out["importReliance"] == 90 and out["shortageStatus"] == "acute"
+    assert out["globalProduction"] == "~600 t/yr" and out["recyclability"] == "low"
+    assert out["alternatives"] and out["exportRestrictions"][0]["authority"] == "MOFCOM"
+    assert out["priceHistory"][-1]["value"] == 340.0 and len(out["priceHistory"]) == 13
+    # base fields preserved
+    assert out["concentration"] == 90 and out["name"] == "Gallium"
+
+
 from sources.supplier_intel import build_profiles
 
 

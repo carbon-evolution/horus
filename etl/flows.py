@@ -15,7 +15,7 @@ import entities
 import real_loader
 from sources import (yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec,
                      sec_facts, opendart, nvd, fedreg, holdings, news_enrich, cyber,
-                     risks, scores, supplier_intel, summary, derive)
+                     risks, scores, supplier_intel, materials_intel, summary, derive)
 
 ROOT = Path(__file__).resolve().parent.parent
 INDUSTRIES = ["semiconductor", "ai", "battery"]
@@ -29,7 +29,7 @@ def sources_for(industry: str):
     # Intelligence stages run after their inputs and before derive: news_enrich
     # (needs news) -> cyber (needs enriched news) -> risks (needs cyber/policies/
     # geo/edges) -> scores (needs cyber/esg/geo/edges) -> summary (needs scores/risks).
-    common_tail = [news_enrich, cyber, risks, scores, supplier_intel, summary]
+    common_tail = [news_enrich, cyber, risks, scores, supplier_intel, materials_intel, summary]
     if industry == "semiconductor":
         return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, sec_facts, yahoo_facts,
                 opendart, nvd, fedreg, holdings, *common_tail, derive]

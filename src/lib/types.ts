@@ -215,6 +215,8 @@ export interface ProducerShare {
   country: string;
   share: number; // % of global output
 }
+export interface MaterialRestriction { title: string; authority: string; }
+export interface MaterialPricePoint { period: string; value: number; }
 export interface RawMaterial {
   id: string;
   name: string;
@@ -224,6 +226,17 @@ export interface RawMaterial {
   supplyRisk: RiskLevel;
   topProducers: ProducerShare[];
   usedIn: string;
+  // Deep intelligence (sources/materials_intel.py) — optional so un-enriched still types.
+  strategicImportance?: number;
+  strategicLabel?: string;
+  globalProduction?: string;
+  importReliance?: number;
+  shortageStatus?: string;
+  recyclability?: string;
+  alternatives?: string[];
+  environmentalConcern?: string;
+  exportRestrictions?: MaterialRestriction[];
+  priceHistory?: MaterialPricePoint[];
 }
 export type ShipMode = "sea" | "air" | "rail";
 export interface TradeShipment {
