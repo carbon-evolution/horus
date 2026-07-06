@@ -1,7 +1,6 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getSankey, getShipments } from "@/lib/fixtures";
-import { INDUSTRY_LABEL, type ShipMode } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type ShipMode, type SankeyData, type TradeShipment } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
@@ -10,10 +9,8 @@ import { Icon } from "@/components/Icon";
 
 const MODE_ICON: Record<ShipMode, string> = { sea: "Ship", air: "Plane", rail: "Train" };
 
-export function TradeView() {
-  const industry = useApp((s) => s.industry);
-  const sankey = getSankey(industry);
-  const shipments = getShipments(industry);
+export function TradeView({ sankey, shipments }: { sankey: SankeyData; shipments: TradeShipment[] }) {
+  const industry = useIndustry();
 
   return (
     <div className="space-y-3">

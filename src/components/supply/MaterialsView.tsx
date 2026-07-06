@@ -1,15 +1,13 @@
 "use client";
-import { useApp } from "@/lib/store";
-import { getMaterials } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type RawMaterial } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
 const PRODUCER_COLORS = ["#3b82f6", "#a78bfa", "#34d399"];
 
-export function MaterialsView() {
-  const industry = useApp((s) => s.industry);
-  const materials = getMaterials(industry);
+export function MaterialsView({ materials }: { materials: RawMaterial[] }) {
+  const industry = useIndustry();
 
   return (
     <div>

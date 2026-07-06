@@ -1,14 +1,9 @@
-"use client";
-import dynamic from "next/dynamic";
+import { SupplyChainMapClient } from "@/components/supply/SupplyChainMapClient";
+import { getSupplyGraph } from "@/lib/provider";
+import type { Industry } from "@/lib/types";
 
-// The 3D force graph pulls in three.js — load it only on this route, client-only.
-const SupplyChainMap = dynamic(() => import("@/components/supply/SupplyChainMap"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[72vh] items-center justify-center text-sm text-[var(--text-dim)]">Loading 3D supply-chain graph…</div>
-  ),
-});
-
-export default function Page() {
-  return <SupplyChainMap />;
+export default async function Page({ params }: { params: Promise<{ industry: Industry }> }) {
+  const { industry } = await params;
+  const graph = await getSupplyGraph(industry);
+  return <SupplyChainMapClient graph={graph} />;
 }

@@ -2,9 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import ForceGraph3D from "react-force-graph-3d";
-import { useApp } from "@/lib/store";
-import { getSupplyGraph } from "@/lib/fixtures";
-import { INDUSTRY_LABEL, type GraphNode } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type GraphData, type GraphNode } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 
@@ -14,14 +13,13 @@ const GROUP_COLOR: Record<GraphNode["group"], string> = {
   material: "#34d399",
 };
 
-export default function SupplyChainMap() {
-  const industry = useApp((s) => s.industry);
+export default function SupplyChainMap({ graph: raw }: { graph: GraphData }) {
+  const industry = useIndustry();
   const { active, matchesText, toggleFocus, nameToId } = useFocus();
   const graph = useMemo(() => {
-    const g = getSupplyGraph(industry);
     // Fresh copies — the force engine mutates node/link objects with coordinates.
-    return { nodes: g.nodes.map((n) => ({ ...n })), links: g.links.map((l) => ({ ...l })) };
-  }, [industry]);
+    return { nodes: raw.nodes.map((n) => ({ ...n })), links: raw.links.map((l) => ({ ...l })) };
+  }, [raw]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fgRef = useRef<any>(null);

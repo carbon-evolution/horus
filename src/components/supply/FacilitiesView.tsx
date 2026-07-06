@@ -1,8 +1,7 @@
 "use client";
 import { Crosshair } from "lucide-react";
-import { useApp } from "@/lib/store";
-import { getFacilities, getCompanies } from "@/lib/fixtures";
-import { INDUSTRY_LABEL, type FacilityStatus } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type FacilityStatus, type Company, type Facility } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
@@ -22,11 +21,10 @@ const STATUS_COLOR: Record<FacilityStatus, string> = {
   risk: "var(--risk-high)",
 };
 
-export function FacilitiesView() {
-  const industry = useApp((s) => s.industry);
+export function FacilitiesView({ companies, facilities }: { companies: Company[]; facilities: Facility[] }) {
+  const industry = useIndustry();
   const { focusId, active, toggleFocus } = useFocus();
-  const facilities = getFacilities(industry);
-  const companyName = new Map(getCompanies(industry).map((c) => [c.id, c.name]));
+  const companyName = new Map(companies.map((c) => [c.id, c.name]));
   const count = (s: FacilityStatus) => facilities.filter((f) => f.status === s).length;
 
   return (

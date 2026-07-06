@@ -1,18 +1,16 @@
 "use client";
 import { useMemo, useState } from "react";
 import { Crosshair } from "lucide-react";
-import { useApp } from "@/lib/store";
-import { getSupplierEdges } from "@/lib/fixtures";
-import { INDUSTRY_LABEL } from "@/lib/types";
+import { useIndustry } from "@/lib/industry-context";
+import { INDUSTRY_LABEL, type SupplierEdge } from "@/lib/types";
 import { useFocus } from "@/lib/focus";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 
-export function SuppliersView() {
-  const industry = useApp((s) => s.industry);
+export function SuppliersView({ edges }: { edges: SupplierEdge[] }) {
+  const industry = useIndustry();
   const { active, matchesText, toggleFocus, nameToId } = useFocus();
-  const edges = getSupplierEdges(industry);
   const buyers = useMemo(() => [...new Set(edges.map((e) => e.buyer))], [edges]);
   const [picked, setPicked] = useState<string>(buyers[0] ?? "");
   // A focused company auto-selects its buyer row; manual clicks apply otherwise.
