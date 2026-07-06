@@ -50,3 +50,16 @@ def test_build_meta_merges_facts_and_derived():
 def test_build_meta_handles_missing_facts():
     m = build_meta({}, {"id": "x", "name": "X", "changeYtd": -2}, "semiconductor")
     assert m["ceo"] == "—" and m["hq"] == "—"
+
+
+from sources.patentsview import normalize_patents
+
+
+def test_normalize_patents():
+    rows = normalize_patents("NVIDIA", total=1867,
+                             cpc_counts={"G06": 934, "H01": 560, "G11": 373, "B60": 12})
+    assert rows["company"] == "NVIDIA"
+    assert rows["total"] == 1867
+    assert rows["pending"] > 0
+    assert len(rows["categories"]) == 3
+    assert rows["categories"][0]["count"] >= rows["categories"][1]["count"]
