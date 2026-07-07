@@ -102,9 +102,13 @@ export const CHOKEPOINT_COORD: Record<string, [number, number]> = {
 // instead of cutting across continents. Keyed "A>B"; looked up in either order.
 export const SEA_VIA: Record<string, [number, number][]> = {
   "Strait of Malacca>Suez Canal": [[6, 80], [13, 62], [12.5, 45], [20, 38]],
-  "Suez Canal>Netherlands": [[33.5, 24], [37, 11], [36, -6], [46, -8]],
-  "Suez Canal>Germany": [[33.5, 24], [37, 11], [36, -6], [48, -6]],
-  "India>Strait of Malacca": [[5, 82], [6, 95]],
+  // Round Iberia (west of Portugal/Galicia) and Brittany, then up the Channel —
+  // never straight across the peninsula or the English coast.
+  "Suez Canal>Netherlands": [[33.5, 24], [37, 11], [36, -6], [38, -10], [43, -10], [48, -6], [50, -1.5], [51.5, 3]],
+  "Suez Canal>Germany": [[33.5, 24], [37, 11], [36, -6], [38, -10], [43, -10], [48, -6], [50, -1.5], [52, 3.5]],
+  // Down India's west coast, south around Sri Lanka, across the Bay of Bengal to
+  // the Andaman/Malacca — never across the peninsula or through Sri Lanka.
+  "India>Strait of Malacca": [[13, 73], [8, 75], [5, 79], [6, 90], [7, 97]],
   "South China Sea>Strait of Malacca": [[2, 105]],
   "South China Sea>Taiwan Strait": [[18, 117]],
   // Australia (NW bulk-export coast) north through the Indonesian straits into
