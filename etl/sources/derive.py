@@ -96,6 +96,48 @@ def build_compare_radar(companies: list[dict], curated: list[dict],
     return series
 
 
+# Major manufacturing/consuming hubs per industry — the destination column of the
+# sourcing sankey. Weights are the rough share of downstream manufacturing.
+CONSUMER_HUBS = {
+    "semiconductor": {"Taiwan": 30, "China": 25, "South Korea": 22, "USA": 15, "Japan": 8},
+    "battery": {"China": 42, "USA": 20, "South Korea": 16, "Germany": 12, "Japan": 10},
+    "ai": {"USA": 45, "China": 25, "Taiwan": 12, "South Korea": 10, "Europe": 8},
+}
+
+
+def build_material_sankey(materials: list[dict], industry: str) -> dict:
+    """Origin country -> raw material -> destination, built from the SAME curated
+    `materials.topProducers` the Raw Materials page uses, so producer shares are
+    identical across both views. Link value = share of supply (%). Materials are
+    the most concentrated few, to stay readable."""
+    hubs = CONSUMER_HUBS.get(industry) or {"USA": 40, "China": 30, "Europe": 30}
+    hub_total = sum(hubs.values()) or 1
+    mats = [m for m in materials if m.get("topProducers")]
+    mats.sort(key=lambda m: -(m.get("concentration") or 0))
+    mats = mats[:6]
+
+    nodes: list[dict] = []
+    index: dict[str, int] = {}
+
+    def node(name: str) -> int:
+        if name not in index:
+            index[name] = len(nodes)
+            nodes.append({"name": name})
+        return index[name]
+
+    links: list[dict] = []
+    for m in mats:
+        mi = node(m["name"])
+        total = 0.0
+        for p in m["topProducers"]:
+            links.append({"source": node(p["country"]), "target": mi, "value": p["share"]})
+            total += p["share"]
+        # split the material's tracked inflow across the consuming hubs
+        for hub, w in hubs.items():
+            links.append({"source": mi, "target": node(hub + " "), "value": round(total * w / hub_total, 1)})
+    return {"nodes": nodes, "links": links, "unit": "% of supply"}
+
+
 def run(industry: str = "semiconductor") -> dict:
     seeded = read_dataset(industry, "kpis") or []
     companies = read_dataset(industry, "companies") or []
@@ -103,7 +145,11 @@ def run(industry: str = "semiconductor") -> dict:
     curated = read_dataset(industry, "compareRadar") or []
     meta_map = read_dataset(industry, "companyMeta") or {}
     esg_list = read_dataset(industry, "esg") or []
-    return {
+    materials = read_dataset(industry, "materials") or []
+    out = {
         "kpis": build_kpis(seeded, len(companies), len(news)),
         "compareRadar": build_compare_radar(companies, curated, meta_map, esg_list),
     }
+    if materials:
+        out["sankey"] = build_material_sankey(materials, industry)
+    return out

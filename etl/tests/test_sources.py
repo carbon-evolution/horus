@@ -351,7 +351,8 @@ def test_normalize_patents():
     assert rows["categories"][0]["count"] >= rows["categories"][1]["count"]
 
 
-from sources.comtrade import _lane, build_sankey
+from sources.comtrade import _lane
+from sources.derive import build_material_sankey
 
 
 def test_lane():
@@ -363,22 +364,22 @@ def test_lane():
     assert s["risk"] == "high"  # Taiwan lane is chokepoint-adjacent
 
 
-def test_build_sankey_values_and_shares():
-    rows = [
-        {"reporterDesc": "Chile", "partnerDesc": "China", "primaryValue": 2.0e9},
-        {"reporterDesc": "Chile", "partnerDesc": "Rep. of Korea", "primaryValue": 1.0e9},
-        {"reporterDesc": "Australia", "partnerDesc": "China", "primaryValue": 0.5e9},
-    ]
-    sk = build_sankey("battery", {"Lithium Carbonate": rows})
+def test_material_sankey_matches_curated_producers():
+    # The sourcing sankey must use the SAME producer shares as the Raw Materials
+    # dataset so the two views stay consistent (photoresist = Japan, not Germany).
+    materials = [{
+        "name": "Photoresist", "concentration": 96, "usedIn": "Litho",
+        "topProducers": [{"country": "Japan", "share": 78}, {"country": "USA", "share": 10}],
+    }]
+    sk = build_material_sankey(materials, "semiconductor")
     names = [n["name"] for n in sk["nodes"]]
-    assert "Lithium Carbonate" in names and "Chile" in names
-    # destination nodes are distinct via trailing space
-    assert "China " in names and "Rep. of Korea" not in names  # shortened
-    assert "South Korea " in names
-    assert sk["unit"] == "$B/yr"
-    mat = names.index("Lithium Carbonate")
-    inbound = [l for l in sk["links"] if l["target"] == mat]
-    assert sorted(l["value"] for l in inbound) == [0.5, 3.0]  # Chile aggregated
+    assert "Photoresist" in names and "Japan" in names
+    assert sk["unit"] == "% of supply"
+    mat = names.index("Photoresist")
+    inbound = {names[l["source"]]: l["value"] for l in sk["links"] if l["target"] == mat}
+    assert inbound["Japan"] == 78 and inbound["USA"] == 10  # verbatim curated shares
+    # destinations are the consuming hubs (trailing space keeps them distinct)
+    assert any(n.endswith(" ") for n in names)
 
 
 from sources.gdelt import normalize_article

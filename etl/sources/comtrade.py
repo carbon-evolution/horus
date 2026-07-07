@@ -85,44 +85,13 @@ def _lane(origin: str, dest: str, commodity: str, mode: str, val: float) -> dict
     }
 
 
-def build_sankey(industry: str, per_material_rows: dict[str, list[dict]]) -> dict:
-    """Three-column sankey. Destination node names carry a trailing space so a
-    country appearing on both sides stays two distinct nodes (the renderer
-    classes nodes by in/out degree)."""
-    nodes: list[dict] = []
-    index: dict[str, int] = {}
-
-    def node(name: str) -> int:
-        if name not in index:
-            index[name] = len(nodes)
-            nodes.append({"name": name})
-        return index[name]
-
-    links: list[dict] = []
-    for material, rows in per_material_rows.items():
-        if not rows:
-            continue
-        by_origin: dict[str, float] = {}
-        by_dest: dict[str, float] = {}
-        for r in rows:
-            o, d = _short(r["reporterDesc"]), _short(r["partnerDesc"])
-            by_origin[o] = by_origin.get(o, 0) + r["primaryValue"]
-            by_dest[d] = by_dest.get(d, 0) + r["primaryValue"]
-        m = node(material)
-        for origin, val in sorted(by_origin.items(), key=lambda kv: -kv[1])[:4]:
-            links.append({"source": node(origin), "target": m, "value": round(val / 1e9, 2)})
-        for dest, val in sorted(by_dest.items(), key=lambda kv: -kv[1])[:4]:
-            links.append({"source": m, "target": node(dest + " "), "value": round(val / 1e9, 2)})
-    return {"nodes": nodes, "links": links, "unit": "$B/yr"}
-
-
 def run(industry: str = "semiconductor") -> dict:
     out: dict = {}
 
-    # Material flows -> real sankey (all industries).
-    per_material = {mat: _rows(industry, code) for mat, (code, _mode) in MATERIALS[industry].items()}
-    if any(per_material.values()):
-        out["sankey"] = build_sankey(industry, per_material)
+    # NOTE: the sourcing sankey is built in derive.py from the curated `materials`
+    # dataset (Comtrade's broad HS categories misrepresent semiconductor specialty
+    # inputs — e.g. HS 370790 shows German photographic-chemical re-exports, not
+    # Japan-dominated photoresist). Comtrade here provides the real freight lanes.
 
     # Freight lanes. Semiconductor keeps the chip-trade lanes; ai/battery build
     # lanes from their material flows.
@@ -135,7 +104,7 @@ def run(industry: str = "semiconductor") -> dict:
                       for r in rows[:6]]
     else:
         for mat, (code, mode) in MATERIALS[industry].items():
-            rows = sorted(per_material[mat], key=lambda r: -r["primaryValue"])
+            rows = sorted(_rows(industry, code), key=lambda r: -r["primaryValue"])
             lanes += [_lane(_short(r["reporterDesc"]), _short(r["partnerDesc"]), mat, mode, r["primaryValue"])
                       for r in rows[:3]]
     if lanes:

@@ -16,7 +16,7 @@ function tradeStats(sankey: SankeyData, shipments: TradeShipment[]) {
   const hasIn = new Set<number>(), hasOut = new Set<number>();
   for (const l of sankey.links) { hasOut.add(l.source); hasIn.add(l.target); }
   const isMaterial = (i: number) => hasIn.has(i) && hasOut.has(i);
-  const totalFlow = sankey.links.filter((l) => isMaterial(l.target)).reduce((s, l) => s + l.value, 0);
+  const materialCount = sankey.nodes.filter((_, i) => isMaterial(i)).length;
 
   // Strongest single-country dependency across materials (its supply share).
   let topDep = { material: "—", country: "—", share: 0 };
@@ -30,7 +30,7 @@ function tradeStats(sankey: SankeyData, shipments: TradeShipment[]) {
     }
   }
   const highRisk = shipments.filter((s) => s.risk === "high").length;
-  return { totalFlow, topDep, highRisk, lanes: shipments.length };
+  return { materialCount, topDep, highRisk, lanes: shipments.length };
 }
 
 export function TradeView({ sankey, shipments, companySankey }: { sankey: SankeyData; shipments: TradeShipment[]; companySankey: SankeyData }) {
@@ -44,7 +44,7 @@ export function TradeView({ sankey, shipments, companySankey }: { sankey: Sankey
       <PageHeader title="Trade & Shipments" subtitle={`${INDUSTRY_LABEL[industry]} · sourcing flows, freight lanes and tariff exposure`} />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile label={`Tracked Flow${sankey.unit ? ` (${sankey.unit})` : ""}`} value={stats.totalFlow >= 1 ? `$${stats.totalFlow.toFixed(0)}B` : "—"} icon="TrendingUp" accent="#34d399" />
+        <StatTile label="Materials Tracked" value={stats.materialCount} icon="Boxes" accent="#34d399" />
         <StatTile label="Active Lanes" value={stats.lanes} icon="Ship" accent="#38bdf8" />
         <StatTile label="High-Risk Lanes" value={stats.highRisk} icon="AlertTriangle" accent="#ef4444" />
         <StatTile label="Top Dependency" value={`${Math.round(stats.topDep.share * 100)}%`} sub={`${stats.topDep.country} · ${stats.topDep.material}`} icon="Crosshair" accent="#f59e0b" />

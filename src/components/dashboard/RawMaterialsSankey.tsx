@@ -420,7 +420,7 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
         )}
       </div>
       <div className="mt-2 shrink-0 text-[10px] text-[var(--text-faint)]">
-        Line thickness ∝ {variant === "company" ? "annual spend" : "trade volume"}{data.unit ? ` (${data.unit}${variant === "company" ? "" : ", UN Comtrade 2024"})` : ""} · drag to reposition · click any node for details
+        Line thickness ∝ {variant === "company" ? "annual spend" : "share of supply"}{data.unit ? ` (${data.unit})` : ""} · drag to reposition · click any node for details
       </div>
     </div>
   );
