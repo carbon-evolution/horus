@@ -11,7 +11,7 @@ interface SupplyBlock {
 const semiconductor: SupplyBlock = {
   supplierEdges: [
     { buyer: "TSMC", supplier: "ASML", tier: 1, material: "EUV Lithography", spend: "$12.8B", risk: "medium" },
-    { buyer: "TSMC", supplier: "Applied Materials", tier: 1, material: "Deposition/Etch", spend: "$9.4B", risk: "medium" },
+    { buyer: "TSMC", supplier: "Applied Materials", tier: 1, material: "Deposition", spend: "$9.4B", risk: "medium" },
     { buyer: "TSMC", supplier: "Tokyo Electron", tier: 1, material: "Coater/Developer", spend: "$6.1B", risk: "low" },
     { buyer: "TSMC", supplier: "Shin-Etsu Chemical", tier: 2, material: "Silicon Wafers", spend: "$4.2B", risk: "low" },
     { buyer: "NVIDIA", supplier: "TSMC", tier: 1, material: "Advanced Logic", spend: "$14.2B", risk: "high" },

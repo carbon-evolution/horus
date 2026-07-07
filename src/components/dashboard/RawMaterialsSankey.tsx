@@ -161,7 +161,13 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
   // A new industry's graph must reset drag + selection.
   useEffect(() => { setOffsets({}); setSelected(null); }, [data]);
 
-  const { w, h } = dims;
+  // Height scales with the busiest column so pills + their "top/lead" labels
+  // never overlap (a 10-input company graph needs far more room than a 4-row one).
+  const maxRows = Math.max(model.originIdx.length, model.matIdx.length, model.destIdx.length);
+  const minH = Math.max(460, maxRows * 62 + 40);
+
+  const { w } = dims;
+  const h = Math.max(dims.h, minH);
   const ORIGIN_X = Math.round(w * 0.14);
   const MAT_X = Math.round(w * 0.5);
   const DEST_X = Math.round(w * 0.86);
@@ -246,8 +252,8 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
         <span className="text-center">{T.hint}</span>
         <span className="text-right">{T.right}</span>
       </div>
-      <div className="flex min-h-[460px] flex-1 gap-3">
-      <div className="relative min-h-[460px] flex-1 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]" ref={wrapRef}>
+      <div className="flex flex-1 gap-3" style={{ minHeight: minH }}>
+      <div className="relative flex-1 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]" style={{ minHeight: minH }} ref={wrapRef}>
         <svg
           ref={svgRef}
           viewBox={`0 0 ${w} ${h}`}
