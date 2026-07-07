@@ -23,12 +23,13 @@ const H = 360;
 const px = (lng: number) => ((lng + 180) / 360) * W;
 const py = (lat: number) => ((90 - lat) / 180) * H;
 
-export function ManufacturingFootprint({ facilities }: { facilities: Facility[] }) {
+export function ManufacturingFootprint({ facilities, onSelectAction }: { facilities: Facility[]; onSelectAction?: (f: Facility) => void }) {
   const { focusId, active } = useFocus();
   return (
     <div className="flex h-full flex-col">
-      <div className="relative min-h-[200px] flex-1 overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
-        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
+      {/* aspect-locked to the 2:1 equirectangular projection so the map never stretches */}
+      <div className="relative mx-auto aspect-[2/1] w-full max-w-[1100px] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
           {/* graticule */}
           {Array.from({ length: 13 }).map((_, i) => (
             <line key={`v${i}`} x1={(i * W) / 12} y1={0} x2={(i * W) / 12} y2={H} stroke="#ffffff" strokeOpacity={0.03} />
@@ -52,15 +53,29 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
             const color = STATUS_COLOR[f.status];
             const matched = f.companyId === focusId;
             const dim = active && !matched;
+            const x = px(f.lng), y = py(f.lat);
+            const isHq = f.type === "hq";
             return (
-              <g key={f.id} opacity={dim ? 0.25 : 1}>
-                <circle cx={px(f.lng)} cy={py(f.lat)} r={7} fill={color} fillOpacity={0.18} />
+              <g
+                key={f.id}
+                opacity={dim ? 0.25 : 1}
+                onClick={onSelectAction ? () => onSelectAction(f) : undefined}
+                className={onSelectAction ? "cursor-pointer" : undefined}
+              >
+                {onSelectAction && <circle cx={x} cy={y} r={11} fill="transparent" />}
+                <circle cx={x} cy={y} r={7} fill={color} fillOpacity={0.18} />
                 {matched && (
-                  <circle cx={px(f.lng)} cy={py(f.lat)} r={9} fill="none" stroke={color} strokeOpacity={0.8} strokeWidth={1.5} />
+                  <circle cx={x} cy={y} r={9} fill="none" stroke={color} strokeOpacity={0.8} strokeWidth={1.5} />
                 )}
-                <circle cx={px(f.lng)} cy={py(f.lat)} r={3} fill={color}>
-                  <title>{`${f.name} — ${STATUS_LABEL[f.status]}`}</title>
-                </circle>
+                {isHq ? (
+                  <rect x={x - 3} y={y - 3} width={6} height={6} fill={color} stroke="#e2e8f0" strokeWidth={0.6} transform={`rotate(45 ${x} ${y})`}>
+                    <title>{`${f.name} · ${f.city}, ${f.country} — HQ — ${STATUS_LABEL[f.status]}`}</title>
+                  </rect>
+                ) : (
+                  <circle cx={x} cy={y} r={3} fill={color}>
+                    <title>{`${f.name} · ${f.city}, ${f.country} — ${f.type} — ${STATUS_LABEL[f.status]}`}</title>
+                  </circle>
+                )}
               </g>
             );
           })}
@@ -74,6 +89,10 @@ export function ManufacturingFootprint({ facilities }: { facilities: Facility[] 
             {STATUS_LABEL[s]}
           </span>
         ))}
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2 w-2 rotate-45 border border-slate-300 bg-[var(--text-dim)]" />
+          HQ
+        </span>
       </div>
     </div>
   );

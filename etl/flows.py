@@ -15,7 +15,7 @@ import entities
 import real_loader
 from sources import (yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec,
                      sec_facts, opendart, nvd, fedreg, holdings, news_enrich, cyber,
-                     risks, scores, supplier_intel, materials_intel, summary, derive)
+                     risks, scores, supplier_intel, materials_intel, facility_intel, summary, derive)
 
 ROOT = Path(__file__).resolve().parent.parent
 INDUSTRIES = ["semiconductor", "ai", "battery"]
@@ -23,8 +23,9 @@ INDUSTRIES = ["semiconductor", "ai", "battery"]
 # nvd appends CVE alerts onto the `alerts` stream that sec.py writes first.
 # Semiconductor is the fully-instrumented universe; ai/battery run the subset
 # that generalises cleanly (yahoo merges real onto curated, sec/fedreg are
-# US-gov, gdelt is name-based). comtrade/patentsview/wikidata stay semi-only
-# (semi-specific HS codes / key-gated / would overwrite curated private meta).
+# US-gov, gdelt is name-based). patentsview/wikidata stay semi-only (key-gated /
+# would overwrite curated private meta); comtrade runs for ALL industries since
+# 2026-07-07 (per-industry HS material maps -> real sankey + shipments).
 def sources_for(industry: str):
     # Intelligence stages run after their inputs and before derive: news_enrich
     # (needs news) -> cyber (needs enriched news) -> risks (needs cyber/policies/
@@ -33,7 +34,7 @@ def sources_for(industry: str):
     if industry == "semiconductor":
         return [patentsview, yahoo, wikidata, comtrade, gdelt, sec, sec_facts, yahoo_facts,
                 opendart, nvd, fedreg, holdings, *common_tail, derive]
-    return [yahoo, gdelt, sec, sec_facts, yahoo_facts, opendart, fedreg, holdings, *common_tail, derive]
+    return [yahoo, comtrade, gdelt, sec, sec_facts, yahoo_facts, opendart, fedreg, holdings, *common_tail, derive]
 
 
 @task(retries=1, retry_delay_seconds=2)

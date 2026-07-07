@@ -22,6 +22,7 @@
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
     "three": "^0.185.1",
+    "three-spritetext": "^1.10.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {

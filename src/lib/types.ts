@@ -34,6 +34,8 @@ export interface Facility {
   name: string;
   lat: number;
   lng: number;
+  city: string;
+  country: string;
   type: FacilityType;
   status: FacilityStatus;
 }
@@ -70,6 +72,7 @@ export interface SankeyLink {
 export interface SankeyData {
   nodes: SankeyNode[];
   links: SankeyLink[];
+  unit?: string; // e.g. "$B/yr" when link values are real trade volumes
 }
 
 export interface FinancialSeriesPoint {
@@ -256,9 +259,13 @@ export interface GraphNode {
   val: number;
 }
 export interface GraphLink {
-  source: string;
-  target: string;
+  source: string; // supplier — the dependency flows source → target
+  target: string; // buyer — depends on the supplier
   value: number;
+  material?: string;
+  spend?: string;
+  tier?: 1 | 2 | 3;
+  risk?: RiskLevel;
 }
 export interface GraphData {
   nodes: GraphNode[];

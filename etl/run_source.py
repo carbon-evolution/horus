@@ -5,12 +5,12 @@ import real_loader
 import warm
 from sources import (yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec,
                      sec_facts, opendart, nvd, fedreg, holdings, news_enrich, cyber,
-                     risks, scores, supplier_intel, materials_intel, summary, derive)
+                     risks, scores, supplier_intel, materials_intel, facility_intel, summary, derive)
 
 SOURCES = {m.__name__.rsplit(".", 1)[-1]: m
            for m in (yahoo, yahoo_facts, wikidata, patentsview, comtrade, gdelt, sec,
                      sec_facts, opendart, nvd, fedreg, holdings, news_enrich, cyber,
-                     risks, scores, supplier_intel, materials_intel, summary, derive)}
+                     risks, scores, supplier_intel, materials_intel, facility_intel, summary, derive)}
 
 
 def main() -> int:

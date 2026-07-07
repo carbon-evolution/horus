@@ -172,6 +172,22 @@ def test_build_compare_radar_is_deterministic():
     assert a == b  # stable across calls (md5 seed, not salted hash())
 
 
+from sources.facility_intel import build_facility, country_from_coords
+
+
+def test_facility_intel_country_and_risk():
+    assert country_from_coords(24.77, 121.02) == "Taiwan"
+    assert country_from_coords(33.45, -112.07) == "USA"
+    assert country_from_coords(32.79, 130.74) == "Japan"
+    f = {"id": "f1", "lat": 24.77, "lng": 121.02, "type": "fab", "status": "operating"}
+    out = build_facility(f)
+    assert out["country"] == "Taiwan" and out["nearestPort"] == "Port of Kaohsiung"
+    assert 0 <= out["aiRiskScore"] <= 100 and out["aiRiskBand"] in ("low", "medium", "high")
+    assert out["capacity"].startswith("High") and "process water" in out["waterIntensity"]
+    # a flagged site accrues a disruption note
+    assert "disruption" in " ".join(build_facility({**f, "status": "risk"})["recentDisruptions"]).lower()
+
+
 from sources.materials_intel import enrich_material
 
 
@@ -335,17 +351,34 @@ def test_normalize_patents():
     assert rows["categories"][0]["count"] >= rows["categories"][1]["count"]
 
 
-from sources.comtrade import normalize_shipment
+from sources.comtrade import _lane, build_sankey
 
 
-def test_normalize_shipment():
-    s = normalize_shipment({"reporterDesc": "Netherlands", "partnerDesc": "Taiwan",
-                            "cmdCode": "8486", "primaryValue": 8.4e9})
+def test_lane():
+    s = _lane("Netherlands", "Taiwan", "Semiconductor Machinery", "air", 8.4e9)
     assert s["lane"] == "Netherlands → Taiwan"
     assert s["origin"] == "Netherlands" and s["destination"] == "Taiwan"
     assert s["mode"] == "air" and s["commodity"] == "Semiconductor Machinery"
     assert s["volume"] == "$8.4B/yr"
-    assert s["risk"] in ("low", "medium", "high")
+    assert s["risk"] == "high"  # Taiwan lane is chokepoint-adjacent
+
+
+def test_build_sankey_values_and_shares():
+    rows = [
+        {"reporterDesc": "Chile", "partnerDesc": "China", "primaryValue": 2.0e9},
+        {"reporterDesc": "Chile", "partnerDesc": "Rep. of Korea", "primaryValue": 1.0e9},
+        {"reporterDesc": "Australia", "partnerDesc": "China", "primaryValue": 0.5e9},
+    ]
+    sk = build_sankey("battery", {"Lithium Carbonate": rows})
+    names = [n["name"] for n in sk["nodes"]]
+    assert "Lithium Carbonate" in names and "Chile" in names
+    # destination nodes are distinct via trailing space
+    assert "China " in names and "Rep. of Korea" not in names  # shortened
+    assert "South Korea " in names
+    assert sk["unit"] == "$B/yr"
+    mat = names.index("Lithium Carbonate")
+    inbound = [l for l in sk["links"] if l["target"] == mat]
+    assert sorted(l["value"] for l in inbound) == [0.5, 3.0]  # Chile aggregated
 
 
 from sources.gdelt import normalize_article

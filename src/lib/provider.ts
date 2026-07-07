@@ -165,7 +165,27 @@ export async function getSupplyGraph(i: Industry): Promise<GraphData> {
     const v = spendNum(e.spend);
     ensure(e.buyer).val += v;
     ensure(e.supplier).val += v;
-    return { source: e.supplier, target: e.buyer, value: v };
+    return { source: e.supplier, target: e.buyer, value: v, material: e.material, spend: e.spend, tier: e.tier, risk: e.risk };
   });
   return { nodes: [...nodeMap.values()], links };
+}
+
+// Company → material → company flow (supplier supplies an input to a buyer).
+// Buyer nodes carry a trailing space so a company that both supplies and buys
+// stays two distinct columns (same trick the country sankey uses).
+export async function getSupplierMaterialSankey(i: Industry): Promise<SankeyData> {
+  const edges = await getSupplierEdges(i);
+  const nodes: { name: string }[] = [];
+  const index = new Map<string, number>();
+  const node = (name: string) => {
+    if (!index.has(name)) { index.set(name, nodes.length); nodes.push({ name }); }
+    return index.get(name)!;
+  };
+  const links: SankeyData["links"] = [];
+  for (const e of edges) {
+    const v = spendNum(e.spend);
+    links.push({ source: node(e.supplier), target: node(e.material), value: v });
+    links.push({ source: node(e.material), target: node(`${e.buyer} `), value: v });
+  }
+  return { nodes, links, unit: "$B/yr" };
 }
