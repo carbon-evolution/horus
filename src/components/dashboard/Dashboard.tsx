@@ -32,29 +32,33 @@ export function Dashboard({ data }: { data: DashboardData }) {
 
       <KpiRow kpis={data.kpis} />
 
-      {/* Hero: the two headline visuals stacked full-width as wide landscape
-          rectangles — both read better expanded than boxed side-by-side. */}
-      <Panel title="Global Manufacturing Footprint" action="All Facilities">
-        <ManufacturingFootprint facilities={data.facilities} />
-      </Panel>
-      <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments">
-        <RawMaterialsSankey data={data.sankey} compact />
-      </Panel>
+      {/* Ordered by importance: risk + market intelligence first, the map mid-
+          page, materials movement next, then deals/suppliers/research, financials. */}
 
-      {/* Row: market / radar / news */}
+      {/* 1. Risk + market pulse — the headline signals */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
-        <Panel title="Market Snapshot (Top 10)" className="xl:col-span-5">
-          <MarketSnapshot companies={data.companies} />
-        </Panel>
         <Panel title="Supply Chain Risk Radar" action="View All Risks" className="xl:col-span-4">
           <RiskRadar data={data.radar} />
+        </Panel>
+        <Panel title="Market Snapshot (Top 10)" className="xl:col-span-5">
+          <MarketSnapshot companies={data.companies} />
         </Panel>
         <Panel title="Latest News & Market Impact" action="View All" className="xl:col-span-3">
           <NewsFeed news={data.news} />
         </Panel>
       </div>
 
-      {/* Row: deals / suppliers / research */}
+      {/* 2. World map — mid-page, full-width landscape */}
+      <Panel title="Global Manufacturing Footprint" action="All Facilities">
+        <ManufacturingFootprint facilities={data.facilities} />
+      </Panel>
+
+      {/* 3. Materials movement — full-width landscape */}
+      <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments">
+        <RawMaterialsSankey data={data.sankey} compact />
+      </Panel>
+
+      {/* 4. Deals / suppliers / research */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
         <Panel title="Recent Deals & Partnerships" action="View All" className="xl:col-span-5" bodyClassName="overflow-x-auto">
           <DealsTable deals={data.deals} />
@@ -67,7 +71,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
         </Panel>
       </div>
 
-      {/* Financial performance — full width */}
+      {/* 5. Financial performance — full width */}
       <Panel title="Financial Performance (TTM)" action="View Financial Details">
         <FinancialPerformance data={data.financials} />
       </Panel>
