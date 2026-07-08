@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useIndustry } from "@/lib/industry-context";
-import { INDUSTRY_LABEL, type NewsItem, type RiskLevel } from "@/lib/types";
+import { INDUSTRY_LABEL, type NewsItem, type RiskLevel, type Company, type Facility } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { AiInsight } from "@/components/ui/AiInsight";
@@ -15,19 +15,37 @@ const my = (lat: number) => ((90 - lat) / 180) * H;
 const IMPACT_COLOR: Record<RiskLevel, string> = { low: "#34d399", medium: "#f59e0b", high: "#f87171" };
 const IMPACT_RANK: Record<RiskLevel, number> = { low: 0, medium: 1, high: 2 };
 
-// News items carry a country-level geo hint (news_enrich). Cluster events per
-// country and plot them; "Global" items have no anchor and stay off-map.
-function EventMap({ news }: { news: NewsItem[] }) {
-  const byGeo = new Map<string, { count: number; worst: RiskLevel; heads: string[] }>();
+// Display name + one alias pass so geo hints and facility country strings
+// land in the same cluster ("USA" / "United States", "UK" / "United Kingdom").
+const COUNTRY_ALIAS: Record<string, string> = { "United States": "USA", "United Kingdom": "UK" };
+
+// Cluster events per country. Anchor priority: the enrichment geo hint
+// (news_enrich), else the story's company HQ country — only items with
+// neither anchor stay off-map.
+function EventMap({ news, hqByCompany }: { news: NewsItem[]; hqByCompany: Record<string, { country: string; lat: number; lng: number }> }) {
+  const byGeo = new Map<string, { count: number; worst: RiskLevel; heads: string[]; lat: number; lng: number }>();
   let global = 0;
   for (const n of news) {
-    const geo = n.geo === "United States" ? "USA" : n.geo;
-    if (!geo || geo === "Global" || !COUNTRY_COORD[geo]) { global++; continue; }
-    const g = byGeo.get(geo) ?? { count: 0, worst: "low" as RiskLevel, heads: [] };
+    // 1) geo hint from enrichment; 2) company HQ fallback
+    let key: string | undefined;
+    let coord: [number, number] | undefined;
+    const geo = n.geo && n.geo !== "Global" ? (COUNTRY_ALIAS[n.geo] ?? n.geo) : undefined;
+    if (geo && COUNTRY_COORD[geo]) {
+      key = geo;
+      coord = COUNTRY_COORD[geo];
+    } else {
+      const hq = hqByCompany[n.company.toLowerCase()];
+      if (hq) {
+        key = COUNTRY_ALIAS[hq.country] ?? hq.country;
+        coord = COUNTRY_COORD[key] ?? [hq.lat, hq.lng];
+      }
+    }
+    if (!key || !coord) { global++; continue; }
+    const g = byGeo.get(key) ?? { count: 0, worst: "low" as RiskLevel, heads: [], lat: coord[0], lng: coord[1] };
     g.count++;
     if (IMPACT_RANK[n.impact] > IMPACT_RANK[g.worst]) g.worst = n.impact;
     if (g.heads.length < 4) g.heads.push(n.headline);
-    byGeo.set(geo, g);
+    byGeo.set(key, g);
   }
   const spots = [...byGeo.entries()];
   const max = Math.max(...spots.map(([, g]) => g.count), 1);
@@ -37,8 +55,7 @@ function EventMap({ news }: { news: NewsItem[] }) {
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
           <path d={WORLD_LAND_PATH} fill="#1b2740" fillOpacity={0.85} stroke="#2b3b5a" strokeWidth={0.4} />
           {spots.map(([geo, g]) => {
-            const [lat, lng] = COUNTRY_COORD[geo];
-            const x = mx(lng), y = my(lat);
+            const x = mx(g.lng), y = my(g.lat);
             const r = 5 + Math.sqrt(g.count / max) * 13;
             const color = IMPACT_COLOR[g.worst];
             return (
@@ -73,9 +90,16 @@ function sentiment(n: NewsItem): "positive" | "neutral" | "negative" {
   return "neutral";
 }
 
-export function CompaniesNews({ news }: { news: NewsItem[] }) {
+export function CompaniesNews({ news, companies, facilities }: { news: NewsItem[]; companies: Company[]; facilities: Facility[] }) {
   const industry = useIndustry();
   const [cat, setCat] = useState("all");
+
+  // company name (lowercased) → HQ country + coords, for events without a geo hint
+  const hqByCompany: Record<string, { country: string; lat: number; lng: number }> = {};
+  for (const c of companies) {
+    const hq = facilities.find((f) => f.companyId === c.id && f.type === "hq") ?? facilities.find((f) => f.companyId === c.id);
+    if (hq) hqByCompany[c.name.toLowerCase()] = { country: hq.country, lat: hq.lat, lng: hq.lng };
+  }
   const counts = { positive: 0, neutral: 0, negative: 0 };
   for (const n of news) counts[sentiment(n)]++;
 
@@ -108,7 +132,7 @@ export function CompaniesNews({ news }: { news: NewsItem[] }) {
       </div>
       <AiInsight text={summary} />
       <Panel title="World Event Map">
-        <EventMap news={news} />
+        <EventMap news={news} hqByCompany={hqByCompany} />
       </Panel>
       <Panel title="Event Feed">
         <div className="mb-3 flex flex-wrap gap-1.5">
