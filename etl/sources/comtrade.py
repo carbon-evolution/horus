@@ -59,7 +59,9 @@ MATERIAL_SOURCING = {
     "battery": {
         "lithium":   "283691",
         "cobalt":    "810520",
-        "nickel":    "750210",
+        # nickel needs the full chain: mattes/MHP 7501 + ferronickel/NPI
+        # 720260 + refined 750210 — Indonesia exports NPI/matte, not class-1
+        "nickel":    "750110,750120,750210,720260",
         "graphite":  "250410",
         "manganese": "260200",
     },
@@ -182,7 +184,7 @@ def run(industry: str = "semiconductor") -> dict:
             if producers:
                 m["topProducers"] = producers
                 m["concentration"] = min(99, sum(p["share"] for p in producers))
-                m["source"] = f"UN Comtrade 2024 trade flows · HS {code} (WITS)"
+                m["source"] = f"UN Comtrade 2024 trade flows · HS {code.replace(',', '/')} (WITS)"
                 touched = True
                 continue
         if not m.get("source"):
