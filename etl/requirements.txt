@@ -1,4 +1,4 @@
-prefect==3.1.15
+prefect==3.6.28.dev2
 # prefect 3.1.15's embedded API server needs fastapi<0.116 / starlette<0.47
 fastapi<0.116
 psycopg[binary]==3.2.13  # 3.2.10+ ships wheels for Python 3.14
