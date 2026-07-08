@@ -68,12 +68,15 @@ const MARKET: Record<Industry, MarketIntel> = {
 export const SOURCES: SourceInfo[] = [
   { name: "Yahoo Finance", provides: "Quotes, market caps, TTM financials, R&D", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
   { name: "SEC EDGAR", provides: "US filings — 8-K/10-K/10-Q material events → alerts", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
-  { name: "UN Comtrade", provides: "Bilateral trade flows (HS 8542/8486) → shipments", cadence: "Monthly", lastSync: "1d ago", status: "healthy", free: true },
+  { name: "UN Comtrade (WITS)", provides: "Bilateral trade flows → shipments + material sourcing shares (per-material HS codes, import-mirror)", cadence: "Monthly", lastSync: "1d ago", status: "healthy", free: true },
   { name: "GDELT 2.0", provides: "Global news events, tone, conflict signals → news", cadence: "Daily", lastSync: "3h ago", status: "healthy", free: true },
   { name: "NIST NVD", provides: "CVEs for sector vendors (CVSS ≥7) → cyber alerts", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
   { name: "US Federal Register", provides: "Export-control / Entity-List / CHIPS rules → policies", cadence: "Daily", lastSync: "2h ago", status: "healthy", free: true },
   { name: "Wikidata", provides: "Company metadata — CEO, HQ, founded, headcount", cadence: "Weekly", lastSync: "2h ago", status: "healthy", free: true },
   { name: "PatentsView", provides: "US patent filings + assignments → patents", cadence: "Weekly", lastSync: "3d ago", status: "degraded", free: true },
+  { name: "Korea DART", provides: "Korean regulatory filings (Samsung, SK hynix, LG Energy) → filings", cadence: "Daily", lastSync: "1d ago", status: "healthy", free: true },
+  { name: "USGS", provides: "Mineral production estimates — curated shares where trade codes are ambiguous", cadence: "Annual", lastSync: "static", status: "healthy", free: true },
+  { name: "Statista", provides: "Industry estimates — specialty inputs (photoresist, HBM, CoWoS, ABF substrate)", cadence: "Annual", lastSync: "static", status: "healthy", free: false },
 ];
 
 const ALERTS: Record<Industry, AlertItem[]> = {

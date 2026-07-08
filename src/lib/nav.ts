@@ -69,10 +69,13 @@ export const NAV: NavGroup[] = [
 export const DATA_SOURCES = [
   "Yahoo Finance",
   "SEC EDGAR",
-  "UN Comtrade",
+  "UN Comtrade (WITS)",
   "GDELT",
   "NIST NVD",
   "Federal Register",
   "Wikidata",
   "PatentsView",
+  "Korea DART",
+  "USGS",
+  "Statista",
 ];
