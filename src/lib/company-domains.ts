@@ -21,6 +21,18 @@ export const COMPANY_DOMAIN: Record<string, string> = {
   northvolt: "northvolt.com", exide: "exideindustries.com", quantumscape: "quantumscape.com", gsyuasa: "gs-yuasa.com",
 };
 
+// Company id -> simple-icons slug (vector SVG brand logos, razor-sharp at any
+// size). Only ids with a confirmed icon; the rest fall back to a favicon.
+export const SIMPLE_ICON: Record<string, string> = {
+  nvidia: "nvidia", amd: "amd", intel: "intel", samsung: "samsung", arm: "arm",
+  qualcomm: "qualcomm", mediatek: "mediatek", broadcom: "broadcom", nxp: "nxp",
+  alphabet: "google", meta: "meta",
+  anthropic: "anthropic", alibaba: "alibabadotcom", palantir: "palantir",
+  databricks: "databricks", huggingface: "huggingface", xai: "x", perplexity: "perplexity",
+  cohere: "cohere", mistral: "mistralai",
+  tesla: "tesla", panasonic: "panasonic", toshiba: "toshiba",
+};
+
 // Display-name -> domain, for components that only have a company name.
 export const DOMAIN_BY_NAME: Record<string, string> = {
   "NVIDIA": "nvidia.com", "Broadcom": "broadcom.com", "TSMC": "tsmc.com", "Samsung": "samsung.com",
