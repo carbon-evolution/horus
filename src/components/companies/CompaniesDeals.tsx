@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
 import { AiInsight } from "@/components/ui/AiInsight";
 import { DealsTable } from "@/components/dashboard/DealsTable";
+import { PartnershipNetwork } from "./PartnershipNetwork";
 
 const dealVal = (v: string) => parseFloat(v.replace(/[^0-9.]/g, "")) || 0;
 const TYPE_COLORS = ["#38bdf8", "#a78bfa", "#34d399", "#f59e0b", "#f472b6", "#22d3ee", "#a3e635"];
@@ -44,6 +45,20 @@ export function CompaniesDeals({ deals }: { deals: Deal[] }) {
       <AiInsight text={summary} />
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
+        <Panel title="Partnership Network" className="xl:col-span-2">
+          <PartnershipNetwork
+            deals={deals}
+            typeColors={Object.fromEntries(typeRows.map((t, i) => [t.type, TYPE_COLORS[i % TYPE_COLORS.length]]))}
+          />
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-[var(--panel-border)] pt-2">
+            {typeRows.map((t, i) => (
+              <span key={t.type} className="inline-flex items-center gap-1.5 text-[10px] text-[var(--text-dim)]">
+                <span className="h-2 w-2 rounded-sm" style={{ background: TYPE_COLORS[i % TYPE_COLORS.length] }} />{t.type}
+              </span>
+            ))}
+          </div>
+        </Panel>
+
         <Panel title="Deal Value by Type" className="xl:col-span-1">
           <div className="space-y-2.5">
             {typeRows.map((t, i) => {
