@@ -32,15 +32,14 @@ export function Dashboard({ data }: { data: DashboardData }) {
 
       <KpiRow kpis={data.kpis} />
 
-      {/* Hero row: the two headline visuals, enlarged */}
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
-        <Panel title="Global Manufacturing Footprint" action="All Facilities" className="min-h-[460px] xl:col-span-7">
-          <ManufacturingFootprint facilities={data.facilities} />
-        </Panel>
-        <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments" className="min-h-[460px] xl:col-span-5">
-          <RawMaterialsSankey data={data.sankey} compact />
-        </Panel>
-      </div>
+      {/* Hero: the two headline visuals stacked full-width as wide landscape
+          rectangles — both read better expanded than boxed side-by-side. */}
+      <Panel title="Global Manufacturing Footprint" action="All Facilities">
+        <ManufacturingFootprint facilities={data.facilities} />
+      </Panel>
+      <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments">
+        <RawMaterialsSankey data={data.sankey} compact />
+      </Panel>
 
       {/* Row: market / radar / news */}
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">

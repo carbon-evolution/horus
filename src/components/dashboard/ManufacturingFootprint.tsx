@@ -28,7 +28,7 @@ export function ManufacturingFootprint({ facilities, onSelectAction }: { facilit
   return (
     <div className="flex h-full flex-col">
       {/* aspect-locked to the 2:1 equirectangular projection so the map never stretches */}
-      <div className="relative mx-auto aspect-[2/1] w-full max-w-[1100px] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
+      <div className="relative mx-auto aspect-[2/1] w-full max-w-[1500px] overflow-hidden rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)]">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
           {/* graticule */}
           {Array.from({ length: 13 }).map((_, i) => (
