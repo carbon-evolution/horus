@@ -1,6 +1,7 @@
 "use client";
 import type { NewsItem, RiskLevel } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
+import { relativeAgo } from "@/lib/relative-time";
 
 const IMPACT_BG: Record<RiskLevel, string> = {
   high: "var(--risk-high)",
@@ -34,7 +35,9 @@ export function NewsFeed({ news }: { news: NewsItem[] }) {
               {n.geo && n.geo !== "Global" && (
                 <span className="text-[10px] text-[var(--text-faint)]">{n.geo}</span>
               )}
-              <span className="text-[10px] text-[var(--text-faint)]">{n.ago}</span>
+              <span className="text-[10px] text-[var(--text-faint)]" title={n.date} suppressHydrationWarning>
+                {n.date ? relativeAgo(n.date) : n.ago}
+              </span>
             </div>
           </div>
         </div>

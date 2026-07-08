@@ -46,7 +46,8 @@ export interface NewsItem {
   headline: string;
   impact: RiskLevel;
   impactLabel: string;
-  ago: string;
+  ago: string;      // ingest-time snapshot; stale for old items — prefer `date`
+  date?: string;    // ISO publication date; UI derives the relative time live
   sentiment?: "positive" | "neutral" | "negative";
   // Enrichment (sources/news_enrich.py) — optional so un-enriched items still type.
   category?: string;

@@ -24,6 +24,8 @@ def normalize_article(art: dict, company: str, idx: int, now_epoch: float | None
         "impact": impact,
         "impactLabel": f"Market Impact: {impact.capitalize()}",
         "ago": ago(_epoch(art["seendate"]), now_epoch),
+        # ISO date so the UI can derive the relative time live (ago goes stale)
+        "date": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(_epoch(art["seendate"]))),
     }
 
 

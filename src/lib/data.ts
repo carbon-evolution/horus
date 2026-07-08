@@ -94,11 +94,11 @@ const semiconductor: IndustryData = {
     { id: "f52", companyId: "intel", name: "Kiryat Gat Fab 28 (Israel)", lat: 31.61, lng: 34.77, city: "Kiryat Gat", country: "Israel", type: "fab", status: "operating" },
   ],
   news: [
-    { id: "n1", company: "NVIDIA", headline: "NVIDIA announces new AI chip architecture Blackwell", impact: "high", impactLabel: "Market Impact: High", ago: "2h ago" },
-    { id: "n2", company: "TSMC", headline: "TSMC to build new fab in Germany with €10B investment", impact: "high", impactLabel: "Market Impact: High", ago: "5h ago" },
-    { id: "n3", company: "USA", headline: "US tightens export restrictions on advanced chips to China", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago" },
-    { id: "n4", company: "Lithium", headline: "Neon supply concerns resurface amid Eastern Europe tensions", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
-    { id: "n5", company: "Samsung", headline: "Samsung signs $16.5B foundry supply deal", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
+    { id: "n1", company: "NVIDIA", headline: "NVIDIA announces new AI chip architecture Blackwell", impact: "high", impactLabel: "Market Impact: High", ago: "2h ago", date: "2024-03-18" },
+    { id: "n2", company: "TSMC", headline: "TSMC to build new fab in Germany with €10B investment", impact: "high", impactLabel: "Market Impact: High", ago: "5h ago", date: "2023-08-08" },
+    { id: "n3", company: "USA", headline: "US tightens export restrictions on advanced chips to China", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago", date: "2024-12-02" },
+    { id: "n4", company: "Lithium", headline: "Neon supply concerns resurface amid Eastern Europe tensions", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago", date: "2022-03-04" },
+    { id: "n5", company: "Samsung", headline: "Samsung signs $16.5B foundry supply deal", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago", date: "2025-07-28" },
   ],
   sankey: {
     nodes: [
@@ -243,11 +243,11 @@ const ai: IndustryData = {
     { id: "a43", companyId: "deepseek", name: "Beijing R&D", lat: 39.98, lng: 116.31, city: "Beijing", country: "China", type: "rnd", status: "operating" },
   ],
   news: [
-    { id: "an1", company: "OpenAI", headline: "OpenAI unveils next-gen model with expanded context", impact: "high", impactLabel: "Market Impact: High", ago: "3h ago" },
-    { id: "an2", company: "Microsoft", headline: "Microsoft commits $80B to AI datacenter buildout", impact: "high", impactLabel: "Market Impact: High", ago: "6h ago" },
-    { id: "an3", company: "USA", headline: "New AI compute export controls proposed", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago" },
-    { id: "an4", company: "NVIDIA", headline: "HBM supply tightness expected through 2025", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago" },
-    { id: "an5", company: "CoreWeave", headline: "CoreWeave secures $7.5B debt for GPU expansion", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago" },
+    { id: "an1", company: "OpenAI", headline: "OpenAI unveils next-gen model with expanded context", impact: "high", impactLabel: "Market Impact: High", ago: "3h ago", date: "2025-04-14" },
+    { id: "an2", company: "Microsoft", headline: "Microsoft commits $80B to AI datacenter buildout", impact: "high", impactLabel: "Market Impact: High", ago: "6h ago", date: "2025-01-03" },
+    { id: "an3", company: "USA", headline: "New AI compute export controls proposed", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago", date: "2025-01-13" },
+    { id: "an4", company: "NVIDIA", headline: "HBM supply tightness expected through 2025", impact: "medium", impactLabel: "Market Impact: Medium", ago: "1d ago", date: "2024-05-21" },
+    { id: "an5", company: "CoreWeave", headline: "CoreWeave secures $7.5B debt for GPU expansion", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago", date: "2024-05-17" },
   ],
   sankey: {
     nodes: [
@@ -378,11 +378,11 @@ const battery: IndustryData = {
     { id: "b47", companyId: "gsyuasa", name: "Miskolc Plant (Hungary)", lat: 48.1, lng: 20.78, city: "Miskolc", country: "Hungary", type: "fab", status: "operating" },
   ],
   news: [
-    { id: "bn1", company: "CATL", headline: "CATL unveils sodium-ion battery for mass production", impact: "high", impactLabel: "Market Impact: High", ago: "4h ago" },
-    { id: "bn2", company: "Lithium", headline: "Lithium prices drop 15% amid supply glut concerns", impact: "medium", impactLabel: "Market Impact: Medium", ago: "8h ago" },
-    { id: "bn3", company: "EU", headline: "EU Critical Raw Materials Act enters new phase", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago" },
-    { id: "bn4", company: "DR Congo", headline: "Cobalt supply disruption risk rises in DRC", impact: "high", impactLabel: "Market Impact: High", ago: "1d ago" },
-    { id: "bn5", company: "LG Energy", headline: "LG Energy ↔ GM expand Ultium JV capacity", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago" },
+    { id: "bn1", company: "CATL", headline: "CATL unveils sodium-ion battery for mass production", impact: "high", impactLabel: "Market Impact: High", ago: "4h ago", date: "2025-04-21" },
+    { id: "bn2", company: "Lithium", headline: "Lithium prices drop 15% amid supply glut concerns", impact: "medium", impactLabel: "Market Impact: Medium", ago: "8h ago", date: "2024-08-15" },
+    { id: "bn3", company: "EU", headline: "EU Critical Raw Materials Act enters new phase", impact: "high", impactLabel: "Policy Impact: High", ago: "1d ago", date: "2024-05-23" },
+    { id: "bn4", company: "DR Congo", headline: "Cobalt supply disruption risk rises in DRC", impact: "high", impactLabel: "Market Impact: High", ago: "1d ago", date: "2025-02-24" },
+    { id: "bn5", company: "LG Energy", headline: "LG Energy ↔ GM expand Ultium JV capacity", impact: "medium", impactLabel: "Market Impact: Medium", ago: "2d ago", date: "2022-01-25" },
   ],
   sankey: {
     nodes: [
