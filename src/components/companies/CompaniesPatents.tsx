@@ -4,6 +4,8 @@ import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type PatentRow } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
+import { StatTile } from "@/components/ui/StatTile";
+import { AiInsight } from "@/components/ui/AiInsight";
 import { CompanyLink } from "@/components/ui/CompanyLink";
 
 export function CompaniesPatents({ patents: allPatents }: { patents: PatentRow[] }) {
@@ -11,9 +13,28 @@ export function CompaniesPatents({ patents: allPatents }: { patents: PatentRow[]
   const patents = [...allPatents].sort((a, b) => b.total - a.total);
   const chart = patents.map((p) => ({ company: p.company, total: p.total }));
 
+  const totalPatents = patents.reduce((s, p) => s + p.total, 0);
+  const totalPending = patents.reduce((s, p) => s + p.pending, 0);
+  const leader = patents[0];
+  const domainTotals = patents.flatMap((p) => p.categories).reduce<Record<string, number>>((a, c) => ((a[c.name] = (a[c.name] ?? 0) + c.count), a), {});
+  const topDomain = Object.entries(domainTotals).sort((a, b) => b[1] - a[1])[0];
+  const summary =
+    `${totalPatents.toLocaleString()} active patents across ${patents.length} tracked ${INDUSTRY_LABEL[industry]} companies, with ${totalPending.toLocaleString()} pending. ` +
+    (leader ? `${leader.company} leads the portfolio (${leader.total.toLocaleString()} patents). ` : "") +
+    (topDomain ? `Innovation is concentrated in ${topDomain[0]}, the most-patented technology domain — a signal of where the next competitive edge is being built.` : "");
+
   return (
     <div className="space-y-3">
       <PageHeader title="Research & Patents" subtitle={`${INDUSTRY_LABEL[industry]} · intellectual-property output and technology domains`} />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatTile label="Active Patents" value={totalPatents.toLocaleString()} icon="FileText" accent="#38bdf8" />
+        <StatTile label="Pending" value={totalPending.toLocaleString()} icon="Clock" accent="#f59e0b" />
+        <StatTile label="Top Innovator" value={leader?.total.toLocaleString() ?? "—"} sub={leader?.company} icon="Award" accent="#a78bfa" />
+        <StatTile label="Lead Domain" value={topDomain?.[0] ?? "—"} icon="Cpu" accent="#34d399" />
+      </div>
+
+      <AiInsight text={summary} />
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <Panel title="Patents Filed (TTM)">

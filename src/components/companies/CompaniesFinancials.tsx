@@ -4,6 +4,8 @@ import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type Company, type FinancialSeriesPoint, type FinancialTTMPoint } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
+import { StatTile } from "@/components/ui/StatTile";
+import { AiInsight } from "@/components/ui/AiInsight";
 import { FinancialPerformance } from "@/components/dashboard/FinancialPerformance";
 import { CompanyLink } from "@/components/ui/CompanyLink";
 
@@ -41,9 +43,30 @@ export function CompaniesFinancials({
     capex: s.capex,
   }));
 
+  const totalRev = snapshot.reduce((n, s) => n + s.revenue, 0);
+  const totalProfit = snapshot.reduce((n, s) => n + s.profit, 0);
+  const avgMargin = totalRev ? (totalProfit / totalRev) * 100 : 0;
+  const avgRnd = totalRev ? (snapshot.reduce((n, s) => n + s.rnd, 0) / totalRev) * 100 : 0;
+  const topMargin = [...ratios].sort((a, b) => b.margin - a.margin)[0];
+  const topRnd = [...ratios].sort((a, b) => b.rndPct - a.rndPct)[0];
+  const lossmakers = ratios.filter((r) => r.profit < 0);
+  const summary =
+    `Tracked ${INDUSTRY_LABEL[industry]} leaders post $${totalRev.toFixed(0)}B combined revenue at a ${avgMargin.toFixed(1)}% aggregate net margin, reinvesting ${avgRnd.toFixed(1)}% of revenue into R&D. ` +
+    (topMargin ? `${topMargin.company} is the most profitable (${topMargin.margin.toFixed(1)}% margin), while ${topRnd?.company} invests most heavily in R&D (${topRnd?.rndPct.toFixed(1)}% of revenue). ` : "") +
+    (lossmakers.length ? `${lossmakers.map((r) => r.company).join(", ")} ${lossmakers.length > 1 ? "are" : "is"} currently loss-making — a financial-risk flag.` : "All tracked leaders are profitable this period.");
+
   return (
     <div className="space-y-3">
       <PageHeader title="Financials" subtitle={`${INDUSTRY_LABEL[industry]} · comparative revenue, margins, R&D and capex`} />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatTile label="Combined Revenue" value={`$${totalRev.toFixed(0)}B`} icon="TrendingUp" accent="#34d399" />
+        <StatTile label="Combined Profit" value={`$${totalProfit.toFixed(0)}B`} icon="DollarSign" accent="#38bdf8" />
+        <StatTile label="Avg Net Margin" value={`${avgMargin.toFixed(1)}%`} icon="Percent" accent="#a78bfa" />
+        <StatTile label="Avg R&D Intensity" value={`${avgRnd.toFixed(1)}%`} icon="FlaskConical" accent="#f59e0b" />
+      </div>
+
+      <AiInsight text={summary} />
 
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         <Panel title="Revenue Trend — Top 5 (TTM, $B)">

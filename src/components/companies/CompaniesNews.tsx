@@ -4,6 +4,7 @@ import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type NewsItem } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
+import { AiInsight } from "@/components/ui/AiInsight";
 import { NewsFeed } from "@/components/dashboard/NewsFeed";
 
 const NEG = /restrict|export control|tighten|concern|disruption|ban|tension|glut|risk/i;
@@ -25,6 +26,13 @@ export function CompaniesNews({ news }: { news: NewsItem[] }) {
   const categories = ["all", ...Array.from(new Set(news.map((n) => n.category ?? "general"))).sort()];
   const shown = cat === "all" ? news : news.filter((n) => (n.category ?? "general") === cat);
 
+  const highImpact = news.filter((n) => n.impact === "high").length;
+  const topCat = Object.entries(news.reduce<Record<string, number>>((a, n) => ((a[n.category ?? "general"] = (a[n.category ?? "general"] ?? 0) + 1), a), {})).sort((a, b) => b[1] - a[1])[0];
+  const summary =
+    `${news.length} tracked events in ${INDUSTRY_LABEL[industry]}: ${counts.negative} negative vs ${counts.positive} positive in sentiment, with ${highImpact} rated high market/policy impact. ` +
+    (topCat ? `${topCat[0]} dominates the current cycle (${topCat[1]} events). ` : "") +
+    (counts.negative > counts.positive ? "Net-negative sentiment warrants closer monitoring of affected suppliers and facilities." : "Sentiment skews constructive, but export-control and disruption headlines remain the key risks to watch.");
+
   return (
     <div className="space-y-3">
       <PageHeader title="News & Events" subtitle={`${INDUSTRY_LABEL[industry]} · real-time risk-tagged event feed`} />
@@ -42,6 +50,7 @@ export function CompaniesNews({ news }: { news: NewsItem[] }) {
           <div className="text-[11px] text-[var(--text-dim)]">Negative</div>
         </div>
       </div>
+      <AiInsight text={summary} />
       <Panel title="Event Feed">
         <div className="mb-3 flex flex-wrap gap-1.5">
           {categories.map((c) => (
