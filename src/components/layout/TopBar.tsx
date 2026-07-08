@@ -1,20 +1,14 @@
 "use client";
-import { Search, Star, Bell, Download, Settings, User, Crosshair, X } from "lucide-react";
+import { Star, Bell, Download, Settings, User, Crosshair, X } from "lucide-react";
 import { useFocus } from "@/lib/focus";
+import { GlobalSearch } from "@/components/layout/GlobalSearch";
 
 export function TopBar() {
   const { focusName, clearFocus } = useFocus();
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b border-[var(--panel-border)] bg-[var(--bg-elevated)] px-5">
       {/* Global search */}
-      <div className="relative w-full max-w-md">
-        <Search size={15} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[var(--text-faint)]" />
-        <input
-          type="text"
-          placeholder="Search companies, suppliers, materials, countries…"
-          className="w-full rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)] py-2 pr-3 pl-9 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:border-[var(--accent)] focus:outline-none"
-        />
-      </div>
+      <GlobalSearch />
 
       {focusName && (
         <button
