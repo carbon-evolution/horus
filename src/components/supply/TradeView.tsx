@@ -71,6 +71,12 @@ export function TradeView({ sankey, shipments, companySankey, materialLanes }: {
         {flowTab === "country"
           ? <RawMaterialsSankey data={sankey} variant="country" />
           : <RawMaterialsSankey data={companySankey} variant="company" />}
+        {flowTab === "country" && (
+          <p className="mt-2 text-[10px] text-[var(--text-faint)]">
+            Producer shares from UN Comtrade 2024 export data (WITS, per-material HS codes); USGS · Statista industry
+            estimates where trade codes are ambiguous. Per-material provenance on the Raw Materials page.
+          </p>
+        )}
       </Panel>
 
       <Panel title="Freight Lanes & Tariff Exposure" bodyClassName="overflow-x-auto">

@@ -230,6 +230,7 @@ export interface RawMaterial {
   supplyRisk: RiskLevel;
   topProducers: ProducerShare[];
   usedIn: string;
+  source?: string;  // provenance of the producer shares (UN Comtrade HS code, or USGS/Statista estimate)
   // Deep intelligence (sources/materials_intel.py) — optional so un-enriched still types.
   strategicImportance?: number;
   strategicLabel?: string;

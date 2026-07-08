@@ -238,6 +238,9 @@ export function MaterialsView({ materials }: { materials: RawMaterial[] }) {
                   </span>
                 ))}
               </div>
+              {selected.source && (
+                <div className="mt-1.5 text-[10px] text-[var(--text-faint)]">Source: {selected.source}</div>
+              )}
             </div>
 
             <dl className="mt-3 space-y-1 border-t border-[var(--panel-border)] pt-2 text-[11px]">
