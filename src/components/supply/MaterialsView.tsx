@@ -72,7 +72,7 @@ export function MaterialsView({ materials }: { materials: RawMaterial[] }) {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Materials Tracked" value={materials.length} icon="Boxes" accent="#22d3ee" />
-        <StatTile label="High Supply Risk" value={criticalCount} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="High Supply Risk" value={criticalCount} icon="TriangleAlert" accent="#ef4444" />
         <StatTile label="Under Export Curbs" value={restricted} icon="Ban" accent="#f59e0b" />
         <StatTile label="Most Concentrated" value={`${mostConc?.concentration ?? 0}%`} sub={mostConc?.name} icon="Crosshair" accent="#a78bfa" />
       </div>

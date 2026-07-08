@@ -14,6 +14,7 @@ import {
   getFinancialHistory,
   getScores,
   getCompanySummary,
+  getSupplierEdges,
 } from "@/lib/provider";
 import type { Industry } from "@/lib/types";
 
@@ -28,7 +29,7 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
     if (!home) notFound();
     return <CompanyNotTracked id={id} industry={industry} home={home.industry} name={home.company.name} />;
   }
-  const [meta, ttm, facilities, news, patents, holdings, filings, history, scores, summary] = await Promise.all([
+  const [meta, ttm, facilities, news, patents, holdings, filings, history, scores, summary, supplierEdges] = await Promise.all([
     getCompanyMeta(industry, id),
     getFinancialsTTM(industry, id),
     getFacilities(industry),
@@ -39,6 +40,7 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
     getFinancialHistory(industry, id),
     getScores(industry, id),
     getCompanySummary(industry, id),
+    getSupplierEdges(industry),
   ]);
   return (
     <CompanyProfile
@@ -54,6 +56,7 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
       history={history}
       scores={scores}
       summary={summary}
+      supplierEdges={supplierEdges}
     />
   );
 }

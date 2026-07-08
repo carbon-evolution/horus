@@ -47,7 +47,7 @@ export function TradeView({ sankey, shipments, companySankey, materialLanes }: {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Materials Tracked" value={stats.materialCount} icon="Boxes" accent="#34d399" />
         <StatTile label="Active Lanes" value={stats.lanes} icon="Ship" accent="#38bdf8" />
-        <StatTile label="High-Risk Lanes" value={stats.highRisk} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="High-Risk Lanes" value={stats.highRisk} icon="TriangleAlert" accent="#ef4444" />
         <StatTile label="Top Dependency" value={`${Math.round(stats.topDep.share * 100)}%`} sub={`${stats.topDep.country} · ${stats.topDep.material}`} icon="Crosshair" accent="#f59e0b" />
       </div>
 

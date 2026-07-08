@@ -81,7 +81,7 @@ export function GeoRiskView({ geo: allGeo, chokepoints, shipments, materials, ed
             <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <StatTile label="Sea Lanes Tracked" value={seaLanes.length} icon="Ship" accent="#38bdf8" />
               <StatTile label="Sea Trade Value" value={fmt(totalSeaValue)} icon="TrendingUp" accent="#34d399" />
-              <StatTile label="Chokepoints Exposed" value={`${exposedCount}/${chokepoints.length}`} icon="AlertTriangle" accent="#f59e0b" />
+              <StatTile label="Chokepoints Exposed" value={`${exposedCount}/${chokepoints.length}`} icon="TriangleAlert" accent="#f59e0b" />
               <StatTile label="Top Chokepoint" value={topCp ? fmt(topCp.value) : "—"} sub={topCp?.name} icon="Crosshair" accent="#ef4444" />
             </div>
             {seaLanes.length === 0 ? (

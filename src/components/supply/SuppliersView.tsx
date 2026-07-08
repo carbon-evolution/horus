@@ -92,7 +92,7 @@ export function SuppliersView({ edges, profiles }: { edges: SupplierEdge[]; prof
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Suppliers Tracked" value={profiles.length} icon="Users" accent="#a78bfa" />
-        <StatTile label="High-Risk Suppliers" value={highRisk} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="High-Risk Suppliers" value={highRisk} icon="TriangleAlert" accent="#ef4444" />
         <StatTile label="Sole-Source" value={soleSource} icon="Ban" accent="#f59e0b" />
         <StatTile label="Top Exposure" value={`$${topExposure?.totalSpend ?? 0}B`} sub={topExposure?.name} icon="Crosshair" accent="#38bdf8" />
       </div>

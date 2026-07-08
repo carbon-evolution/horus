@@ -71,7 +71,7 @@ export function CompaniesOverview({
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Companies Tracked" value={companies.length} icon="Building2" accent="#38bdf8" />
         <StatTile label="Avg SC Risk" value={`${avgRisk}/100`} icon="Gauge" accent={riskColor(avgRisk)} />
-        <StatTile label="High-Risk (D/F)" value={highRisk} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="High-Risk (D/F)" value={highRisk} icon="TriangleAlert" accent="#ef4444" />
         <StatTile label="Combined Market Cap" value={capLabel} icon="TrendingUp" accent="#34d399" />
       </div>
 

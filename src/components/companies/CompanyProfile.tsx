@@ -14,6 +14,7 @@ import {
   type Filing,
   type FinancialHistory,
   type Scores,
+  type SupplierEdge,
 } from "@/lib/types";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
@@ -22,6 +23,8 @@ import { NewsFeed } from "@/components/dashboard/NewsFeed";
 import { CompanyLink } from "@/components/ui/CompanyLink";
 import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { CompanyScorecard } from "./CompanyScorecard";
+import { SupplierNetwork } from "./SupplierNetwork";
+import { ManufacturingFootprint } from "@/components/dashboard/ManufacturingFootprint";
 
 export function CompanyProfile({
   id,
@@ -36,6 +39,7 @@ export function CompanyProfile({
   history,
   scores,
   summary,
+  supplierEdges,
 }: {
   id: string;
   company: Company;
@@ -49,6 +53,7 @@ export function CompanyProfile({
   history: FinancialHistory | null;
   scores: Scores | null;
   summary: string | null;
+  supplierEdges: SupplierEdge[];
 }) {
   const industry = useIndustry();
 
@@ -79,6 +84,24 @@ export function CompanyProfile({
   }
   const spendSeries = [...spendByYear.values()].sort((a, b) => a.year - b.year);
   const latestAcq = history?.acquisitions?.at(-1);
+
+  // Annual revenue / net income (FY) — longer horizon than the TTM trend above.
+  const perfByYear = new Map<number, { year: number; revenue?: number; netIncome?: number }>();
+  for (const key of ["revenue", "netIncome"] as const) {
+    for (const p of history?.[key] ?? []) {
+      const row = perfByYear.get(p.year) ?? { year: p.year };
+      row[key] = p.val;
+      perfByYear.set(p.year, row);
+    }
+  }
+  const perfSeries = [...perfByYear.values()].sort((a, b) => a.year - b.year);
+  const revRows = perfSeries.filter((r) => r.revenue != null && r.revenue > 0);
+  const revFirst = revRows[0];
+  const revLast = revRows.at(-1);
+  const revCagr =
+    revFirst && revLast && revLast.year > revFirst.year
+      ? (Math.pow(revLast.revenue! / revFirst.revenue!, 1 / (revLast.year - revFirst.year)) - 1) * 100
+      : null;
 
   return (
     <div className="space-y-3">
@@ -162,63 +185,89 @@ export function CompanyProfile({
         </Panel>
       </div>
 
-      {/* historical spending, R&D & acquisitions — parsed from SEC XBRL filings */}
-      {spendSeries.length > 0 && (
-        <Panel title="Historical Spending, R&D & Acquisitions ($B)">
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-[2fr_1fr]">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={spendSeries} margin={{ top: 6, right: 12, bottom: 0, left: -14 }}>
-                <XAxis dataKey="year" tick={{ fill: "#8695ab", fontSize: 10 }} />
-                <YAxis tick={{ fill: "#5b6a80", fontSize: 10 }} />
-                <Tooltip contentStyle={{ background: "#0d1420", border: "1px solid #1e2a3d", borderRadius: 8, fontSize: 12 }} />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="rnd" name="R&D" fill="#f59e0b" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="capex" name="Capex" fill="#3b82f6" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="acquisitions" name="Acquisitions" fill="#a78bfa" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="flex flex-col justify-center gap-3 text-sm">
-              {history?.rnd?.at(-1) && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest R&D ({history.rnd.at(-1)!.year})</div>
-                  <div className="text-lg font-bold text-[#f59e0b]">${history.rnd.at(-1)!.val.toFixed(1)}B</div>
-                </div>
-              )}
-              {history?.capex?.at(-1) && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest Capex ({history.capex.at(-1)!.year})</div>
-                  <div className="text-lg font-bold text-[#3b82f6]">${history.capex.at(-1)!.val.toFixed(1)}B</div>
-                </div>
-              )}
-              {latestAcq && (
-                <div>
-                  <div className="text-[10px] uppercase tracking-wide text-[var(--text-faint)]">Latest Acquisitions ({latestAcq.year})</div>
-                  <div className="text-lg font-bold text-[#a78bfa]">${latestAcq.val.toFixed(1)}B</div>
-                </div>
-              )}
-              <p className="pt-1 text-[10px] text-[var(--text-faint)]">Annual figures from {history?.source ?? "company filings"}.</p>
-            </div>
+      {/* annual FY performance + historical spending — parsed from SEC XBRL / Yahoo filings */}
+      {(perfSeries.length > 0 || spendSeries.length > 0) && (
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          {perfSeries.length > 0 && (
+            <Panel title="Annual Revenue & Net Income (FY, $B)" className={spendSeries.length === 0 ? "xl:col-span-2" : undefined}>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={perfSeries} margin={{ top: 6, right: 12, bottom: 0, left: -14 }}>
+                  <XAxis dataKey="year" tick={{ fill: "#8695ab", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "#5b6a80", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "#0d1420", border: "1px solid #1e2a3d", borderRadius: 8, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="revenue" name="Revenue" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="netIncome" name="Net Income" fill="#34d399" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-2 flex items-center justify-between border-t border-[var(--panel-border)] pt-2 text-xs">
+                <span className="text-[var(--text-dim)]">Revenue CAGR ({revFirst?.year}–{revLast?.year})</span>
+                {revCagr != null ? (
+                  <span className="font-semibold" style={{ color: revCagr >= 0 ? "var(--pos)" : "var(--neg)" }}>
+                    {revCagr >= 0 ? "+" : ""}{revCagr.toFixed(1)}%/yr
+                  </span>
+                ) : (
+                  <span className="text-[var(--text-faint)]">—</span>
+                )}
+              </div>
+            </Panel>
+          )}
+          {spendSeries.length > 0 && (
+            <Panel title="Historical Spending, R&D & Acquisitions ($B)" className={perfSeries.length === 0 ? "xl:col-span-2" : undefined}>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={spendSeries} margin={{ top: 6, right: 12, bottom: 0, left: -14 }}>
+                  <XAxis dataKey="year" tick={{ fill: "#8695ab", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "#5b6a80", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "#0d1420", border: "1px solid #1e2a3d", borderRadius: 8, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="rnd" name="R&D" fill="#f59e0b" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="capex" name="Capex" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="acquisitions" name="Acquisitions" fill="#a78bfa" radius={[2, 2, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-[var(--panel-border)] pt-2 text-xs">
+                {history?.rnd?.at(-1) && (
+                  <span>R&D <span className="font-semibold text-[#f59e0b]">${history.rnd.at(-1)!.val.toFixed(1)}B</span></span>
+                )}
+                {history?.capex?.at(-1) && (
+                  <span>Capex <span className="font-semibold text-[#3b82f6]">${history.capex.at(-1)!.val.toFixed(1)}B</span></span>
+                )}
+                {latestAcq && (
+                  <span>Acquisitions <span className="font-semibold text-[#a78bfa]">${latestAcq.val.toFixed(1)}B</span></span>
+                )}
+                <span className="ml-auto text-[10px] text-[var(--text-faint)]">Annual figures from {history?.source ?? "company filings"}.</span>
+              </div>
+            </Panel>
+          )}
+        </div>
+      )}
+
+      {/* global operations map — this company's facilities only */}
+      {facilities.length > 0 && (
+        <Panel title={`Global Operations (${facilities.length} facilities)`}>
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-[2fr_1fr]">
+            <ManufacturingFootprint facilities={facilities} />
+            <ul className="max-h-[340px] space-y-2 overflow-y-auto text-sm">
+              {facilities.map((f) => (
+                <li key={f.id} className="flex items-center justify-between gap-2 rounded-lg border border-[var(--panel-border)] bg-[var(--panel-2)] px-2.5 py-1.5">
+                  <div className="min-w-0">
+                    <div className="truncate text-xs font-medium">{f.name}</div>
+                    <div className="text-[10px] text-[var(--text-faint)]">{f.city}, {f.country}</div>
+                  </div>
+                  <span className="shrink-0 text-[10px] capitalize text-[var(--text-dim)]">{f.type} · {f.status}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </Panel>
       )}
 
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
-        {/* facilities */}
-        <Panel title={`Facilities (${facilities.length})`}>
-          {facilities.length ? (
-            <ul className="space-y-2 text-sm">
-              {facilities.map((f) => (
-                <li key={f.id} className="flex items-center justify-between">
-                  <span>{f.name}</span>
-                  <span className="text-[11px] capitalize text-[var(--text-dim)]">{f.type} · {f.status}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-[var(--text-faint)]">No tracked facilities.</p>
-          )}
-        </Panel>
+      {/* supply-chain network — upstream suppliers / downstream customers */}
+      <Panel title="Supply Chain Network">
+        <SupplierNetwork company={company} edges={supplierEdges} />
+      </Panel>
 
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
         {/* patents */}
         <Panel title="Patents & Innovation">
           {patent ? (

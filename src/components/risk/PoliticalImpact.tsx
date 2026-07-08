@@ -61,7 +61,7 @@ export function PoliticalImpact({ geo, materials, edges }: { geo: GeoRisk[]; mat
 
       <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Producing Countries" value={producers.length} icon="Globe" accent="#a78bfa" />
-        <StatTile label="High-Tension Producers" value={highTension} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="High-Tension Producers" value={highTension} icon="TriangleAlert" accent="#ef4444" />
         <StatTile label="Materials At Risk" value={atRiskMaterials} icon="Boxes" accent="#f59e0b" />
         <StatTile label="Top Instability" value={topInstability?.tension ?? "—"} sub={topInstability?.country} icon="Crosshair" accent="#38bdf8" />
       </div>

@@ -81,7 +81,7 @@ export function FacilitiesView({ companies, facilities }: { companies: Company[]
         <StatTile label="Operating" value={count("operating")} icon="CheckCircle2" accent="#34d399" />
         <StatTile label="Under Construction" value={count("construction")} icon="Hammer" accent="#f59e0b" />
         <StatTile label="Planned" value={count("planned")} icon="Clock" accent="#3b82f6" />
-        <StatTile label="Risk Detected" value={count("risk")} icon="AlertTriangle" accent="#ef4444" />
+        <StatTile label="Risk Detected" value={count("risk")} icon="TriangleAlert" accent="#ef4444" />
       </div>
 
       <Panel title="Global Footprint">
