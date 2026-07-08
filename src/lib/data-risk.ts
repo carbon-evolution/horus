@@ -57,7 +57,7 @@ const semiconductor: RiskBlock = {
     { country: "USA", flag: "🇺🇸", tension: 45, role: "Design, EDA, equipment; fab re-shoring", localization: 42, chokepoints: [] },
     { country: "Japan", flag: "🇯🇵", tension: 38, role: "Materials (photoresist, wafers), equipment", localization: 68, chokepoints: ["South China Sea"] },
     { country: "Netherlands", flag: "🇳🇱", tension: 30, role: "EUV lithography monopoly (ASML)", localization: 55, chokepoints: [] },
-    { country: "Ukraine", flag: "🇺🇦", tension: 90, role: "Neon gas (~50% semiconductor-grade)", localization: 20, chokepoints: [] },
+    { country: "Ukraine", flag: "🇺🇦", tension: 90, role: "Neon gas (~50% pre-2022; plants offline, China now leads)", localization: 20, chokepoints: [] },
   ],
   compareRadar: withComposite([
     { entity: "TSMC", color: "#38bdf8", vals: [85, 60, 25, 55, 60, 45, 65, 60] },
