@@ -18,12 +18,12 @@ function RiskGauge({ value, label }: { value: number; label: string }) {
   const R = 54, CX = 70, CY = 70;
   const angle = Math.PI * (1 - value / 100); // 100 → 0 rad (right), 0 → π (left)
   const nx = CX + R * Math.cos(angle), ny = CY - R * Math.sin(angle);
-  const largeArc = value > 50 ? 1 : 0;
   return (
     <div className="flex flex-col items-center">
       <svg width={140} height={86} viewBox="0 0 140 86">
         <path d={`M${CX - R},${CY} A${R},${R} 0 0 1 ${CX + R},${CY}`} fill="none" stroke="var(--panel-2)" strokeWidth={11} strokeLinecap="round" />
-        <path d={`M${CX - R},${CY} A${R},${R} 0 ${largeArc} 1 ${nx},${ny}`} fill="none" stroke={riskColor(value)} strokeWidth={11} strokeLinecap="round" />
+        {/* value arc never exceeds the 180° semicircle, so large-arc-flag stays 0 */}
+        <path d={`M${CX - R},${CY} A${R},${R} 0 0 1 ${nx},${ny}`} fill="none" stroke={riskColor(value)} strokeWidth={11} strokeLinecap="round" />
         <text x={CX} y={CY - 8} textAnchor="middle" fontSize={22} fontWeight={700} fill={riskColor(value)}>{Math.round(value)}</text>
         <text x={CX} y={CY + 8} textAnchor="middle" fontSize={9} fill="#8695ab">/100 risk</text>
       </svg>
