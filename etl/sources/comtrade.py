@@ -47,14 +47,12 @@ REPORTERS = {
 # listed; specialty inputs with ambiguous codes (photoresist, gallium, HBM,
 # CoWoS...) keep their curated USGS/Statista estimates.
 MATERIAL_SOURCING = {
-    "semiconductor": {
-        "polysilicon": "280461",
-        # neon: NO clean HS code — 280429 lumps all rare gases incl. helium
-        # (Qatar artifact), so neon keeps its curated USGS/Statista estimate
-        "rare-earths": "2846",
-        "palladium":   "711021",
-        "tungsten":    "261100",
-    },
+    # Semiconductor inputs have NO trustworthy trade mapping — verified vs
+    # USGS/Statista production data 2026-07-08: polysilicon/tungsten trade
+    # hides China (domestic consumption), 2846 mirrors count Myanmar→China
+    # concentrate, palladium shows re-export hubs (France mines none), and
+    # 280429 lumps helium (Qatar artifact). All stay curated USGS/Statista.
+    "semiconductor": {},
     "ai": {},  # HBM/CoWoS/substrate/GPU shares are production splits, not trade flows
     "battery": {
         "lithium":   "283691",

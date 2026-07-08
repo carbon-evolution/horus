@@ -24,12 +24,12 @@ const semiconductor: SupplyBlock = {
     { buyer: "Micron", supplier: "Tokyo Electron", tier: 1, material: "Etch", spend: "$3.6B", risk: "low" },
   ],
   materials: [
-    { id: "polysilicon", name: "Polysilicon", category: "Substrate", price: "$8.20/kg", concentration: 79, supplyRisk: "high", topProducers: [{ country: "China", share: 64 }, { country: "Germany", share: 9 }, { country: "USA", share: 6 }], usedIn: "Wafers" },
-    { id: "neon", name: "Neon Gas", category: "Process Gas", price: "$540/m³", concentration: 74, supplyRisk: "high", topProducers: [{ country: "Ukraine", share: 50 }, { country: "China", share: 18 }, { country: "Russia", share: 12 }], usedIn: "Lithography" },
+    { id: "polysilicon", name: "Polysilicon", category: "Substrate", price: "$8.20/kg", concentration: 95, supplyRisk: "high", topProducers: [{ country: "China", share: 83 }, { country: "Germany", share: 7 }, { country: "USA", share: 5 }], usedIn: "Wafers" },
+    { id: "neon", name: "Neon Gas", category: "Process Gas", price: "$540/m³", concentration: 85, supplyRisk: "high", topProducers: [{ country: "China", share: 60 }, { country: "Ukraine", share: 15 }, { country: "Russia", share: 10 }], usedIn: "Lithography" },
     { id: "gallium", name: "Gallium", category: "Compound", price: "$390/kg", concentration: 94, supplyRisk: "high", topProducers: [{ country: "China", share: 94 }, { country: "Japan", share: 3 }, { country: "Russia", share: 2 }], usedIn: "RF / Power chips" },
     { id: "germanium", name: "Germanium", category: "Compound", price: "$1,900/kg", concentration: 83, supplyRisk: "high", topProducers: [{ country: "China", share: 60 }, { country: "Russia", share: 12 }, { country: "USA", share: 11 }], usedIn: "Optics / IR" },
     { id: "photoresist", name: "Photoresist", category: "Chemical", price: "$3,100/kg", concentration: 88, supplyRisk: "medium", topProducers: [{ country: "Japan", share: 78 }, { country: "USA", share: 10 }, { country: "South Korea", share: 8 }], usedIn: "Patterning" },
-    { id: "rare-earths", name: "Rare Earths", category: "Elements", price: "$68/kg", concentration: 85, supplyRisk: "high", topProducers: [{ country: "China", share: 70 }, { country: "USA", share: 14 }, { country: "Myanmar", share: 8 }], usedIn: "Magnets / Polishing" },
+    { id: "rare-earths", name: "Rare Earths", category: "Elements", price: "$68/kg", concentration: 85, supplyRisk: "high", topProducers: [{ country: "China", share: 69 }, { country: "USA", share: 12 }, { country: "Myanmar", share: 11 }], usedIn: "Magnets / Polishing" },
     { id: "palladium", name: "Palladium", category: "Metal", price: "$980/oz", concentration: 77, supplyRisk: "medium", topProducers: [{ country: "Russia", share: 40 }, { country: "South Africa", share: 37 }, { country: "Canada", share: 9 }], usedIn: "Plating" },
     { id: "tungsten", name: "Tungsten", category: "Metal", price: "$340/mtu", concentration: 86, supplyRisk: "high", topProducers: [{ country: "China", share: 80 }, { country: "Vietnam", share: 5 }, { country: "Russia", share: 3 }], usedIn: "Interconnects" },
   ],
@@ -57,10 +57,10 @@ const ai: SupplyBlock = {
     { buyer: "Microsoft", supplier: "Vertiv", tier: 2, material: "Cooling/Power", spend: "$4.3B", risk: "low" },
   ],
   materials: [
-    { id: "hbm", name: "HBM Memory", category: "Component", price: "$18/GB", concentration: 92, supplyRisk: "high", topProducers: [{ country: "South Korea", share: 68 }, { country: "USA", share: 22 }, { country: "Japan", share: 6 }], usedIn: "AI accelerators" },
+    { id: "hbm", name: "HBM Memory", category: "Component", price: "$18/GB", concentration: 92, supplyRisk: "high", topProducers: [{ country: "South Korea", share: 90 }, { country: "USA", share: 9 }], usedIn: "AI accelerators" },
     { id: "cowos", name: "CoWoS Packaging", category: "Component", price: "capacity-bound", concentration: 90, supplyRisk: "high", topProducers: [{ country: "Taiwan", share: 85 }, { country: "USA", share: 8 }, { country: "Japan", share: 5 }], usedIn: "GPU packaging" },
     { id: "substrate", name: "ABF Substrate", category: "Component", price: "tight", concentration: 80, supplyRisk: "medium", topProducers: [{ country: "Japan", share: 45 }, { country: "Taiwan", share: 30 }, { country: "South Korea", share: 20 }], usedIn: "Advanced packaging" },
-    { id: "gpu", name: "GPUs", category: "Accelerator", price: "$25k+/unit", concentration: 88, supplyRisk: "high", topProducers: [{ country: "Taiwan", share: 60 }, { country: "USA", share: 30 }, { country: "South Korea", share: 8 }], usedIn: "Training/Inference" },
+    { id: "gpu", name: "GPUs", category: "Accelerator", price: "$25k+/unit", concentration: 88, supplyRisk: "high", topProducers: [{ country: "Taiwan", share: 88 }, { country: "South Korea", share: 7 }, { country: "USA", share: 5 }], usedIn: "Training/Inference" },
     { id: "power", name: "Grid Power", category: "Utility", price: "$/MWh", concentration: 55, supplyRisk: "medium", topProducers: [{ country: "USA", share: 40 }, { country: "China", share: 25 }, { country: "EU", share: 20 }], usedIn: "Datacenters" },
   ],
   shipments: [
