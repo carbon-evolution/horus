@@ -38,7 +38,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
           <ManufacturingFootprint facilities={data.facilities} />
         </Panel>
         <Panel title="Raw Materials Movement (30 Days)" action="View Trade & Shipments" className="min-h-[460px] xl:col-span-5">
-          <RawMaterialsSankey data={data.sankey} />
+          <RawMaterialsSankey data={data.sankey} compact />
         </Panel>
       </div>
 

@@ -137,7 +137,29 @@ const VARIANT = {
   },
 } as const;
 
-export function RawMaterialsSankey({ data, variant = "country" }: { data: SankeyData; variant?: "country" | "company" }) {
+// Keep only the top-K inbound (origins) and top-M outbound (destinations) links
+// per material, dropping orphaned nodes — used for the compact dashboard view.
+function trimSankey(data: SankeyData, kOrigins: number, mDests: number): SankeyData {
+  const hasIn = new Set<number>(), hasOut = new Set<number>();
+  for (const l of data.links) { hasOut.add(l.source); hasIn.add(l.target); }
+  const isMat = (i: number) => hasIn.has(i) && hasOut.has(i);
+  const keep: typeof data.links = [];
+  for (let m = 0; m < data.nodes.length; m++) {
+    if (!isMat(m)) continue;
+    keep.push(...data.links.filter((l) => l.target === m).sort((a, b) => b.value - a.value).slice(0, kOrigins));
+    keep.push(...data.links.filter((l) => l.source === m).sort((a, b) => b.value - a.value).slice(0, mDests));
+  }
+  const used = [...new Set(keep.flatMap((l) => [l.source, l.target]))].sort((a, b) => a - b);
+  const remap = new Map(used.map((i, k) => [i, k]));
+  return {
+    ...data,
+    nodes: used.map((i) => data.nodes[i]),
+    links: keep.map((l) => ({ ...l, source: remap.get(l.source)!, target: remap.get(l.target)! })),
+  };
+}
+
+export function RawMaterialsSankey({ data: raw, variant = "country", compact = false }: { data: SankeyData; variant?: "country" | "company"; compact?: boolean }) {
+  const data = useMemo(() => (compact ? trimSankey(raw, 2, 2) : raw), [raw, compact]);
   const model = useMemo(() => buildModel(data), [data]);
   const unit = data.unit ? ` ${data.unit}` : "";
   const T = VARIANT[variant];
@@ -162,15 +184,18 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
   useEffect(() => { setOffsets({}); setSelected(null); }, [data]);
 
   // Height scales with the busiest column so pills + their "top/lead" labels
-  // never overlap (a 10-input company graph needs far more room than a 4-row one).
+  // never overlap. Compact (dashboard) hides subtitles and packs tighter so it
+  // stays balanced with the map beside it.
   const maxRows = Math.max(model.originIdx.length, model.matIdx.length, model.destIdx.length);
-  const minH = Math.max(460, maxRows * 62 + 40);
+  const rowH = compact ? 46 : 62;
+  const minH = Math.max(460, maxRows * rowH + 40);
 
   const { w } = dims;
   const h = Math.max(dims.h, minH);
-  const ORIGIN_X = Math.round(w * 0.14);
+  // Wider label gutters so long country names never clip at the panel edges.
+  const ORIGIN_X = Math.max(104, Math.round(w * 0.15));
+  const DEST_X = Math.min(w - 104, Math.round(w * 0.85));
   const MAT_X = Math.round(w * 0.5);
-  const DEST_X = Math.round(w * 0.86);
   const MAT_HALF = Math.max(52, Math.min(78, w * 0.09));
 
   const oy = spread(model.originIdx.length, h);
@@ -314,9 +339,11 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
                 <rect x={p.x - MAT_HALF} y={p.y - 16} width={MAT_HALF * 2} height={32} rx={7}
                   fill={info.color} stroke={isSel ? "#e2e8f0" : "none"} strokeWidth={2} />
                 <text x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize={13} fontWeight={600} fill="#0b0f17" style={{ pointerEvents: "none" }}>{info.name}</text>
-                <text x={p.x} y={p.y + 29} textAnchor="middle" fontSize={11} fill="#8b98b8" style={{ pointerEvents: "none" }}>
-                  {T.top}: {info.sources[0] ? `${info.sources[0].name} ${Math.round(info.sources[0].share * 100)}%` : "—"}
-                </text>
+                {!compact && (
+                  <text x={p.x} y={p.y + 29} textAnchor="middle" fontSize={11} fill="#8b98b8" style={{ pointerEvents: "none" }}>
+                    {T.top}: {info.sources[0] ? `${info.sources[0].name} ${Math.round(info.sources[0].share * 100)}%` : "—"}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -425,8 +452,24 @@ export function RawMaterialsSankey({ data, variant = "country" }: { data: Sankey
           </div>
         )}
       </div>
-      <div className="mt-2 shrink-0 text-[10px] text-[var(--text-faint)]">
-        Line thickness ∝ {variant === "company" ? "annual spend" : "share of supply"}{data.unit ? ` (${data.unit})` : ""} · drag to reposition · click any node for details
+      {/* material colour palette — so the coloured ribbons stay identifiable */}
+      <div className="mt-2 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1">
+        {model.matIdx.map((idx) => {
+          const info = model.matInfo.get(idx)!;
+          return (
+            <button
+              key={idx}
+              onClick={() => setSelected((s) => (s === idx ? null : idx))}
+              className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-dim)] hover:text-[var(--text)]"
+            >
+              <span className="h-2.5 w-2.5 rounded-sm" style={{ background: info.color }} />
+              {info.name}
+            </button>
+          );
+        })}
+      </div>
+      <div className="mt-1 shrink-0 text-[10px] text-[var(--text-faint)]">
+        Line thickness ∝ {variant === "company" ? "annual spend" : "share of supply"}{data.unit ? ` (${data.unit})` : ""} · {compact ? "click a material to trace it · open Trade & Shipments for detail" : "drag to reposition · click any node for details"}
       </div>
     </div>
   );
