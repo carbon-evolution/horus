@@ -30,6 +30,7 @@ export const LOCAL_LOGO: Record<string, string> = {
   alphabet: "/logos/alphabet.png",
   eve: "/logos/eve.png",
   lges: "/logos/lges.png",
+  byd: "/logos/byd.png",
 };
 
 // Company id -> simple-icons slug (vector SVG brand logos, razor-sharp at any
