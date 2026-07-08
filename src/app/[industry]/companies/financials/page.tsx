@@ -1,6 +1,6 @@
 import { CompaniesFinancials } from "@/components/companies/CompaniesFinancials";
-import { getCompanies, getFinancialsSnapshot, getFinancialsTTM } from "@/lib/provider";
-import type { Industry, FinancialTTMPoint } from "@/lib/types";
+import { getCompanies, getFinancialsSnapshot, getFinancialsTTM, getScores } from "@/lib/provider";
+import type { Industry, FinancialTTMPoint, Scores } from "@/lib/types";
 
 export default async function Page({ params }: { params: Promise<{ industry: Industry }> }) {
   const { industry } = await params;
@@ -11,5 +11,8 @@ export default async function Page({ params }: { params: Promise<{ industry: Ind
   const ttm: Record<string, FinancialTTMPoint[]> = Object.fromEntries(
     await Promise.all(companies.map(async (c) => [c.id, await getFinancialsTTM(industry, c.id)])),
   );
-  return <CompaniesFinancials companies={companies} financials={financials} ttm={ttm} />;
+  const scores: Record<string, Scores | null> = Object.fromEntries(
+    await Promise.all(companies.map(async (c) => [c.id, await getScores(industry, c.id)])),
+  );
+  return <CompaniesFinancials companies={companies} financials={financials} ttm={ttm} scores={scores} />;
 }
