@@ -20,6 +20,7 @@ import { StatTile } from "@/components/ui/StatTile";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { NewsFeed } from "@/components/dashboard/NewsFeed";
 import { CompanyLink } from "@/components/ui/CompanyLink";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 import { CompanyScorecard } from "./CompanyScorecard";
 
 export function CompanyProfile({
@@ -83,12 +84,15 @@ export function CompanyProfile({
     <div className="space-y-3">
       {/* header */}
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Link href={`/${industry}/companies`} className="text-xs text-[var(--accent)] hover:underline">← Companies</Link>
+        <div className="flex items-start gap-3">
+          <CompanyLogo id={company.id} name={company.name} size={44} />
+          <div>
+            <div className="flex items-center gap-2">
+              <Link href={`/${industry}/companies`} className="text-xs text-[var(--accent)] hover:underline">← Companies</Link>
+            </div>
+            <h1 className="mt-1 text-xl font-bold">{company.name}</h1>
+            <p className="max-w-2xl text-xs text-[var(--text-dim)]">{m.description}</p>
           </div>
-          <h1 className="mt-1 text-xl font-bold">{company.name}</h1>
-          <p className="max-w-2xl text-xs text-[var(--text-dim)]">{m.description}</p>
         </div>
         <RiskBadge level={m.exposure} label={`Supply Exposure: ${m.exposure}`} />
       </div>

@@ -1,6 +1,7 @@
 "use client";
 import type { Company } from "@/lib/types";
 import { useFocus, focusDim } from "@/lib/focus";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 
 function pct(n: number) {
   if (n === 0) return <span className="text-[var(--text-faint)]">—</span>;
@@ -35,8 +36,13 @@ export function MarketSnapshot({ companies }: { companies: Company[] }) {
                 }`}
               >
                 <td className="py-1.5">
-                  <div className={`font-medium ${focused ? "text-[var(--accent)]" : ""}`}>{c.name}</div>
-                  <div className="text-[10px] text-[var(--text-faint)]">{c.ticker}</div>
+                  <div className="flex items-center gap-2">
+                    <CompanyLogo id={c.id} name={c.name} size={22} />
+                    <div>
+                      <div className={`font-medium ${focused ? "text-[var(--accent)]" : ""}`}>{c.name}</div>
+                      <div className="text-[10px] text-[var(--text-faint)]">{c.ticker}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="py-1.5 text-right tabular-nums">{c.marketCap}</td>
                 <td className="py-1.5 text-right tabular-nums text-[var(--text-dim)]">{c.price}</td>

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Supply Chain Risk Radar",
-  description: "Global supply-chain risk intelligence for Semiconductor, AI, and Battery — powered by free and open data.",
+  title: "Horus — Supply-Chain Risk Intelligence",
+  description: "Horus: global supply-chain risk intelligence for Semiconductor, AI, and Battery — powered by free and open data.",
 };
 
 export default function RootLayout({

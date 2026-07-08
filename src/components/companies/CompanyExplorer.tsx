@@ -7,6 +7,7 @@ import { INDUSTRY_LABEL, type Company, type CompanyMeta } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
 import { DataTable, type Column } from "@/components/ui/DataTable";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 
 function capNum(s: string): number {
   const n = parseFloat(s.replace(/[$,]/g, ""));
@@ -25,9 +26,12 @@ export function CompanyExplorer({ companies, metas }: { companies: Company[]; me
       header: "Company",
       sortValue: (r) => r.name,
       render: (r) => (
-        <div>
-          <div className="font-medium text-[var(--accent)]">{r.name}</div>
-          <div className="text-[10px] text-[var(--text-faint)]">{r.ticker}</div>
+        <div className="flex items-center gap-2.5">
+          <CompanyLogo id={r.id} name={r.name} size={24} />
+          <div>
+            <div className="font-medium text-[var(--accent)]">{r.name}</div>
+            <div className="text-[10px] text-[var(--text-faint)]">{r.ticker}</div>
+          </div>
         </div>
       ),
     },

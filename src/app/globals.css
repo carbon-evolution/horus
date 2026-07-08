@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-/* Dark enterprise theme for the Supply Chain Risk Radar. */
+/* Dark enterprise theme for Horus — supply-chain risk intelligence. Gold accent
+   drawn from the Eye-of-Horus brand mark. */
 :root {
   --bg: #0a0e17;
   --bg-elevated: #0f1420;
@@ -10,8 +11,8 @@
   --text: #e5edf7;
   --text-dim: #8695ab;
   --text-faint: #5b6a80;
-  --accent: #3b82f6;
-  --accent-soft: #1d4ed8;
+  --accent: #e0b83a;
+  --accent-soft: #b8860b;
   --pos: #34d399;
   --neg: #f87171;
   --risk-low: #34d399;

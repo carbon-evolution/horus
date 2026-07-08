@@ -6,6 +6,7 @@ import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type Company, type CompanyMeta } from "@/lib/types";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RiskBadge } from "@/components/ui/RiskBadge";
+import { CompanyLogo } from "@/components/ui/CompanyLogo";
 
 function healthColor(n: number) {
   return n >= 80 ? "var(--risk-low)" : n >= 60 ? "var(--risk-med)" : "var(--risk-high)";
@@ -33,9 +34,12 @@ export function CompaniesOverview({ companies: allCompanies, metas }: { companie
               } ${focusDim(active, focused)}`}
             >
               <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-semibold">{c.name}</div>
-                  <div className="text-[10px] text-[var(--text-faint)]">{c.ticker} · {m.hq}</div>
+                <div className="flex items-center gap-2.5">
+                  <CompanyLogo id={c.id} name={c.name} size={30} />
+                  <div>
+                    <div className="font-semibold">{c.name}</div>
+                    <div className="text-[10px] text-[var(--text-faint)]">{c.ticker} · {m.hq}</div>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button

@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { NAV, DATA_SOURCES } from "@/lib/nav";
 import { INDUSTRIES, INDUSTRY_LABEL } from "@/lib/types";
 import { Icon } from "@/components/Icon";
+import { HorusLogo } from "@/components/layout/HorusLogo";
 import { useIndustry } from "@/lib/industry-context";
 
 const INDUSTRY_ICON: Record<string, string> = {
@@ -127,13 +128,12 @@ export function Sidebar() {
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-[var(--panel-border)] bg-[var(--bg-elevated)]">
       {/* Brand */}
       <div className="flex items-center gap-3 px-4 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent)]/20 ring-1 ring-[var(--accent)]/40">
-          <Icon name="Radar" size={20} className="text-[var(--accent)]" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)]/10 ring-1 ring-[var(--accent)]/30">
+          <HorusLogo size={30} />
         </div>
         <div className="leading-tight">
-          <div className="text-sm font-bold">Supply Chain</div>
-          <div className="text-sm font-bold">Risk Radar</div>
-          <div className="mt-0.5 text-[10px] text-[var(--text-faint)]">Semiconductor · AI · Battery</div>
+          <div className="text-base font-bold tracking-[0.2em] text-[var(--accent)]">HORUS</div>
+          <div className="mt-0.5 text-[10px] text-[var(--text-faint)]">Supply-chain risk intelligence</div>
         </div>
       </div>
 
