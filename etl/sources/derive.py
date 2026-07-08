@@ -105,16 +105,56 @@ CONSUMER_HUBS = {
 }
 
 
+# Rough global annual trade value ($B/yr) per material, used to give the derived
+# material shipping lanes plausible relative magnitudes. Estimates, not exact.
+TRADE_VALUE_B = {
+    "Polysilicon": 8, "Gallium": 1.5, "Germanium": 1, "Rare Earths": 10,
+    "Palladium": 22, "Tungsten": 4, "Neon Gas": 1, "Photoresist": 6,
+    "Lithium": 40, "Cobalt": 15, "Nickel": 30, "Graphite": 5, "Manganese": 8,
+    "HBM Memory": 60, "GPUs": 120, "CoWoS Packaging": 30, "ABF Substrate": 8,
+}
+# Materials that move by air (gases, chemicals, finished components) vs by sea.
+AIR_CATEGORIES = {"Process Gas", "Chemical", "Component", "Accelerator"}
+SKIP_CATEGORIES = {"Utility"}  # not physically shipped (e.g. grid power)
+
+
+def build_material_lanes(materials: list[dict], industry: str, geo: list[dict]) -> list[dict]:
+    """Producer country -> consuming hub shipping lanes for each raw material, so
+    the maritime chokepoint map can project every material's supply route. Top
+    producers by share; sea/air by category; volume from a trade-value estimate ×
+    producer share; risk from the producer's geopolitical tension + concentration."""
+    hubs = list((CONSUMER_HUBS.get(industry) or {"USA": 1, "China": 1}).keys())
+    tension = {g["country"]: g.get("tension", 0) for g in geo}
+    lanes: list[dict] = []
+    for m in materials:
+        cat = m.get("category", "")
+        if cat in SKIP_CATEGORIES:
+            continue
+        mode = "air" if cat in AIR_CATEGORIES else "sea"
+        tv = TRADE_VALUE_B.get(m["name"], 3.0)
+        conc = m.get("concentration") or 0
+        for p in sorted(m.get("topProducers", []), key=lambda x: -x["share"])[:2]:
+            origin = p["country"]
+            dest = next((h for h in hubs if h != origin), hubs[0])
+            val = tv * p["share"] / 100.0
+            t = tension.get(origin, 0)
+            risk = "high" if t >= 70 or conc >= 85 else "medium" if t >= 45 or conc >= 70 else "low"
+            vol = f"${val:.1f}B/yr" if val >= 1 else f"${round(val * 1000)}M/yr"
+            lanes.append({
+                "lane": f"{origin} → {dest}", "origin": origin, "destination": dest,
+                "mode": mode, "commodity": m["name"], "volume": vol, "tariff": "—", "risk": risk,
+            })
+    return lanes
+
+
 def build_material_sankey(materials: list[dict], industry: str) -> dict:
     """Origin country -> raw material -> destination, built from the SAME curated
     `materials.topProducers` the Raw Materials page uses, so producer shares are
-    identical across both views. Link value = share of supply (%). Materials are
-    the most concentrated few, to stay readable."""
+    identical across both views. Link value = share of supply (%)."""
     hubs = CONSUMER_HUBS.get(industry) or {"USA": 40, "China": 30, "Europe": 30}
     hub_total = sum(hubs.values()) or 1
     mats = [m for m in materials if m.get("topProducers")]
     mats.sort(key=lambda m: -(m.get("concentration") or 0))
-    mats = mats[:6]
 
     nodes: list[dict] = []
     index: dict[str, int] = {}
@@ -146,10 +186,12 @@ def run(industry: str = "semiconductor") -> dict:
     meta_map = read_dataset(industry, "companyMeta") or {}
     esg_list = read_dataset(industry, "esg") or []
     materials = read_dataset(industry, "materials") or []
+    geo = read_dataset(industry, "geo") or []
     out = {
         "kpis": build_kpis(seeded, len(companies), len(news)),
         "compareRadar": build_compare_radar(companies, curated, meta_map, esg_list),
     }
     if materials:
         out["sankey"] = build_material_sankey(materials, industry)
+        out["materialLanes"] = build_material_lanes(materials, industry, geo)
     return out

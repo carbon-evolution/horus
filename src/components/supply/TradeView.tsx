@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useIndustry } from "@/lib/industry-context";
 import { INDUSTRY_LABEL, type ShipMode, type SankeyData, type TradeShipment } from "@/lib/types";
+import { chokepointsForLane } from "@/lib/maritime";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Panel } from "@/components/ui/Panel";
 import { StatTile } from "@/components/ui/StatTile";
@@ -33,7 +34,7 @@ function tradeStats(sankey: SankeyData, shipments: TradeShipment[]) {
   return { materialCount, topDep, highRisk, lanes: shipments.length };
 }
 
-export function TradeView({ sankey, shipments, companySankey }: { sankey: SankeyData; shipments: TradeShipment[]; companySankey: SankeyData }) {
+export function TradeView({ sankey, shipments, companySankey, materialLanes }: { sankey: SankeyData; shipments: TradeShipment[]; companySankey: SankeyData; materialLanes: TradeShipment[] }) {
   const industry = useIndustry();
   const stats = tradeStats(sankey, shipments);
   const [flowTab, setFlowTab] = useState<"country" | "company">("country");
@@ -104,6 +105,53 @@ export function TradeView({ sankey, shipments, companySankey }: { sankey: Sankey
           </tbody>
         </table>
       </Panel>
+
+      {materialLanes.length > 0 && (
+        <Panel title="Raw Material Shipping Routes" bodyClassName="overflow-x-auto">
+          <div className="mb-2 text-[11px] text-[var(--text-dim)]">
+            How each raw material moves from its producing country to a manufacturing hub, and the maritime chokepoints that route transits — the same lanes projected onto the map in Risk → Geopolitical.
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-[11px] text-[var(--text-dim)]">
+                <th className="pb-2 pr-4 font-medium">Material</th>
+                <th className="pb-2 pr-4 font-medium">Route</th>
+                <th className="pb-2 pr-4 font-medium">Mode</th>
+                <th className="pb-2 pr-6 text-right font-medium">Est. Value</th>
+                <th className="pb-2 pr-4 font-medium">Chokepoints</th>
+                <th className="pb-2 text-right font-medium">Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...materialLanes].sort((a, b) => a.commodity.localeCompare(b.commodity)).map((s, i) => {
+                const cps = s.mode === "sea" ? chokepointsForLane(s.origin, s.destination) : [];
+                return (
+                  <tr key={i} className="border-t border-[var(--panel-border)] align-top">
+                    <td className="py-2 pr-4 font-medium">{s.commodity}</td>
+                    <td className="py-2 pr-4 text-[var(--text-dim)]">{s.origin} → {s.destination}</td>
+                    <td className="py-2 pr-4">
+                      <span className="inline-flex items-center gap-1.5 capitalize text-[var(--text-dim)]">
+                        <Icon name={MODE_ICON[s.mode]} size={14} /> {s.mode}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-6 text-right tabular-nums whitespace-nowrap">{s.volume}</td>
+                    <td className="py-2 pr-4">
+                      {cps.length ? (
+                        <div className="flex flex-wrap gap-1">
+                          {cps.map((c) => (
+                            <span key={c} className="rounded-full border border-[var(--panel-border)] bg-[var(--panel-2)] px-2 py-0.5 text-[10px] text-[var(--text-dim)]">{c}</span>
+                          ))}
+                        </div>
+                      ) : <span className="text-[10px] text-[var(--text-faint)]">{s.mode === "air" ? "air freight" : "—"}</span>}
+                    </td>
+                    <td className="py-2 text-right"><RiskBadge level={s.risk} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </Panel>
+      )}
     </div>
   );
 }

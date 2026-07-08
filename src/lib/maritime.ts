@@ -26,8 +26,13 @@ const REGION: Record<string, Region> = {
   Brazil: "SAM_A", Argentina: "SAM_A",
   // Africa
   "DR Congo": "AFR", "South Africa": "AFR", Morocco: "AFR", Nigeria: "AFR",
-  // Oceania
+  Mozambique: "AFR", Madagascar: "AFR", Gabon: "AFR",
+  Oceania: "OCE",
   Australia: "OCE", "New Zealand": "OCE",
+  // Others (Myanmar on the Bay of Bengal routes via Malacca like SE Asia)
+  Myanmar: "SEA",
+  // Russia (Pacific exports via Vladivostok) and Ukraine (Black Sea) are left
+  // out of the region map on purpose — their material lanes route directly.
 };
 
 const WEST_OF_MALACCA: Region[] = ["EU", "MED", "GULF", "SA", "AFR"];
@@ -120,6 +125,13 @@ export const SEA_VIA: Record<string, [number, number][]> = {
   "Chile>Taiwan Strait": [[-22, -150], [5, 170]],
   "Peru>Taiwan Strait": [[-8, -140], [8, 165]],
   "USA>Taiwan Strait": [[30, -160], [22, 175]],
+  // Southern/eastern Africa across the Indian Ocean to the Strait of Malacca.
+  "South Africa>Strait of Malacca": [[-27, 45], [-10, 70], [0, 92]],
+  "Mozambique>Strait of Malacca": [[-25, 50], [-8, 72], [0, 92]],
+  "Madagascar>Strait of Malacca": [[-20, 58], [-6, 76], [0, 93]],
+  // West/central Africa rounds the Cape of Good Hope, then across the Indian Ocean.
+  "DR Congo>Strait of Malacca": [[-28, 14], [-35, 22], [-22, 55], [-6, 76], [0, 93]],
+  "Gabon>Strait of Malacca": [[-15, 6], [-35, 20], [-22, 55], [-6, 76], [0, 93]],
 };
 
 export function seaVia(a: string, b: string): [number, number][] {
@@ -162,7 +174,14 @@ export const COUNTRY_COORD: Record<string, [number, number]> = {
   Brazil: [-23.9, -46.3],
   Argentina: [-34.6, -58.4],
   "DR Congo": [-5.9, 12.4],
-  "South Africa": [-33.9, 18.4],
-  Australia: [-20.3, 118.6],    // Port Hedland (major bulk-export port)
+  "South Africa": [-29.9, 31.0],  // Durban
+  Mozambique: [-25.9, 32.6],      // Maputo
+  Madagascar: [-18.1, 49.4],      // Toamasina
+  Gabon: [-0.7, 8.8],             // Libreville
+  Australia: [-20.3, 118.6],      // Port Hedland (major bulk-export port)
   "New Zealand": [-36.8, 174.8],
+  Russia: [43.1, 131.9],          // Vladivostok (Pacific exports)
+  Ukraine: [46.5, 30.7],          // Odesa
+  Myanmar: [16.8, 96.2],          // Yangon
+  Philippines: [14.6, 120.9],     // Manila
 };

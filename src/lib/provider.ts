@@ -27,6 +27,7 @@ export const getSupplierEdges = (i: Industry) => ds<SupplierEdge[]>(i, "supplier
 export const getSupplierProfiles = (i: Industry) => ds<SupplierProfile[]>(i, "supplierProfiles", []);
 export const getMaterials = (i: Industry) => ds<RawMaterial[]>(i, "materials", []);
 export const getShipments = (i: Industry) => ds<TradeShipment[]>(i, "shipments", []);
+export const getMaterialLanes = (i: Industry) => ds<TradeShipment[]>(i, "materialLanes", []);
 export const getPolicies = (i: Industry) => ds<Policy[]>(i, "policies", []);
 export const getEsgProfiles = (i: Industry) => ds<EsgProfile[]>(i, "esg", []);
 export const getGeoRisks = (i: Industry) => ds<GeoRisk[]>(i, "geo", []);
