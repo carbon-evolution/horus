@@ -4,7 +4,7 @@ fastapi<0.116
 psycopg[binary]==3.2.13  # 3.2.10+ ships wheels for Python 3.14
 redis==5.2.1
 PyYAML==6.0.2
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 pytest==8.3.4
 requests==2.32.3
 yfinance==0.2.61
