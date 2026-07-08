@@ -5,7 +5,7 @@ psycopg[binary]==3.2.13  # 3.2.10+ ships wheels for Python 3.14
 redis==5.2.1
 PyYAML==6.0.2
 python-dotenv==1.0.1
-pytest==8.3.4
+pytest==9.0.3
 requests==2.32.3
 yfinance==0.2.61
 importlib_metadata  # prefect server start needs the backport on Python 3.14
