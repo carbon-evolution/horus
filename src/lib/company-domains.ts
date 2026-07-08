@@ -8,7 +8,7 @@ export const COMPANY_DOMAIN: Record<string, string> = {
   kla: "kla.com", micron: "micron.com", adi: "analog.com", ti: "ti.com",
   tel: "tel.com", mediatek: "mediatek.com", infineon: "infineon.com", nxp: "nxp.com",
   // AI
-  microsoft: "microsoft.com", alphabet: "abc.xyz", amazon: "amazon.com", meta: "meta.com",
+  microsoft: "microsoft.com", alphabet: "google.com", amazon: "amazon.com", meta: "meta.com",
   openai: "openai.com", alibaba: "alibaba.com", palantir: "palantir.com", anthropic: "anthropic.com",
   databricks: "databricks.com", xai: "x.ai", perplexity: "perplexity.ai", scaleai: "scale.com",
   midjourney: "midjourney.com", cerebras: "cerebras.ai", mistral: "mistral.ai", cohere: "cohere.com",
@@ -21,16 +21,28 @@ export const COMPANY_DOMAIN: Record<string, string> = {
   northvolt: "northvolt.com", exide: "exideindustries.com", quantumscape: "quantumscape.com", gsyuasa: "gs-yuasa.com",
 };
 
+// Company id -> locally-hosted logo (user-supplied high-res images). Highest
+// priority — used before any external source.
+export const LOCAL_LOGO: Record<string, string> = {
+  tsmc: "/logos/tsmc.png",
+  skhynix: "/logos/skhynix.png",
+  skon: "/logos/skon.png",
+  alphabet: "/logos/alphabet.png",
+  eve: "/logos/eve.png",
+  lges: "/logos/lges.png",
+};
+
 // Company id -> simple-icons slug (vector SVG brand logos, razor-sharp at any
 // size). Only ids with a confirmed icon; the rest fall back to a favicon.
 export const SIMPLE_ICON: Record<string, string> = {
   nvidia: "nvidia", amd: "amd", intel: "intel", samsung: "samsung", arm: "arm",
   qualcomm: "qualcomm", mediatek: "mediatek", broadcom: "broadcom", nxp: "nxp",
-  alphabet: "google", meta: "meta",
+  meta: "meta",
   anthropic: "anthropic", alibaba: "alibabadotcom", palantir: "palantir",
   databricks: "databricks", huggingface: "huggingface", xai: "x", perplexity: "perplexity",
   cohere: "cohere", mistral: "mistralai",
   tesla: "tesla", panasonic: "panasonic", toshiba: "toshiba",
+  lges: "lg", samsungsdi: "samsung",  // LG Energy → LG mark, Samsung SDI → Samsung mark
 };
 
 // Display-name -> domain, for components that only have a company name.
