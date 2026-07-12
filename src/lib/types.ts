@@ -309,10 +309,25 @@ export interface GeoRisk {
 }
 
 // --- Data & Analytics + Monitoring sections ---
+export interface MarketMover { id: string; name: string; ticker: string; changePct: number; }
+export interface MarketLeader { id: string; name: string; ticker: string; marketCap: string; capSharePct: number; }
+// Live sector snapshot derived from real Yahoo quotes (sources/derive.py).
+export interface MarketSnapshot {
+  totalMarketCap: string;      // formatted sum across tracked companies, e.g. "$14.2T"
+  tracked: number;             // # companies with a market cap
+  advancers: number;           // 24h up
+  decliners: number;           // 24h down
+  avgYtdPct: number;           // mean YTD % across tracked companies
+  top3ConcentrationPct: number; // share of total cap held by the 3 largest
+  topGainers: MarketMover[];   // best 24h movers
+  topLosers: MarketMover[];    // worst 24h movers
+  leaders: MarketLeader[];     // largest by market cap, with cap share
+}
 export interface MarketIntel {
   inventoryRatio: { period: string; value: number }[]; // days of inventory
   leadTimes: { component: string; weeks: number; delta: number }[]; // delta vs prior quarter
   utilization: { segment: string; pct: number }[];
+  marketSnapshot?: MarketSnapshot; // live, derived from company quotes
 }
 export interface SourceInfo {
   name: string;
