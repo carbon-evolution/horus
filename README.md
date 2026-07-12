@@ -85,10 +85,10 @@ Three independently-modeled industries under `/semiconductor`, `/ai`, and `/batt
 
 ### 🗺️ Interactive Risk Map
 
-MapLibre-based global manufacturing footprint with:
+Custom **inline-SVG world maps** (simplified Natural Earth landmasses on an equirectangular projection — no map-tile dependency) with:
 - **1,000+ facilities** — fab/R&D/HQ/supplier locations with status and type markers
-- **Supply chain visualization** — deck.gl force graphs and sankey diagrams
-- **Geospatial risk** — country-level tension scores, maritime chokepoints
+- **Supply-chain visualization** — an interactive 3D dependency graph (`react-force-graph-3d` / three.js) and custom SVG **Sankey** flow diagrams
+- **Geospatial risk** — country-level tension scores and animated maritime chokepoints
 
 ### 📡 ETL Data Pipeline (20+ Sources)
 
@@ -103,14 +103,14 @@ MapLibre-based global manufacturing footprint with:
 | **Wikidata** | Company metadata (CEO, HQ, founded) | ❌ |
 | **PatentsView** | US patent filings + assignments | optional free key |
 | **Korea DART** | Korean regulatory filings (Samsung, SK hynix) | optional free key |
-| **USGS** | Mineral production estimates | ❌ |
-| **NASA FIRMS** | Active fire / hotspot data | ❌ |
+
+Plus derived/enrichment modules (risk register, composite scores, KPI derivation, supplier/material/facility intelligence) that run on top of the fetched data. Some material and trade figures are **curated industry estimates** (USGS / Statista references), not live feeds.
 
 ### 🧠 Derived Intelligence Layers
 
 - **Company risk register** — severity, probability, financial impact, recommended actions
 - **Composite scoring** — weighted scores across cyber, exposure, financial health, ESG
-- **AI-generated summaries** — Gemini-powered per-company briefs (opt-in API key)
+- **Executive summaries** — per-company briefs deterministically composed from the structured scores/risks (single `generate()` seam, ready to swap for an LLM call)
 - **Derived KPIs** — real counts patched into seeded KPI cards
 - **Compare radar** — per-axis risk profile for every tracked company
 
@@ -207,7 +207,8 @@ src/
 │   └── ui/       (Panel, DataTable, RiskBadge, StatTile)
 └── lib/
     ├── db.ts             # Redis read-through (readDataset<T>)
-    ├── provider.ts       # 41 typed data accessors
+    ├── provider.ts       # 39 typed data accessors
+    ├── data*.ts          # data.ts, data-supply.ts, data-risk.ts, data-analytics.ts (domain accessors)
     ├── types.ts          # All TypeScript types
     ├── store.ts          # Zustand (focusCompany, watchlist)
     ├── focus.ts          # Cross-panel focus helper
@@ -325,7 +326,7 @@ Each source runs independently via `run(industry) → dict`. The pipeline is seq
 | Wikidata | Entity metadata | ✅ | Weekly |
 | PatentsView | US patents | ✅* | Weekly |
 | Korea DART | KR filings | ✅* | Daily |
-| USGS | Mineral data | ✅ | Annual |
+| USGS / Statista | Mineral & materials estimates (curated, not a live feed) | ✅ | Reference |
 
 *\* Requires free API key*
 
