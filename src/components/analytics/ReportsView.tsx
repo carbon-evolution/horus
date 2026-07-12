@@ -15,15 +15,28 @@ const SECTIONS = [
 ] as const;
 type SectionKey = (typeof SECTIONS)[number]["key"];
 
+const SEV_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 };
+
 export function ReportsView({
   alerts, companies: allCompanies, materials: allMaterials, policies: allPolicies,
 }: { alerts: AlertItem[]; companies: Company[]; materials: RawMaterial[]; policies: Policy[] }) {
   const industry = useIndustry();
   const [picked, setPicked] = useState<SectionKey[]>(["exec", "companies", "alerts"]);
+  // Companies arrive pre-sorted by market cap; surface the top risks for the
+  // rest so the brief highlights the worst offenders, not an arbitrary first N.
   const companies = allCompanies.slice(0, 5);
-  const materials = allMaterials.slice(0, 5);
-  const policies = allPolicies.slice(0, 4);
+  const materials = [...allMaterials]
+    .sort((a, b) => b.concentration - a.concentration || SEV_RANK[b.supplyRisk] - SEV_RANK[a.supplyRisk])
+    .slice(0, 5);
+  const policies = [...allPolicies]
+    .sort((a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity] || b.date.localeCompare(a.date))
+    .slice(0, 4);
   const has = (k: SectionKey) => picked.includes(k);
+
+  const highAlerts = alerts.filter((a) => a.severity === "high").length;
+  const highRiskMaterials = allMaterials.filter((m) => m.supplyRisk === "high").length;
+  const topMaterial = materials[0];
+  const topPolicy = policies[0];
 
   return (
     <div className="space-y-3">
@@ -61,9 +74,10 @@ export function ReportsView({
               <section>
                 <h3 className="mb-1 font-semibold">Executive Summary</h3>
                 <p className="text-[var(--text-dim)]">
-                  {INDUSTRY_LABEL[industry]} supply chain shows {alerts.filter((a) => a.severity === "high").length} high-severity
-                  active alerts. Key concentrations remain in sourcing ({materials[0]?.name}: {materials[0]?.concentration}% top-3)
-                  and policy exposure ({policies[0]?.title.slice(0, 60)}…).
+                  The {INDUSTRY_LABEL[industry]} supply chain shows {highAlerts} high-severity active alert{highAlerts === 1 ? "" : "s"}
+                  {highRiskMaterials > 0 && <> and {highRiskMaterials} raw material{highRiskMaterials === 1 ? "" : "s"} at high supply risk</>}.
+                  {topMaterial && <> The tightest sourcing concentration is <strong>{topMaterial.name}</strong> at {topMaterial.concentration}% (top-3).</>}
+                  {topPolicy && <> The most significant regulatory exposure is <strong>{topPolicy.title}</strong> ({topPolicy.severity} severity — {topPolicy.authority}).</>}
                 </p>
               </section>
             )}
