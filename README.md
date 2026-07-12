@@ -31,45 +31,45 @@ Built on **Next.js 16 (App Router)**, **React 19**, **Postgres 17**, and **Redis
 
 ## 📸 Screenshots
 
-### Dashboard Overview
+### Command Dashboard
 
-| Risk Radar + Market Pulse | Global Manufacturing Footprint |
+| Risk & Market Overview | Raw-Material Flow (Sankey) |
 |---|---|
-| ![Risk radar, market snapshot, and news feed on the semiconductor dashboard](docs/screenshots/dashboard-overview.png) | ![Map view of global fab and R&D facility locations](docs/screenshots/supply-chain-map.png) |
+| ![Semiconductor dashboard: KPI tiles, 8-axis composite risk radar, Top-10 market snapshot, news feed, and global facility map](docs/screenshots/dashboard-overview.png) | ![Sankey of semiconductor raw-material flows from origin countries to Taiwan and China, with a photoresist dependency panel](docs/screenshots/supply-chain-map.png) |
 
-*The dashboard (left) shows interactive risk radar, market snapshot with price/change data, and latest news. The manufacturing map (right) plots 1,000+ fab/R&D facilities worldwide.*
+*Left — the semiconductor dashboard: seven KPI tiles (companies, suppliers, facilities, materials, countries, policy updates, market-moving news), an 8-axis **composite risk radar** (Medium · 61/100), a **Top-10 market snapshot** (market cap, price, 24h/YTD %), a **market-impact news feed**, and the **global manufacturing footprint** map at the bottom. Right — the dashboard's **"Raw Materials Movement" Sankey**: origin countries → materials (photoresist, gallium, rare earths, neon gas…) → destinations, with a per-material dependency call-out (e.g. Japan controls 89% of tracked photoresist).*
 
-### Company Intelligence
+### Multi-Industry Modelling
 
-| Company Profile & Scorecard | Financial Performance |
+| AI Industry — Supply Flows | Battery Industry — Material Trade |
 |---|---|
-| ![Company profile with scorecard, news, and related data](docs/screenshots/company-profile.png) | ![TTM financial performance across tracked companies](docs/screenshots/company-financials.png) |
+| ![AI-industry dashboard Sankey of HBM memory, CoWoS packaging, GPUs, ABF substrate and grid power, plus deals and R&D tables](docs/screenshots/company-profile.png) | ![Battery-industry material Sankey of lithium, cobalt, nickel, graphite and manganese to consuming countries](docs/screenshots/raw-materials.png) |
 
-*Per-company intelligence pages with risk scorecards, news events, supplier networks, and financial time-series.*
+*The same models re-instantiated per industry. **AI** (left): HBM memory, CoWoS packaging, GPUs, ABF substrate, grid power — with recent deals, top suppliers by spend, and R&D/patent tables. **Battery** (right): lithium, cobalt, nickel, graphite, manganese flows with sourcing-concentration warnings (e.g. Indonesia controls 88% of tracked nickel).*
 
-### Supply Chain
+### Supply-Chain Analysis
 
-| Suppliers & Vendor Risk | Raw Materials Tracking |
+| Raw-Materials Supply-Risk Matrix | 3D Dependency Graph |
 |---|---|
-| ![Supplier network with tier-1 and tier-2 vendor risk](docs/screenshots/supply-chain-suppliers.png) | ![Raw material price, concentration, and supply risk data](docs/screenshots/raw-materials.png) |
+| ![Raw Materials page: supply-risk scatter plot (sourcing concentration vs strategic importance) and compare-materials table](docs/screenshots/supply-chain-suppliers.png) | ![Interactive 3D force graph of supplier-to-buyer dependencies with TSMC focused and edges coloured by risk](docs/screenshots/data-analytics-market.png) |
 
-| Trade & Shipment Lanes | Full Navigation Tree |
-|---|---|
-| ![Trade routes with tariff and risk assessments](docs/screenshots/trade-shipments.png) | ![Sidebar showing full industry-aware navigation](docs/screenshots/sidebar-companies.png) |
-
-*Supply-chain views: tier-1/2 supplier networks, raw material sourcing concentration, trade lane risk, and the full industry-aware sidebar.*
-
-### Risk & Analytics
-
-| Risk Radar (8-Axis Profile) | Market Intelligence |
-|---|---|
-| ![Risk radar showing geopolitical, supply, financial, and other risk axes](docs/screenshots/risk-radar.png) | ![Market intelligence with inventory ratios, lead times, and utilization](docs/screenshots/data-analytics-market.png) |
-
-### Monitoring
-
-| Monitoring & Alerts |
+| Supplier → Input → Buyer Sourcing Flow |
 |---|
-| ![Alert feed with severity-coded notifications](docs/screenshots/monitoring-alerts.png) |
+| ![Trade & Shipments page: supplier-to-input-to-buyer Sankey with a freight-lane tariff and risk table](docs/screenshots/trade-shipments.png) |
+
+*The **Raw Materials** page (top-left) plots each material on a supply-risk matrix (sourcing concentration × strategic importance × supply risk) beside a sortable compare table. The **Supply Chain Map** (top-right) is an interactive **3D dependency force-graph** — click a node (TSMC shown) to focus it and trace supplier→buyer edges coloured by risk. **Trade & Shipments** (bottom) renders the supplier→input→buyer sourcing flow with a freight-lane tariff/risk table.*
+
+### Risk & Compliance
+
+| Comparative Risk Radar | Geopolitical — Political Instability |
+|---|---|
+| ![Risk Radar page: 8-axis comparative risk profile for TSMC vs the sector benchmark, plus a per-company risk register](docs/screenshots/monitoring-alerts.png) | ![Geopolitical Risk map: producing countries scored by political-instability tension with cascade arcs to dependent materials](docs/screenshots/company-financials.png) |
+
+| Maritime Chokepoints | Financial-Risk Ranking |
+|---|---|
+| ![Maritime chokepoints map with animated sea lanes through Hormuz, Malacca and the Taiwan Strait and exposure bars](docs/screenshots/sidebar-companies.png) | ![Financials page ranking companies by financial-risk score with a key-ratios table](docs/screenshots/risk-radar.png) |
+
+*The **Risk Radar** (top-left) overlays any company's 8-axis profile on the sector benchmark, with a per-company **risk register** below. **Geopolitical Risk** offers two lenses: **political instability** (top-right) — producing countries scored by tension with cascade arcs to the materials and companies exposed — and **maritime chokepoints** (bottom-left) — animated sea lanes through Hormuz, Malacca, the Taiwan Strait and more, with per-chokepoint trade-exposure bars. The **Financials** page (bottom-right) ranks every tracked company by financial-risk score alongside a revenue/margin/R&D/capex key-ratios table.*
 
 ---
 
@@ -265,7 +265,7 @@ make ingest
 
 # 7. Launch dashboard
 cd .. && npm run dev
-# → http://localhost:3000 → /semiconductor
+# → http://localhost:4444 → /semiconductor
 ```
 
 ### Per-Source Refresh
@@ -284,8 +284,8 @@ make ingest.derive     # Recompute KPIs/radar
 
 | Variable | Default | Unlocks |
 |----------|---------|---------|
-| `DATABASE_URL` | `[REDACTED] | Postgres connection |
-| `REDIS_URL` | `[REDACTED] | Redis cache |
+| `DATABASE_URL` | `postgresql://scr:scr@localhost:5433/scr_radar` | Postgres connection |
+| `REDIS_URL` | `redis://localhost:6380` | Redis cache |
 | `CACHE_TTL` | `86400` | Cache TTL (seconds) |
 | `PATENTSVIEW_API_KEY` | — | US patent filings (free) |
 | `DART_API_KEY` | — | Korea DART filings (free) |
