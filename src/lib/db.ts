@@ -10,6 +10,7 @@ export const pool =
 
 export const redis =
   g._redis ?? (g._redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6380"));
+// ^ fallback is the localhost-only dev default; production sets REDIS_URL env
 
 const CACHE_TTL = Number(process.env.CACHE_TTL ?? "86400");
 
