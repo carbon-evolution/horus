@@ -12,6 +12,11 @@ const riskColor = (v: number) => (v >= 70 ? "#f87171" : v >= 45 ? "#f59e0b" : "#
 
 export function CompanyScorecard({ scores }: { scores: Scores }) {
   const keys = ["geopolitical", "supplierDependency", "cyber", "financial", "esg", "customerDependency"] as const;
+  // customerDependency is now derived from the supplier graph; only companies
+  // with no tracked customer edges fall back to a neutral estimate.
+  const custFactors = scores.factors?.customerDependency ?? {};
+  const custEstimated = custFactors.estimated === true;
+  const custBuyers = Number(custFactors.buyers ?? 0);
   return (
     <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -42,7 +47,7 @@ export function CompanyScorecard({ scores }: { scores: Scores }) {
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-[var(--text-dim)]">
                 {LABELS[k]}
-                {k === "customerDependency" && <span title="limited data (proxy)"> *</span>}
+                {k === "customerDependency" && custEstimated && <span title="no tracked customer edges — neutral estimate"> *</span>}
               </span>
               <span className="font-semibold" style={{ color: riskColor(scores[k]) }}>{scores[k]}</span>
             </div>
@@ -53,7 +58,10 @@ export function CompanyScorecard({ scores }: { scores: Scores }) {
         ))}
       </div>
       <p className="mt-2 text-[10px] text-[var(--text-faint)]">
-        * customer dependency is a proxy (no free customer-relationship feed). Higher = more risk.
+        {custEstimated
+          ? "* customer dependency has no tracked customer edges for this company — shown as a neutral estimate. "
+          : `Customer dependency is derived from the supplier graph (${custBuyers} tracked ${custBuyers === 1 ? "buyer" : "buyers"}). `}
+        Higher = more risk.
       </p>
     </div>
   );
