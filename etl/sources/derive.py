@@ -34,6 +34,58 @@ def _seed(*parts: str) -> int:
     return int(hashlib.md5("|".join(parts).encode()).hexdigest()[:8], 16)
 
 
+def _cap_num(s: str) -> float:
+    """'$1.20T' -> 1.2e12, '$300B' -> 3e11."""
+    try:
+        s = (s or "").strip().lstrip("$")
+        mult = 1e12 if s.endswith("T") else 1e9 if s.endswith("B") else 1e6 if s.endswith("M") else 1.0
+        return float(s.rstrip("TBMK")) * mult
+    except Exception:
+        return 0.0
+
+
+def _fmt_cap(n: float) -> str:
+    if n >= 1e12:
+        return f"${n / 1e12:.2f}T"
+    if n >= 1e9:
+        return f"${n / 1e9:.0f}B"
+    if n >= 1e6:
+        return f"${n / 1e6:.0f}M"
+    return f"${n:.0f}"
+
+
+def build_market_snapshot(companies: list[dict]) -> dict | None:
+    """Live sector snapshot from the real Yahoo quotes in the companies dataset:
+    aggregate market cap, 24h breadth, YTD average, cap concentration and movers."""
+    rows = [c for c in companies if _cap_num(c.get("marketCap")) > 0]
+    if not rows:
+        return None
+    by_cap = sorted(rows, key=lambda c: -_cap_num(c.get("marketCap")))
+    total = sum(_cap_num(c.get("marketCap")) for c in rows) or 1.0
+    top3 = sum(_cap_num(c.get("marketCap")) for c in by_cap[:3])
+    ch = [c for c in rows if isinstance(c.get("change24h"), (int, float))]
+    yts = [c["changeYtd"] for c in rows if isinstance(c.get("changeYtd"), (int, float))]
+
+    def mover(c: dict) -> dict:
+        return {"id": c["id"], "name": c["name"], "ticker": c.get("ticker", ""),
+                "changePct": round(c.get("change24h", 0), 2)}
+
+    return {
+        "totalMarketCap": _fmt_cap(total),
+        "tracked": len(rows),
+        "advancers": sum(1 for c in ch if c["change24h"] > 0),
+        "decliners": sum(1 for c in ch if c["change24h"] < 0),
+        "avgYtdPct": round(sum(yts) / len(yts), 1) if yts else 0.0,
+        "top3ConcentrationPct": round(top3 / total * 100, 1),
+        "topGainers": [mover(c) for c in sorted(ch, key=lambda c: -c["change24h"])[:3]],
+        "topLosers": [mover(c) for c in sorted(ch, key=lambda c: c["change24h"])[:3]],
+        "leaders": [{"id": c["id"], "name": c["name"], "ticker": c.get("ticker", ""),
+                     "marketCap": c.get("marketCap", ""),
+                     "capSharePct": round(_cap_num(c.get("marketCap")) / total * 100, 1)}
+                    for c in by_cap[:5]],
+    }
+
+
 def _color(idx: int) -> str:
     """Distinct categorical hue per company via the golden angle (HSL->hex)."""
     h = (idx * 137.508) % 360
@@ -194,4 +246,10 @@ def run(industry: str = "semiconductor") -> dict:
     if materials:
         out["sankey"] = build_material_sankey(materials, industry)
         out["materialLanes"] = build_material_lanes(materials, industry, geo)
+    # Merge a live market snapshot into the (otherwise curated) marketIntel so the
+    # Market Intelligence page shows real quotes, not just static inventory data.
+    snapshot = build_market_snapshot(companies)
+    if snapshot:
+        market = read_dataset(industry, "marketIntel") or {}
+        out["marketIntel"] = {**market, "marketSnapshot": snapshot}
     return out
