@@ -19,13 +19,18 @@ function heat(value: number, max: number) {
   );
 }
 
+const total = (e: EsgProfile) => e.scope1 + e.scope2 + e.scope3;
+
 export function EsgView({ esg }: { esg: EsgProfile[] }) {
   const industry = useIndustry();
   const { active, matchesText, toggleFocus, nameToId } = useFocus();
+  // Rank the heatmap by total footprint so the worst emitters surface first.
+  const rows = [...esg].sort((a, b) => total(b) - total(a));
   const max = {
     s1: Math.max(...esg.map((e) => e.scope1), 0.1),
     s2: Math.max(...esg.map((e) => e.scope2), 0.1),
     s3: Math.max(...esg.map((e) => e.scope3), 0.1),
+    tot: Math.max(...esg.map(total), 0.1),
   };
 
   return (
@@ -39,13 +44,14 @@ export function EsgView({ esg }: { esg: EsgProfile[] }) {
               <th className="pb-2 text-right font-medium">Scope 1</th>
               <th className="pb-2 text-right font-medium">Scope 2</th>
               <th className="pb-2 text-right font-medium">Scope 3</th>
+              <th className="pb-2 text-right font-medium">Total</th>
               <th className="pb-2 text-right font-medium">Water Risk</th>
               <th className="pb-2 text-right font-medium">Ethical Sourcing</th>
               <th className="pb-2 text-right font-medium">Net-Zero Target</th>
             </tr>
           </thead>
           <tbody>
-            {esg.map((e) => {
+            {rows.map((e) => {
               const matched = matchesText(e.company);
               const id = nameToId(e.company);
               return (
@@ -67,6 +73,7 @@ export function EsgView({ esg }: { esg: EsgProfile[] }) {
                 <td className="py-1.5">{heat(e.scope1, max.s1)}</td>
                 <td className="py-1.5">{heat(e.scope2, max.s2)}</td>
                 <td className="py-1.5">{heat(e.scope3, max.s3)}</td>
+                <td className="py-1.5 text-right font-semibold tabular-nums">{total(e).toFixed(1)}</td>
                 <td className="py-2 text-right"><RiskBadge level={e.waterRisk} /></td>
                 <td className="py-2 text-right"><RiskBadge level={e.ethicalSourcing} /></td>
                 <td className="py-2 text-right tabular-nums text-[var(--text-dim)]">{e.netZeroTarget}</td>
