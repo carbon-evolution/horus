@@ -50,6 +50,18 @@ def _supplier_dependency(name, edges):
     return _clamp(35 + sole * 15 + max(0, 10 - len(mine)) * 2), {"edges": len(mine), "soleSource": sole}
 
 
+def _customer_dependency(name, edges):
+    """Sell-side concentration: how few / how risky this company's buyers are.
+    Uses the same supplier graph (edges where this company is the supplier)."""
+    mine = [e for e in edges if e.get("supplier") == name]
+    if not mine:
+        return 45, {"buyers": 0, "estimated": True, "note": "no tracked customer edges"}
+    buyers = {e.get("buyer") for e in mine}
+    concentrated = sum(1 for e in mine if e.get("risk") == "high")
+    score = _clamp(35 + concentrated * 15 + max(0, 4 - len(buyers)) * 6)
+    return score, {"buyers": len(buyers), "highRiskLinks": concentrated}
+
+
 def build_scores(ctx):
     cid, name = ctx["id"], ctx["name"]
     supplier, sf = _supplier_dependency(name, ctx.get("edges") or [])
@@ -59,7 +71,7 @@ def build_scores(ctx):
     financial = _clamp(100 - hs) if isinstance(hs, (int, float)) else _clamp(40 + _seed(cid, "fin") % 30)
     geo_base = ctx.get("geoTension") or EXPOSURE_GEO.get(ctx.get("exposure"), 50)
     geopolitical = _clamp(geo_base)
-    customer = _clamp(40 + _seed(cid, "cust") % 35)  # proxy - no free customer data
+    customer, cf = _customer_dependency(name, ctx.get("edges") or [])
     subs = {"supplierDependency": supplier, "customerDependency": customer, "esg": esg,
             "cyber": cyber, "financial": financial, "geopolitical": geopolitical}
     overall, band = overall_and_band(subs)
@@ -73,7 +85,7 @@ def build_scores(ctx):
     esg_total = round(sum((ctx.get("esg") or {}).get(k, 0) or 0 for k in ("scope1", "scope2", "scope3")), 1)
     return {**subs, "overall": overall, "band": band, "trend": trend,
             "factors": {"supplierDependency": sf,
-                        "customerDependency": {"estimated": True, "note": "revenue-proxy; no free customer feed"},
+                        "customerDependency": cf,
                         "esg": {"scopeTotal": esg_total},
                         "cyber": {"exposure": cyber}, "financial": {"healthScore": hs if hs is not None else "n/a"},
                         "geopolitical": {"base": geo_base}}}
