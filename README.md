@@ -109,7 +109,8 @@ Plus derived/enrichment modules (risk register, composite scores, KPI derivation
 ### 🧠 Derived Intelligence Layers
 
 - **Company risk register** — severity, probability, financial impact, recommended actions
-- **Composite scoring** — weighted scores across cyber, exposure, financial health, ESG
+- **Composite scoring** — a weighted 0–100 blend of six real subscores (geopolitical, supplier dependency, cyber, financial, ESG, customer dependency) → A–F band + trend. Supplier *and* customer dependency are computed from the supplier graph; each subscore records the inputs it used
+- **Live market snapshot** — sector market cap, 24h breadth, YTD average, cap concentration and top movers, derived from the real company quotes (shown on Market Intelligence)
 - **Executive summaries** — per-company briefs deterministically composed from the structured scores/risks (single `generate()` seam, ready to swap for an LLM call)
 - **Derived KPIs** — real counts patched into seeded KPI cards
 - **Compare radar** — per-axis risk profile for every tracked company
@@ -162,7 +163,7 @@ etl/
 ├── warm.py                # Postgres → Redis cache copy
 ├── flows.py               # Prefect orchestration
 ├── run_source.py          # Single-source CLI runner
-├── ai/summary.py          # Gemini-powered summaries
+├── ai/summary.py          # deterministic exec summaries (LLM-swappable seam)
 ├── migrations/001_init.sql
 ├── seeds/                 # semiconductor.yaml, ai.yaml, battery.yaml
 ├── sources/               # 20+ data source modules
@@ -175,7 +176,7 @@ etl/
 │   ├── opendart.py        # Korean disclosures
 │   ├── fedreg.py          # Federal Register
 │   ├── risks.py · scores.py · summary.py  # Derived layers
-│   ├── derive.py          # KPI computation
+│   ├── derive.py          # derived datasets: KPIs, compare radar, market snapshot, material flows
 │   ├── supplier_intel.py · materials_intel.py · facility_intel.py
 │   └── ...                # holdings, news_enrich, etc.
 └── cache/                 # API response cache (gitignored)
