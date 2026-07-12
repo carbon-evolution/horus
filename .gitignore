@@ -47,3 +47,6 @@ etl/seeds/fixtures/
 __pycache__/
 .pytest_cache/
 etl/cache/
+
+# graph analysis artifacts
+graphify-out/
