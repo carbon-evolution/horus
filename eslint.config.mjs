@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Python ETL virtualenv ships bundled JS that is not ours to lint.
+    "**/.venv/**",
+    "graphify-out/**",
   ]),
 ]);
 
