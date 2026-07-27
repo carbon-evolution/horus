@@ -242,7 +242,10 @@ export function CompanyProfile({
         </div>
       )}
 
-      {/* global operations map — this company's facilities only */}
+      {/* Operations map worldwide — this company's facilities only.
+          NB: do not let this comment start with the word "global" — ESLint
+          reads such a block comment as a globals-declaration directive and
+          reports every word in it as an unused variable. */}
       {facilities.length > 0 && (
         <Panel title={`Global Operations (${facilities.length} facilities)`}>
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-[2fr_1fr]">

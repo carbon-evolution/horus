@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import ForceGraph3D from "react-force-graph-3d";
 import SpriteText from "three-spritetext";
 import { useIndustry } from "@/lib/industry-context";
@@ -43,8 +42,14 @@ export default function SupplyChainMap({ graph: raw }: { graph: GraphData }) {
     return () => ro.disconnect();
   }, []);
 
-  // A stale selection from a previous industry's graph must not survive a data swap.
-  useEffect(() => setSelected(null), [raw]);
+  // A stale selection from a previous industry's graph must not survive a data
+  // swap. Adjusting during render (rather than in an effect) avoids the extra
+  // commit + cascading re-render: https://react.dev/reference/react/useState
+  const [prevRaw, setPrevRaw] = useState(raw);
+  if (raw !== prevRaw) {
+    setPrevRaw(raw);
+    setSelected(null);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function handleClick(node: any) {
