@@ -180,8 +180,14 @@ export function RawMaterialsSankey({ data: raw, variant = "country", compact = f
     setDims({ w: el.clientWidth, h: el.clientHeight });
     return () => ro.disconnect();
   }, []);
-  // A new industry's graph must reset drag + selection.
-  useEffect(() => { setOffsets({}); setSelected(null); }, [data]);
+  // A new industry's graph must reset drag + selection. Adjusted during render
+  // rather than in an effect so the stale offsets never paint for a frame.
+  const [prevData, setPrevData] = useState(data);
+  if (data !== prevData) {
+    setPrevData(data);
+    setOffsets({});
+    setSelected(null);
+  }
 
   // Height scales with the busiest column so pills + their "top/lead" labels
   // never overlap. Compact (dashboard) hides subtitles and packs tighter so it

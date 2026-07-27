@@ -14,25 +14,30 @@ export function GlobalSearch() {
   const valid = (INDUSTRIES as readonly string[]).includes(industry);
 
   const [q, setQ] = useState("");
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [fetched, setFetched] = useState<Group[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
+  // An empty/invalid query shows nothing. Derived rather than stored, so the
+  // effect never has to clear state synchronously on its own first pass.
+  const querying = valid && q.trim().length >= 1;
+  const groups = querying ? fetched : [];
+
   // debounced fetch
   useEffect(() => {
-    if (!valid || q.trim().length < 1) { setGroups([]); return; }
+    if (!querying) return;
     const t = setTimeout(async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/search?industry=${industry}&q=${encodeURIComponent(q.trim())}`);
         const data = await res.json();
-        setGroups(data.groups ?? []);
-      } catch { setGroups([]); }
+        setFetched(data.groups ?? []);
+      } catch { setFetched([]); }
       setLoading(false);
     }, 180);
     return () => clearTimeout(t);
-  }, [q, industry, valid]);
+  }, [q, industry, querying]);
 
   // close on outside click
   useEffect(() => {

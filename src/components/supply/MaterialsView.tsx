@@ -62,7 +62,9 @@ export function MaterialsView({ materials }: { materials: RawMaterial[] }) {
     z: shortageRank(m.shortageStatus), color: RISK_COLOR[m.supplyRisk], risk: m.supplyRisk,
   }));
 
-  const Arrow = ({ k }: { k: SortKey }) => (
+  // A plain function, not a component: rendering <Arrow /> from a value
+  // created during render remounts it every pass (react-hooks/static-components).
+  const arrow = (k: SortKey) => (
     <span className="ml-0.5 text-[9px] text-[var(--text-faint)]">{sortKey === k ? (sortDir === 1 ? "▲" : "▼") : "↕"}</span>
   );
 
@@ -127,11 +129,11 @@ export function MaterialsView({ materials }: { materials: RawMaterial[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-[11px] text-[var(--text-dim)]">
-                <th className="cursor-pointer pb-2 pr-3 font-medium" onClick={() => toggleSort("name")}>Material<Arrow k="name" /></th>
-                <th className="cursor-pointer pb-2 pr-3 text-right font-medium" onClick={() => toggleSort("price")}>Spot price<Arrow k="price" /></th>
-                <th className="cursor-pointer pb-2 pr-3 font-medium" onClick={() => toggleSort("concentration")}>Concentration<Arrow k="concentration" /></th>
-                <th className="cursor-pointer pb-2 pr-3 text-right font-medium" onClick={() => toggleSort("strategic")}>Strategic<Arrow k="strategic" /></th>
-                <th className="cursor-pointer pb-2 text-right font-medium" onClick={() => toggleSort("risk")}>Risk<Arrow k="risk" /></th>
+                <th className="cursor-pointer pb-2 pr-3 font-medium" onClick={() => toggleSort("name")}>Material{arrow("name")}</th>
+                <th className="cursor-pointer pb-2 pr-3 text-right font-medium" onClick={() => toggleSort("price")}>Spot price{arrow("price")}</th>
+                <th className="cursor-pointer pb-2 pr-3 font-medium" onClick={() => toggleSort("concentration")}>Concentration{arrow("concentration")}</th>
+                <th className="cursor-pointer pb-2 pr-3 text-right font-medium" onClick={() => toggleSort("strategic")}>Strategic{arrow("strategic")}</th>
+                <th className="cursor-pointer pb-2 text-right font-medium" onClick={() => toggleSort("risk")}>Risk{arrow("risk")}</th>
               </tr>
             </thead>
             <tbody>
