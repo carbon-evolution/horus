@@ -1,11 +1,11 @@
-prefect==3.1.15
-# prefect 3.1.15's embedded API server needs fastapi<0.116 / starlette<0.47
+prefect==3.6.29  # 3.6.22+ fixes auth-bypass/event-injection advisories
+# prefect's embedded API server still resolves fastapi<0.116 / starlette<0.47
 fastapi<0.116
 psycopg[binary]==3.2.13  # 3.2.10+ ships wheels for Python 3.14
 redis==5.2.1
 PyYAML==6.0.2
-python-dotenv==1.0.1
-pytest==8.3.4
-requests==2.32.3
+python-dotenv==1.2.2  # 1.2.2 fixes symlink-following in set_key
+pytest==9.0.3  # 9.0.3 fixes tmpdir handling
+requests==2.33.0  # 2.32.4 netrc leak + 2.33.0 temp-file reuse
 yfinance==0.2.61
 importlib_metadata  # prefect server start needs the backport on Python 3.14
